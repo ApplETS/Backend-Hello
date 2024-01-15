@@ -1,0 +1,13 @@
+version: '3.9'
+services:
+  backend:
+    container_name: api
+    image: ps/api
+    build:
+      context: HelloAPI
+      dockerfile: Dockerfile
+    ports:
+      - 5000:8080
+      - 5001:8081
+    env_file:
+      - .env
