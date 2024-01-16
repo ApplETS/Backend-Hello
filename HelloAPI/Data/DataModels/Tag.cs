@@ -3,7 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HelloAPI.Data.DataModels;
 
-public class Tag
+[Table("Tag")]
+public class Tag : BaseEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -14,18 +15,11 @@ public class Tag
 
     [Required]
     public int PriorityValue { get; set; }
-
-    public long? ParentTagId { get; set; }
-    [ForeignKey("ParentTagId")]
-    public Tag ParentTag { get; set; }
-
-    public ICollection<Tag> ChildTags { get; set; }
-
-    [Required]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-    [Required]
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-    public DateTime? DeletedAt { get; set; }
+    
+    [InverseProperty("Tags")]
+    public virtual ICollection<Publication> Publications { get; set; }
+    
+    public virtual ICollection<Tag> ParentTags { get; set; }
+    
+    public virtual ICollection<Tag> ChildrenTags { get; set; }
 }

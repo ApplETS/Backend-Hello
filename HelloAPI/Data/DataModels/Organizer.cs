@@ -4,7 +4,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HelloAPI.Data.DataModels;
 
-public class Organizer
+[Table("Organizer")]
+public class Organizer : BaseEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -23,14 +24,6 @@ public class Organizer
     [Required]
     public string ActivityArea { get; set; }
 
-    [Required]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-    [Required]
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-    public DateTime? DeletedAt { get; set; }
-
+    [InverseProperty("Organizer")]
     public ICollection<Publication> Publications { get; set; }
-    public ICollection<Event> Events { get; set; }
 }

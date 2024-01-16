@@ -3,7 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HelloAPI.Data.DataModels;
 
-public class Report
+
+[Table("Report")]
+public class Report : BaseEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -14,12 +16,11 @@ public class Report
 
     [Required]
     public DateTime Date { get; set; } = DateTime.UtcNow;
+    
+    public long PublicationId { get; set; }
+    
+    [ForeignKey("PublicationId")]
+    [InverseProperty("Reports")]
+    public virtual Publication Publications { get; set; } = null!;
 
-    [Required]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-    [Required]
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-    public DateTime? DeletedAt { get; set; }
 }

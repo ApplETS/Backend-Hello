@@ -3,7 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HelloAPI.Data.DataModels;
 
-public class Publication
+[Table("Publication")]
+public abstract class Publication : BaseEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -24,20 +25,22 @@ public class Publication
     [Required]
     public DateTime PublicationDate { get; set; }
 
-    [Required]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-    [Required]
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-    public DateTime? DeletedAt { get; set; }
-
     public long? ModeratorId { get; set; }
+    
     [ForeignKey("ModeratorId")]
+    [InverseProperty("Publications")]
     public Moderator Moderator { get; set; }
 
     [Required]
     public long OrganizerId { get; set; }
+    
     [ForeignKey("OrganizerId")]
+    [InverseProperty("Publications")]
     public Organizer Organizer { get; set; }
+    
+    [InverseProperty("Publications")]
+    public virtual ICollection<Tag> Tags { get; set; }
+        
+    [InverseProperty("Publications")]
+    public virtual ICollection<Report> Reports { get; } = new List<Report>();
 }
