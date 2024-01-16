@@ -1,4 +1,4 @@
-﻿using System.Reflection.Metadata;
+using System.Reflection.Metadata;
 
 using HelloAPI.Data.DataModels;
 
@@ -8,6 +8,10 @@ namespace HelloAPI.Data;
 
 public class HelloContext: DbContext
 {
+
+    public HelloContext(DbContextOptions<HelloContext> options) : base(options)  { }
+
+    public DbSet<Publication> Publications { get; set; }
     public DbSet<Event> Events { get; set; }
     public DbSet<Moderator> Moderators { get; set; }
     public DbSet<Organizer> Organizers { get; set; }
