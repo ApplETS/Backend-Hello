@@ -1,9 +1,6 @@
-using System.Reflection.Metadata;
-
-using HelloAPI.Data.DataModels;
+﻿using HelloAPI.Data.Entities;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 namespace HelloAPI.Data;
 
 public class HelloContext: DbContext
@@ -17,11 +14,8 @@ public class HelloContext: DbContext
     public DbSet<Organizer> Organizers { get; set; }
     public DbSet<Report> Reports { get; set; }
     public DbSet<Tag> Tags { get; set; }
+    public DbSet<UserProfile> UserProfiles { get; set; } 
 
-    protected override void OnConfiguring(DbContextOptionsBuilder opt)
-        => opt.UseNpgsql(
-            "UserId=postgres;Password=USTTdY1rIJhOjHwA;Server=db.ekjsmadkoplhbuafidaa.supabase.co;Port=5432;Database=postgres");
-    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Publication>().UseTptMappingStrategy();
@@ -32,6 +26,14 @@ public class HelloContext: DbContext
             .HasMany(c => c.ChildrenTags)
             .WithMany(p => p.ParentTags)
             .UsingEntity(x => x.ToTable("TagsHierarchy"));
-        
+
+        modelBuilder.Entity<UserProfile>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("userprofile_pkey");
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("timezone('utc'::text, now())");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("timezone('utc'::text, now())");
+        });
     }
 }

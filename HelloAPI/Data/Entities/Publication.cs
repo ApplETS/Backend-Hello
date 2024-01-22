@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace HelloAPI.Data.DataModels;
+namespace HelloAPI.Data.Entities;
 
 [Table("Publication")]
 public abstract class Publication : BaseEntity
