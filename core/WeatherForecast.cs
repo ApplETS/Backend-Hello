@@ -1,4 +1,4 @@
-namespace HelloAPI;
+namespace api.core;
 
 public class WeatherForecast
 {
