@@ -1,6 +1,6 @@
 using System.Text;
 
-using HelloAPI.Data;
+using api.core.Data;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

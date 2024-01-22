@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace HelloAPI.Data.Entities;
+namespace api.core.Data.Entities;
 
 [Table("Moderator")]
 public partial class Moderator

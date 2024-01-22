@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using HelloAPI.Data.Entities;
+using api.core.Data.Entities;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace HelloAPI.Data;
+namespace api.core.Data;
 
 public partial class EventManagementContext : DbContext
 {
