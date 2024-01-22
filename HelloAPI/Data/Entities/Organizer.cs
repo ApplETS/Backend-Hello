@@ -1,29 +1,32 @@
-﻿using Microsoft.Extensions.Logging;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace HelloAPI.Data.Entities;
 
 [Table("Organizer")]
-public class Organizer : BaseEntity
+public partial class Organizer
 {
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long Id { get; set; }
 
-    [Required]
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
-    [Required]
-    [EmailAddress]
-    public string Email { get; set; }
+    public string Email { get; set; } = null!;
 
-    [Required]
-    public string Organisation { get; set; }
+    public string Organisation { get; set; } = null!;
 
-    [Required]
-    public string ActivityArea { get; set; }
+    public string ActivityArea { get; set; } = null!;
+
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime UpdatedAt { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
 
     [InverseProperty("Organizer")]
-    public ICollection<Publication> Publications { get; set; }
+    public virtual ICollection<Publication> Publications { get; set; } = new List<Publication>();
 }

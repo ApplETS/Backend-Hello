@@ -1,46 +1,55 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace HelloAPI.Data.Entities;
 
 [Table("Publication")]
-public abstract class Publication : BaseEntity
+[Index("ModeratorId", Name = "IX_Publication_ModeratorId")]
+[Index("OrganizerId", Name = "IX_Publication_OrganizerId")]
+public partial class Publication
 {
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long Id { get; set; }
 
-    [Required]
-    public string Title { get; set; }
+    public string Title { get; set; } = null!;
 
-    [Required]
-    public string Content { get; set; }
+    public string Content { get; set; } = null!;
 
-    [Required]
-    public string ImageUrl { get; set; }
+    public string ImageUrl { get; set; } = null!;
 
-    [Required]
-    public string State { get; set; }
+    public string State { get; set; } = null!;
 
-    [Required]
     public DateTime PublicationDate { get; set; }
 
     public long? ModeratorId { get; set; }
-    
+
+    public long OrganizerId { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime UpdatedAt { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
+
+    [InverseProperty("IdNavigation")]
+    public virtual Event? Event { get; set; }
+
     [ForeignKey("ModeratorId")]
     [InverseProperty("Publications")]
-    public Moderator Moderator { get; set; }
+    public virtual Moderator? Moderator { get; set; }
 
-    [Required]
-    public long OrganizerId { get; set; }
-    
     [ForeignKey("OrganizerId")]
     [InverseProperty("Publications")]
-    public Organizer Organizer { get; set; }
-    
+    public virtual Organizer Organizer { get; set; } = null!;
+
+    [InverseProperty("Publication")]
+    public virtual ICollection<Report> Reports { get; set; } = new List<Report>();
+
+    [ForeignKey("PublicationsId")]
     [InverseProperty("Publications")]
-    public virtual ICollection<Tag> Tags { get; set; }
-        
-    [InverseProperty("Publications")]
-    public virtual ICollection<Report> Reports { get; } = new List<Report>();
+    public virtual ICollection<Tag> Tags { get; set; } = new List<Tag>();
 }

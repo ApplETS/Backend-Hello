@@ -1,25 +1,37 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace HelloAPI.Data.Entities;
 
 [Table("Tag")]
-public class Tag : BaseEntity
+public partial class Tag
 {
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long Id { get; set; }
 
-    [Required]
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
-    [Required]
     public int PriorityValue { get; set; }
-    
+
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime UpdatedAt { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
+
+    [ForeignKey("ParentTagsId")]
+    [InverseProperty("ParentTags")]
+    public virtual ICollection<Tag> ChildrenTags { get; set; } = new List<Tag>();
+
+    [ForeignKey("ChildrenTagsId")]
+    [InverseProperty("ChildrenTags")]
+    public virtual ICollection<Tag> ParentTags { get; set; } = new List<Tag>();
+
+    [ForeignKey("TagsId")]
     [InverseProperty("Tags")]
-    public virtual ICollection<Publication> Publications { get; set; }
-    
-    public virtual ICollection<Tag> ParentTags { get; set; }
-    
-    public virtual ICollection<Tag> ChildrenTags { get; set; }
+    public virtual ICollection<Publication> Publications { get; set; } = new List<Publication>();
 }

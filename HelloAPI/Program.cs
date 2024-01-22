@@ -1,15 +1,27 @@
+using System.Text;
+
 using HelloAPI.Data;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var supabaseSecretKey = Environment.GetEnvironmentVariable("SUPABASE_SECRET_KEY") ?? throw new Exception("SUPABASE_SECRET_KEY is not set");
+var supabaseProjectId = Environment.GetEnvironmentVariable("SUPABASE_PROJECT_ID") ?? throw new Exception("SUPABASE_PROJECT_ID is not set");
+var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new Exception("CONNECTION_STRING is not set");
 
-var postgresqlConnectionString = Environment.GetEnvironmentVariable("POSTGRESQL_CONNECTION_STR") ?? throw new Exception("POSTGRESQL_CONNECTION_STR is not set");
-builder.Services.AddDbContext<HelloContext>(o =>
+builder.Services.AddDbContext<EventManagementContext>(opt => opt.UseNpgsql(connectionString));
+
+builder.Services.AddAuthentication().AddJwtBearer(o =>
 {
-    o.UseNpgsql(postgresqlConnectionString);
+    o.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(supabaseSecretKey)),
+        ValidAudiences = ["authenticated"],
+        ValidIssuer = $"https://{supabaseProjectId}.supabase.co/auth/v1"
+    };
 });
 
 builder.Services.AddControllers();

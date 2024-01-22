@@ -1,26 +1,32 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace HelloAPI.Data.Entities;
 
-
 [Table("Report")]
-public class Report : BaseEntity
+[Index("PublicationId", Name = "IX_Report_PublicationId")]
+public partial class Report
 {
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long Id { get; set; }
 
-    [Required]
-    public string Reason { get; set; }
+    public string Reason { get; set; } = null!;
 
-    [Required]
-    public DateTime Date { get; set; } = DateTime.UtcNow;
-    
+    public DateTime Date { get; set; }
+
     public long PublicationId { get; set; }
-    
+
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime UpdatedAt { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
+
     [ForeignKey("PublicationId")]
     [InverseProperty("Reports")]
-    public virtual Publication Publications { get; set; } = null!;
-
+    public virtual Publication Publication { get; set; } = null!;
 }

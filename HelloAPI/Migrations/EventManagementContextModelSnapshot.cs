@@ -3,7 +3,6 @@ using System;
 using HelloAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,21 +10,31 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace HelloAPI.Migrations
 {
-    [DbContext(typeof(HelloContext))]
-    [Migration("20240116203116_InitialMigration")]
-    partial class InitialMigration
+    [DbContext(typeof(EventManagementContext))]
+    partial class EventManagementContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
-
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("HelloAPI.Data.DataModels.Moderator", b =>
+            modelBuilder.Entity("HelloAPI.Data.Entities.Event", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("EventDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Event");
+                });
+
+            modelBuilder.Entity("HelloAPI.Data.Entities.Moderator", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -34,7 +43,9 @@ namespace HelloAPI.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
@@ -48,14 +59,16 @@ namespace HelloAPI.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Moderator");
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.DataModels.Organizer", b =>
+            modelBuilder.Entity("HelloAPI.Data.Entities.Organizer", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -68,7 +81,9 @@ namespace HelloAPI.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
@@ -86,14 +101,16 @@ namespace HelloAPI.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Organizer");
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.DataModels.Publication", b =>
+            modelBuilder.Entity("HelloAPI.Data.Entities.Publication", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -106,7 +123,9 @@ namespace HelloAPI.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
@@ -133,20 +152,20 @@ namespace HelloAPI.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ModeratorId");
+                    b.HasIndex(new[] { "ModeratorId" }, "IX_Publication_ModeratorId");
 
-                    b.HasIndex("OrganizerId");
+                    b.HasIndex(new[] { "OrganizerId" }, "IX_Publication_OrganizerId");
 
                     b.ToTable("Publication");
-
-                    b.UseTptMappingStrategy();
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.DataModels.Report", b =>
+            modelBuilder.Entity("HelloAPI.Data.Entities.Report", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -155,7 +174,9 @@ namespace HelloAPI.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
@@ -171,16 +192,18 @@ namespace HelloAPI.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PublicationId");
+                    b.HasIndex(new[] { "PublicationId" }, "IX_Report_PublicationId");
 
                     b.ToTable("Report");
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.DataModels.Tag", b =>
+            modelBuilder.Entity("HelloAPI.Data.Entities.Tag", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -189,7 +212,9 @@ namespace HelloAPI.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
@@ -202,7 +227,9 @@ namespace HelloAPI.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
 
                     b.HasKey("Id");
 
@@ -219,9 +246,9 @@ namespace HelloAPI.Migrations
 
                     b.HasKey("PublicationsId", "TagsId");
 
-                    b.HasIndex("TagsId");
+                    b.HasIndex(new[] { "TagsId" }, "IX_PublicationTag_TagsId");
 
-                    b.ToTable("PublicationTag");
+                    b.ToTable("PublicationTag", (string)null);
                 });
 
             modelBuilder.Entity("TagTag", b =>
@@ -234,100 +261,110 @@ namespace HelloAPI.Migrations
 
                     b.HasKey("ChildrenTagsId", "ParentTagsId");
 
-                    b.HasIndex("ParentTagsId");
+                    b.ToTable("TagTag");
+                });
+
+            modelBuilder.Entity("TagsHierarchy", b =>
+                {
+                    b.Property<long>("ChildrenTagsId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ParentTagsId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ChildrenTagsId", "ParentTagsId");
+
+                    b.HasIndex(new[] { "ParentTagsId" }, "IX_TagsHierarchy_ParentTagsId");
 
                     b.ToTable("TagsHierarchy", (string)null);
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.DataModels.Event", b =>
+            modelBuilder.Entity("HelloAPI.Data.Entities.Event", b =>
                 {
-                    b.HasBaseType("HelloAPI.Data.DataModels.Publication");
+                    b.HasOne("HelloAPI.Data.Entities.Publication", "IdNavigation")
+                        .WithOne("Event")
+                        .HasForeignKey("HelloAPI.Data.Entities.Event", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<DateTime>("EventDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.ToTable("Event");
+                    b.Navigation("IdNavigation");
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.DataModels.Publication", b =>
+            modelBuilder.Entity("HelloAPI.Data.Entities.Publication", b =>
                 {
-                    b.HasOne("HelloAPI.Data.DataModels.Moderator", "Moderator")
+                    b.HasOne("HelloAPI.Data.Entities.Moderator", "Moderator")
                         .WithMany("Publications")
-                        .HasForeignKey("ModeratorId");
+                        .HasForeignKey("ModeratorId")
+                        .HasConstraintName("Publication_ModeratorId_fkey");
 
-                    b.HasOne("HelloAPI.Data.DataModels.Organizer", "Organizer")
+                    b.HasOne("HelloAPI.Data.Entities.Organizer", "Organizer")
                         .WithMany("Publications")
                         .HasForeignKey("OrganizerId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("Publication_OrganizerId_fkey");
 
                     b.Navigation("Moderator");
 
                     b.Navigation("Organizer");
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.DataModels.Report", b =>
+            modelBuilder.Entity("HelloAPI.Data.Entities.Report", b =>
                 {
-                    b.HasOne("HelloAPI.Data.DataModels.Publication", "Publications")
+                    b.HasOne("HelloAPI.Data.Entities.Publication", "Publication")
                         .WithMany("Reports")
                         .HasForeignKey("PublicationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("Report_PublicationId_fkey");
 
-                    b.Navigation("Publications");
+                    b.Navigation("Publication");
                 });
 
             modelBuilder.Entity("PublicationTag", b =>
                 {
-                    b.HasOne("HelloAPI.Data.DataModels.Publication", null)
+                    b.HasOne("HelloAPI.Data.Entities.Publication", null)
                         .WithMany()
                         .HasForeignKey("PublicationsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HelloAPI.Data.DataModels.Tag", null)
+                    b.HasOne("HelloAPI.Data.Entities.Tag", null)
                         .WithMany()
                         .HasForeignKey("TagsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TagTag", b =>
+            modelBuilder.Entity("TagsHierarchy", b =>
                 {
-                    b.HasOne("HelloAPI.Data.DataModels.Tag", null)
+                    b.HasOne("HelloAPI.Data.Entities.Tag", null)
                         .WithMany()
                         .HasForeignKey("ChildrenTagsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HelloAPI.Data.DataModels.Tag", null)
+                    b.HasOne("HelloAPI.Data.Entities.Tag", null)
                         .WithMany()
                         .HasForeignKey("ParentTagsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.DataModels.Event", b =>
-                {
-                    b.HasOne("HelloAPI.Data.DataModels.Publication", null)
-                        .WithOne()
-                        .HasForeignKey("HelloAPI.Data.DataModels.Event", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("HelloAPI.Data.DataModels.Moderator", b =>
+            modelBuilder.Entity("HelloAPI.Data.Entities.Moderator", b =>
                 {
                     b.Navigation("Publications");
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.DataModels.Organizer", b =>
+            modelBuilder.Entity("HelloAPI.Data.Entities.Organizer", b =>
                 {
                     b.Navigation("Publications");
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.DataModels.Publication", b =>
+            modelBuilder.Entity("HelloAPI.Data.Entities.Publication", b =>
                 {
+                    b.Navigation("Event");
+
                     b.Navigation("Reports");
                 });
 #pragma warning restore 612, 618
