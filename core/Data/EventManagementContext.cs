@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using api.core.Data.Entities;
+using api.core.data.entities;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace api.core.Data;
+namespace api.core.data;
 
 public partial class EventManagementContext : DbContext
 {

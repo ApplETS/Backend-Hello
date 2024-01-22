@@ -1,6 +1,6 @@
 using System.Text;
 
-using api.core.Data;
+using api.core.data;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

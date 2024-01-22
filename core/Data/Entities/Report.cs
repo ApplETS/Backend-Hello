@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace api.core.Data.Entities;
+namespace api.core.data.entities;
 
 [Table("Report")]
 [Index("PublicationId", Name = "IX_Report_PublicationId")]

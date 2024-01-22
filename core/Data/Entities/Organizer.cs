@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace api.core.Data.Entities;
+namespace api.core.data.entities;
 
 [Table("Organizer")]
 public partial class Organizer
