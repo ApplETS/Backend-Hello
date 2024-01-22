@@ -22,7 +22,7 @@ namespace api.core.migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("HelloAPI.Data.Entities.Event", b =>
+            modelBuilder.Entity("api.core.data.entities.Event", b =>
                 {
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
@@ -35,7 +35,7 @@ namespace api.core.migrations
                     b.ToTable("Event");
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.Entities.Moderator", b =>
+            modelBuilder.Entity("api.core.data.entities.Moderator", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -69,7 +69,7 @@ namespace api.core.migrations
                     b.ToTable("Moderator");
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.Entities.Organizer", b =>
+            modelBuilder.Entity("api.core.data.entities.Organizer", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -111,7 +111,7 @@ namespace api.core.migrations
                     b.ToTable("Organizer");
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.Entities.Publication", b =>
+            modelBuilder.Entity("api.core.data.entities.Publication", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -166,7 +166,7 @@ namespace api.core.migrations
                     b.ToTable("Publication");
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.Entities.Report", b =>
+            modelBuilder.Entity("api.core.data.entities.Report", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -204,7 +204,7 @@ namespace api.core.migrations
                     b.ToTable("Report");
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.Entities.Tag", b =>
+            modelBuilder.Entity("api.core.data.entities.Tag", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -280,25 +280,25 @@ namespace api.core.migrations
                     b.ToTable("TagsHierarchy", (string)null);
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.Entities.Event", b =>
+            modelBuilder.Entity("api.core.data.entities.Event", b =>
                 {
-                    b.HasOne("HelloAPI.Data.Entities.Publication", "IdNavigation")
+                    b.HasOne("api.core.data.entities.Publication", "IdNavigation")
                         .WithOne("Event")
-                        .HasForeignKey("HelloAPI.Data.Entities.Event", "Id")
+                        .HasForeignKey("api.core.data.entities.Event", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("IdNavigation");
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.Entities.Publication", b =>
+            modelBuilder.Entity("api.core.data.entities.Publication", b =>
                 {
-                    b.HasOne("HelloAPI.Data.Entities.Moderator", "Moderator")
+                    b.HasOne("api.core.data.entities.Moderator", "Moderator")
                         .WithMany("Publications")
                         .HasForeignKey("ModeratorId")
                         .HasConstraintName("Publication_ModeratorId_fkey");
 
-                    b.HasOne("HelloAPI.Data.Entities.Organizer", "Organizer")
+                    b.HasOne("api.core.data.entities.Organizer", "Organizer")
                         .WithMany("Publications")
                         .HasForeignKey("OrganizerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -310,9 +310,9 @@ namespace api.core.migrations
                     b.Navigation("Organizer");
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.Entities.Report", b =>
+            modelBuilder.Entity("api.core.data.entities.Report", b =>
                 {
-                    b.HasOne("HelloAPI.Data.Entities.Publication", "Publication")
+                    b.HasOne("api.core.data.entities.Publication", "Publication")
                         .WithMany("Reports")
                         .HasForeignKey("PublicationId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -324,13 +324,13 @@ namespace api.core.migrations
 
             modelBuilder.Entity("PublicationTag", b =>
                 {
-                    b.HasOne("HelloAPI.Data.Entities.Publication", null)
+                    b.HasOne("api.core.data.entities.Publication", null)
                         .WithMany()
                         .HasForeignKey("PublicationsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HelloAPI.Data.Entities.Tag", null)
+                    b.HasOne("api.core.data.entities.Tag", null)
                         .WithMany()
                         .HasForeignKey("TagsId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -339,30 +339,30 @@ namespace api.core.migrations
 
             modelBuilder.Entity("TagsHierarchy", b =>
                 {
-                    b.HasOne("HelloAPI.Data.Entities.Tag", null)
+                    b.HasOne("api.core.data.entities.Tag", null)
                         .WithMany()
                         .HasForeignKey("ChildrenTagsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HelloAPI.Data.Entities.Tag", null)
+                    b.HasOne("api.core.data.entities.Tag", null)
                         .WithMany()
                         .HasForeignKey("ParentTagsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.Entities.Moderator", b =>
+            modelBuilder.Entity("api.core.data.entities.Moderator", b =>
                 {
                     b.Navigation("Publications");
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.Entities.Organizer", b =>
+            modelBuilder.Entity("api.core.data.entities.Organizer", b =>
                 {
                     b.Navigation("Publications");
                 });
 
-            modelBuilder.Entity("HelloAPI.Data.Entities.Publication", b =>
+            modelBuilder.Entity("api.core.data.entities.Publication", b =>
                 {
                     b.Navigation("Event");
 
