@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace HelloAPI.Data.DataModels;
+namespace api.core.Data.DataModels;
 
 [Table("Moderator")]
 public class Moderator : BaseEntity

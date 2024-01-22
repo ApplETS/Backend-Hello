@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace HelloAPI.Data.DataModels;
+namespace api.core.Data.DataModels;
 
 public abstract class BaseEntity
 {

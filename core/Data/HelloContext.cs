@@ -4,7 +4,7 @@ using HelloAPI.Data.DataModels;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
-namespace HelloAPI.Data;
+namespace api.core.Data;
 
 public class HelloContext: DbContext
 {
