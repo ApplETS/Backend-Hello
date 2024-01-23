@@ -37,9 +37,8 @@ namespace api.core.migrations
 
             modelBuilder.Entity("api.core.data.entities.Moderator", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
@@ -71,9 +70,8 @@ namespace api.core.migrations
 
             modelBuilder.Entity("api.core.data.entities.Organizer", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
@@ -135,11 +133,11 @@ namespace api.core.migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long?>("ModeratorId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid?>("ModeratorId")
+                        .HasColumnType("uuid");
 
-                    b.Property<long>("OrganizerId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("OrganizerId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("PublicationDate")
                         .HasColumnType("timestamp with time zone");
@@ -250,19 +248,6 @@ namespace api.core.migrations
                     b.HasIndex(new[] { "TagsId" }, "IX_PublicationTag_TagsId");
 
                     b.ToTable("PublicationTag", (string)null);
-                });
-
-            modelBuilder.Entity("TagTag", b =>
-                {
-                    b.Property<long>("ChildrenTagsId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("ParentTagsId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("ChildrenTagsId", "ParentTagsId");
-
-                    b.ToTable("TagTag");
                 });
 
             modelBuilder.Entity("TagsHierarchy", b =>
