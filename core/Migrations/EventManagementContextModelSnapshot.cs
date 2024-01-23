@@ -251,19 +251,6 @@ namespace api.core.migrations
                     b.ToTable("PublicationTag", (string)null);
                 });
 
-            modelBuilder.Entity("TagTag", b =>
-                {
-                    b.Property<long>("ChildrenTagsId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("ParentTagsId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("ChildrenTagsId", "ParentTagsId");
-
-                    b.ToTable("TagTag");
-                });
-
             modelBuilder.Entity("TagsHierarchy", b =>
                 {
                     b.Property<long>("ChildrenTagsId")
