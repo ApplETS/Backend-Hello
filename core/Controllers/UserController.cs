@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace api.core.controllers;
 
-//[Authorize]
+[Authorize]
 [ApiController]
 [Route("api/user")]
 public class UserController(IOrganizerService service) : ControllerBase
