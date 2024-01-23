@@ -1,12 +1,19 @@
-﻿namespace api.core.Extensions;
+﻿using api.core.repositories;
+using api.core.repositories.abstractions;
+using api.core.services.abstractions;
+using api.core.Services;
+
+namespace api.core.Extensions;
 
 public static class DependencyInjectionExtension
 {
     public static IServiceCollection AddDependencyInjection(this IServiceCollection services)
     {
         // Repositories
+        services.AddTransient<IOrganizerRepository, OrganizerRepository>();
 
         // Services
+        services.AddTransient<IOrganizerService, OrganizerService>();
 
         return services;
     }
