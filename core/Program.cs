@@ -1,3 +1,5 @@
+using api.core.Extensions;
+
 using System.Text;
 
 using api.core.data;
@@ -27,6 +29,7 @@ builder.Services.AddAuthentication().AddJwtBearer(o =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddDependencyInjection();
 
 var app = builder.Build();
 
