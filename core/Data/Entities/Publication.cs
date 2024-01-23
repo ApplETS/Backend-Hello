@@ -25,9 +25,9 @@ public partial class Publication
 
     public DateTime PublicationDate { get; set; }
 
-    public long? ModeratorId { get; set; }
+    public Guid? ModeratorId { get; set; }
 
-    public long OrganizerId { get; set; }
+    public Guid OrganizerId { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

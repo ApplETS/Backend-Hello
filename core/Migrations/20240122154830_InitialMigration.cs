@@ -16,8 +16,7 @@ namespace api.core.migrations
                 name: "Moderator",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "(now() AT TIME ZONE 'utc'::text)"),
@@ -33,8 +32,7 @@ namespace api.core.migrations
                 name: "Organizer",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
                     Organisation = table.Column<string>(type: "text", nullable: false),
@@ -66,18 +64,6 @@ namespace api.core.migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TagTag",
-                columns: table => new
-                {
-                    ChildrenTagsId = table.Column<long>(type: "bigint", nullable: false),
-                    ParentTagsId = table.Column<long>(type: "bigint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TagTag", x => new { x.ChildrenTagsId, x.ParentTagsId });
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Publication",
                 columns: table => new
                 {
@@ -88,8 +74,8 @@ namespace api.core.migrations
                     ImageUrl = table.Column<string>(type: "text", nullable: false),
                     State = table.Column<string>(type: "text", nullable: false),
                     PublicationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModeratorId = table.Column<long>(type: "bigint", nullable: true),
-                    OrganizerId = table.Column<long>(type: "bigint", nullable: false),
+                    ModeratorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    OrganizerId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "(now() AT TIME ZONE 'utc'::text)"),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "(now() AT TIME ZONE 'utc'::text)"),
                     DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
@@ -237,9 +223,6 @@ namespace api.core.migrations
 
             migrationBuilder.DropTable(
                 name: "Report");
-
-            migrationBuilder.DropTable(
-                name: "TagTag");
 
             migrationBuilder.DropTable(
                 name: "TagsHierarchy");
