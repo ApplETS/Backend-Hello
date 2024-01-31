@@ -35,7 +35,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/pfe-api
+            ${{ secrets.DOCKERHUB_USERNAME }}/ps-api
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -50,7 +50,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: coreAPI/
+          context: core/
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
