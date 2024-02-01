@@ -5,5 +5,5 @@ namespace api.core.services.abstractions;
 
 public interface IEventService
 {
-    public EventResponseDTO GetEvents(DateTime? startDate, DateTime? endDate, IEnumerable<string>? tags);
+    public IEnumerable<EventResponseDTO> GetEvents(DateTime? startDate, DateTime? endDate, IEnumerable<string>? activityAreas, IEnumerable<Guid>? tags);
 }

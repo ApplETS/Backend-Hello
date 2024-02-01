@@ -26,7 +26,7 @@ public class EventResponseDTO
 
     public OrganizerResponseDTO Organizer { get; set; } = null!;
 
-    public virtual ICollection<Tag> Tags { get; set; } = new List<Tag>();
+    public virtual ICollection<Guid> Tags { get; set; } = new List<Guid>();
 
     public static EventResponseDTO Map(Event oneEvent)
     {

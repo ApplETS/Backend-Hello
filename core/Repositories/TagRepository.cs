@@ -1,0 +1,61 @@
+﻿using api.core.data;
+using api.core.data.entities;
+using api.core.Repositories.Abstractions;
+
+namespace api.core.repositories;
+
+public class TagRepository(EventManagementContext context) : ITagRepository
+{
+    public Tag Add(Tag entity)
+    {
+        var inserted = context.Tags.Add(entity);
+
+        if (inserted.Entity != null)
+        {
+            context.SaveChanges();
+            return inserted.Entity;
+        }
+        throw new Exception($"Unable to create an Tag {entity.Id}");
+    }
+
+    public bool Delete(Tag entity)
+    {
+        try
+        {
+            context.Tags.Remove(entity);
+            context.SaveChanges();
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    public Tag? Get(Guid id)
+    {
+        var tag = context.Tags
+            .FirstOrDefault(x => x.Id == id);
+
+        return tag != null ? tag : throw new Exception($"Unable to fetch a tag {id}");
+    }
+
+    public IEnumerable<Tag> GetAll()
+    {
+        return context.Tags.ToList();
+    }
+
+    public bool Update(Guid id, Tag entity)
+    {
+        var tag = Get(id);
+
+        if (tag != null)
+        {
+            context.Entry(tag).CurrentValues.SetValues(entity);
+            context.SaveChanges();
+            return true;
+        }
+
+        return false;
+    }
+}
