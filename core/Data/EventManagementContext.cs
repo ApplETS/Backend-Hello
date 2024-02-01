@@ -29,6 +29,7 @@ public partial class EventManagementContext : DbContext
     public virtual DbSet<Report> Reports { get; set; }
 
     public virtual DbSet<Tag> Tags { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Event>(entity =>

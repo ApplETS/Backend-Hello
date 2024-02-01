@@ -10,8 +10,9 @@ namespace api.core.data.entities;
 [Table("Tag")]
 public partial class Tag
 {
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
-    public long Id { get; set; }
+    public Guid Id { get; set; }
 
     public string Name { get; set; } = null!;
 

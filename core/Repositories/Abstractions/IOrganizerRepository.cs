@@ -3,7 +3,6 @@ using api.core.Data.requests;
 
 namespace api.core.repositories.abstractions;
 
-public interface IOrganizerRepository
+public interface IOrganizerRepository : IRepository<Organizer>
 {
-    public Organizer AddOrganizer(OrganizerCreationRequestDTO organizer);
 }

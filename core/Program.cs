@@ -28,6 +28,10 @@ builder.Services.AddAuthentication().AddJwtBearer(o =>
 });
 
 builder.Services.AddControllers();
+
+builder.Services.AddHealthChecks()
+    .AddNpgSql(connectionString);
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -71,6 +75,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.MapHealthChecks("/health");
 
 app.MapControllers();
 
