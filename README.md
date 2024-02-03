@@ -1,1 +1,29 @@
-# backend-ps
+# Backend PS
+
+## Installation Docker
+Start by pulling the image from docker hub
+```bash
+docker pull mysticfragilist/ps-api:<VERSION>
+```
+multiple versions are available, you can check them [here](https://hub.docker.com/repository/docker/mysticfragilist/ps-api/tags?page=1&ordering=last_updated)
+
+The default one is `latest`
+
+## Create the DB
+
+ℹ️ If your database is already created and running, you can skip this step and directly go to [Run the image](#run-the-image).
+
+Access this [repository](https://github.com/projets-fin-bac-24/database-setup) to get started!
+
+## Run the image
+You'll need to setup the environment variables in the `.env` file
+
+Simply copy and paste the `.env.template` file, rename it to `.env` and fill it with the correct value.
+
+Then, run the image on your local machine
+```bash
+docker run --env-file .env --restart always -d -p 8080:8080 --name pfe-api mysticfragilist/ps-api:<VERSION>
+```
+
+You can navigate to `http://localhost:8080/swagger` to check if the API is running correctly!
+
