@@ -72,6 +72,10 @@ builder.Services.AddDependencyInjection();
 
 var app = builder.Build();
 
+await using var scope = app.Services.CreateAsyncScope();
+await using var db = scope.ServiceProvider.GetService<EventManagementContext>();
+await db.Database.MigrateAsync();
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
