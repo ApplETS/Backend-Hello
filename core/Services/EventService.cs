@@ -21,6 +21,7 @@ public class EventService(IEventRepository evntRepo, ITagRepository tagRepo, IOr
         var events = evntRepo.GetAll();
 
         return events.Where(e =>
+         e.Publication.DeletedAt == null &&
          (startDate == null || e.EventDate >= startDate) &&
          (endDate == null || e.EventDate <= endDate) &&  
          (tags.IsNullOrEmpty() || e.Publication.Tags.Any(t => tags.Any(tt => t.Id == tt))) &&
