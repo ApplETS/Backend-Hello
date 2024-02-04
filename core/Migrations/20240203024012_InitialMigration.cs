@@ -1,10 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace api.core.migrations
+namespace api.core.Migrations
 {
     /// <inheritdoc />
     public partial class InitialMigration : Migration
@@ -16,7 +15,7 @@ namespace api.core.migrations
                 name: "Moderator",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "(now() AT TIME ZONE 'utc'::text)"),
@@ -32,7 +31,7 @@ namespace api.core.migrations
                 name: "Organizer",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
                     Organisation = table.Column<string>(type: "text", nullable: false),
@@ -50,8 +49,7 @@ namespace api.core.migrations
                 name: "Tag",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     Name = table.Column<string>(type: "text", nullable: false),
                     PriorityValue = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "(now() AT TIME ZONE 'utc'::text)"),
@@ -64,11 +62,22 @@ namespace api.core.migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TagTag",
+                columns: table => new
+                {
+                    ChildrenTagsId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ParentTagsId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TagTag", x => new { x.ChildrenTagsId, x.ParentTagsId });
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Publication",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     Title = table.Column<string>(type: "text", nullable: false),
                     Content = table.Column<string>(type: "text", nullable: false),
                     ImageUrl = table.Column<string>(type: "text", nullable: false),
@@ -100,8 +109,8 @@ namespace api.core.migrations
                 name: "TagsHierarchy",
                 columns: table => new
                 {
-                    ChildrenTagsId = table.Column<long>(type: "bigint", nullable: false),
-                    ParentTagsId = table.Column<long>(type: "bigint", nullable: false)
+                    ChildrenTagsId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ParentTagsId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -124,7 +133,7 @@ namespace api.core.migrations
                 name: "Event",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     EventDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -142,8 +151,8 @@ namespace api.core.migrations
                 name: "PublicationTag",
                 columns: table => new
                 {
-                    PublicationsId = table.Column<long>(type: "bigint", nullable: false),
-                    TagsId = table.Column<long>(type: "bigint", nullable: false)
+                    PublicationsId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TagsId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -166,11 +175,10 @@ namespace api.core.migrations
                 name: "Report",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     Reason = table.Column<string>(type: "text", nullable: false),
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    PublicationId = table.Column<long>(type: "bigint", nullable: false),
+                    PublicationId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "(now() AT TIME ZONE 'utc'::text)"),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "(now() AT TIME ZONE 'utc'::text)"),
                     DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
@@ -223,6 +231,9 @@ namespace api.core.migrations
 
             migrationBuilder.DropTable(
                 name: "Report");
+
+            migrationBuilder.DropTable(
+                name: "TagTag");
 
             migrationBuilder.DropTable(
                 name: "TagsHierarchy");

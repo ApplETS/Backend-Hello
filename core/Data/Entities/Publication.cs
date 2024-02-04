@@ -12,8 +12,9 @@ namespace api.core.data.entities;
 [Index("OrganizerId", Name = "IX_Publication_OrganizerId")]
 public partial class Publication
 {
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
-    public long Id { get; set; }
+    public Guid Id { get; set; }
 
     public string Title { get; set; } = null!;
 
@@ -35,7 +36,7 @@ public partial class Publication
 
     public DateTime? DeletedAt { get; set; }
 
-    [InverseProperty("IdNavigation")]
+    [InverseProperty("Publication")]
     public virtual Event? Event { get; set; }
 
     [ForeignKey("ModeratorId")]

@@ -7,6 +7,7 @@ using api.core.data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using api.core.Misc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +28,17 @@ builder.Services.AddAuthentication().AddJwtBearer(o =>
     };
 });
 
+
+// Errors handling
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+// Endpoints
 builder.Services.AddControllers();
+
+builder.Services.AddHealthChecks()
+    .AddNpgSql(connectionString);
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -61,16 +72,20 @@ builder.Services.AddDependencyInjection();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+await using var scope = app.Services.CreateAsyncScope();
+await using var db = scope.ServiceProvider.GetService<EventManagementContext>();
+await db.Database.MigrateAsync();
 
-app.UseHttpsRedirection();
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.UseMiddleware<CustomExceptionsCheckerMiddleware>();
+
+// app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.MapHealthChecks("/health");
 
 app.MapControllers();
 

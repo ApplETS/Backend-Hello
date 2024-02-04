@@ -35,7 +35,7 @@
       "environmentVariables": {
         "ASPNETCORE_HTTPS_PORTS": "8081",
         "ASPNETCORE_HTTP_PORTS": "8080",
-        "CONNECTION_STRING": "User Id=postgres.ekjsmadkoplhbuafidaa;Password=USTTdY1rIJhOjHwA;Server=aws-0-ca-central-1.pooler.supabase.com;Port=6543;Database=postgres",
+        "CONNECTION_STRING": "User ID=postgres;Password=test123;Host=host.docker.internal;Port=5432;Database=ps;",
         "SUPABASE_SECRET_KEY": "WCLA+SEo/mB9J2/I++wZpQITeX+Npt/gWD4kEyM235E6AURf3UFsMxZKuNs9anD0rZgSYJ+fSzUbs0VNb1KdvA==",
         "SUPABASE_PROJECT_ID": "ekjsmadkoplhbuafidaa"
       },
