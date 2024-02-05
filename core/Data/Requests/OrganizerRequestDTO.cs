@@ -1,6 +1,6 @@
 ﻿namespace api.core.Data.requests;
 
-public class OrganizerCreationRequestDTO
+public class OrganizerRequestDTO
 {
     public Guid Id { get; set; }
 
