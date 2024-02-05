@@ -1,7 +1,6 @@
 ﻿using api.core.Misc;
 using api.core.repositories;
 using api.core.repositories.abstractions;
-using api.core.Repositories.Abstractions;
 using api.core.services.abstractions;
 using api.core.Services;
 
@@ -18,6 +17,7 @@ public static class DependencyInjectionExtension
         services.AddTransient<IOrganizerRepository, OrganizerRepository>();
         services.AddTransient<ITagRepository, TagRepository>();
         services.AddTransient<IEventRepository, EventRepository>();
+        services.AddTransient<IModeratorRepository, ModeratorRepository>();
 
         // Services
         services.AddTransient<IOrganizerService, OrganizerService>();

@@ -1,9 +1,11 @@
 using api.core.Data;
+using api.core.Data.requests;
 using api.core.Data.Requests;
 using api.core.Data.Responses;
 using api.core.Misc;
 using api.core.services.abstractions;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -42,5 +44,60 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
         var response = PaginationHelper.CreatePaginatedReponse(paginatedRes, validFilter, totalRecords, "/api/campaigns");
 
         return Ok(response);
+    }
+
+    [HttpGet("{id}")]
+    public IActionResult GetEvent(Guid id)
+    {
+        logger.LogInformation($"Getting event {id}");
+
+        var evnt = eventService.GetEvent(id);
+
+        return new OkObjectResult(
+            new Response<EventResponseDTO>
+            {
+                Data = evnt,
+            });
+    }
+
+    [Authorize]
+    [HttpPost]
+    public IActionResult AddEvent([FromBody] EventRequestDTO dto)
+    {
+        logger.LogInformation($"Adding new event");
+
+        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
+        var evnt = eventService.AddEvent(userId, dto);
+
+        return new OkObjectResult(
+            new Response<EventResponseDTO>
+            {
+                Data = evnt,
+            });
+    }
+
+    [Authorize]
+    [HttpDelete("{id}")]
+    public IActionResult DeleteEvent(Guid id)
+    {
+        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
+        var isDeleted = eventService.DeleteEvent(userId, id);
+        return isDeleted ? Ok() : BadRequest();
+    }
+
+    [Authorize]
+    [HttpPatch("{id}")]
+    public IActionResult UpdateEvent(Guid id, [FromBody] EventRequestDTO dto)
+    {
+        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
+        return eventService.UpdateEvent(userId, id, dto) ? Ok() : BadRequest();
+    }
+
+    [Authorize]
+    [HttpPatch("{id}/state")]
+    public IActionResult UpdateEventState(Guid id, [FromQuery] string newState)
+    {
+        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
+        return eventService.UpdateEventState(userId, id, newState) ? Ok() : BadRequest();
     }
 }
