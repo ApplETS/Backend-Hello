@@ -8,6 +8,7 @@ using api.core.data.entities;
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.repositories.abstractions;
+using api.core.repositories.abstractions;
 using api.core.Services;
 
 using FluentAssertions;
@@ -146,8 +147,9 @@ public class EventServiceTests
         var mockEventRepository = new Mock<IEventRepository>();
         var mockTagRepository = new Mock<ITagRepository>();
         var mockOrganizerRepository = new Mock<IOrganizerRepository>();
+        var mockModeratorRepository = new Mock<IModeratorRepository>();
 
-        var eventService = new EventService(mockEventRepository.Object, mockTagRepository.Object, mockOrganizerRepository.Object);
+        var eventService = new EventService(mockEventRepository.Object, mockTagRepository.Object, mockOrganizerRepository.Object, mockModeratorRepository.Object);
         
         mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
@@ -167,8 +169,9 @@ public class EventServiceTests
         var mockEventRepository = new Mock<IEventRepository>();
         var mockTagRepository = new Mock<ITagRepository>();
         var mockOrganizerRepository = new Mock<IOrganizerRepository>();
+        var mockModeratorRepository = new Mock<IModeratorRepository>();
 
-        var eventService = new EventService(mockEventRepository.Object, mockTagRepository.Object, mockOrganizerRepository.Object);
+        var eventService = new EventService(mockEventRepository.Object, mockTagRepository.Object, mockOrganizerRepository.Object, mockModeratorRepository.Object);
 
         mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
@@ -188,8 +191,9 @@ public class EventServiceTests
         var mockEventRepository = new Mock<IEventRepository>();
         var mockTagRepository = new Mock<ITagRepository>();
         var mockOrganizerRepository = new Mock<IOrganizerRepository>();
+        var mockModeratorRepository = new Mock<IModeratorRepository>();
 
-        var eventService = new EventService(mockEventRepository.Object, mockTagRepository.Object, mockOrganizerRepository.Object);
+        var eventService = new EventService(mockEventRepository.Object, mockTagRepository.Object, mockOrganizerRepository.Object, mockModeratorRepository.Object);
 
         mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
@@ -209,8 +213,9 @@ public class EventServiceTests
         var mockEventRepository = new Mock<IEventRepository>();
         var mockTagRepository = new Mock<ITagRepository>();
         var mockOrganizerRepository = new Mock<IOrganizerRepository>();
+        var mockModeratorRepository = new Mock<IModeratorRepository>();
 
-        var eventService = new EventService(mockEventRepository.Object, mockTagRepository.Object, mockOrganizerRepository.Object);
+        var eventService = new EventService(mockEventRepository.Object, mockTagRepository.Object, mockOrganizerRepository.Object, mockModeratorRepository.Object);
 
         mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
@@ -233,8 +238,9 @@ public class EventServiceTests
         var mockEventRepository = new Mock<IEventRepository>();
         var mockTagRepository = new Mock<ITagRepository>();
         var mockOrganizerRepository = new Mock<IOrganizerRepository>();
+        var mockModeratorRepository = new Mock<IModeratorRepository>();
 
-        var eventService = new EventService(mockEventRepository.Object, mockTagRepository.Object, mockOrganizerRepository.Object);
+        var eventService = new EventService(mockEventRepository.Object, mockTagRepository.Object, mockOrganizerRepository.Object, mockModeratorRepository.Object);
 
         mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
@@ -258,8 +264,9 @@ public class EventServiceTests
         var mockEventRepository = new Mock<IEventRepository>();
         var mockTagRepository = new Mock<ITagRepository>();
         var mockOrganizerRepository = new Mock<IOrganizerRepository>();
+        var mockModeratorRepository = new Mock<IModeratorRepository>();
 
-        var eventService = new EventService(mockEventRepository.Object, mockTagRepository.Object, mockOrganizerRepository.Object);
+        var eventService = new EventService(mockEventRepository.Object, mockTagRepository.Object, mockOrganizerRepository.Object, mockModeratorRepository.Object);
 
         mockEventRepository.Setup(repo => repo.Get(_events.First().Id)).Returns((Event?)null);
 
@@ -277,9 +284,10 @@ public class EventServiceTests
         var mockEventRepository = new Mock<IEventRepository>();
         var mockTagRepository = new Mock<ITagRepository>();
         var mockOrganizerRepository = new Mock<IOrganizerRepository>();
+        var mockModeratorRepository = new Mock<IModeratorRepository>();
 
-        var eventService = new EventService(mockEventRepository.Object, mockTagRepository.Object, mockOrganizerRepository.Object);
-        
+        var eventService = new EventService(mockEventRepository.Object, mockTagRepository.Object, mockOrganizerRepository.Object, mockModeratorRepository.Object);
+
 
         mockEventRepository.Setup(repo => repo.Get(_events.First().Id)).Returns(_events.First());
 
@@ -299,10 +307,11 @@ public class EventServiceTests
         var mockEventRepository = new Mock<IEventRepository>();
         var mockTagRepository = new Mock<ITagRepository>();
         var mockOrganizerRepository = new Mock<IOrganizerRepository>();
+        var mockModeratorRepository = new Mock<IModeratorRepository>();
 
         mockOrganizerRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns((Organizer?)null);
 
-        var eventService = new EventService(mockEventRepository.Object, mockTagRepository.Object, mockOrganizerRepository.Object);
+        var eventService = new EventService(mockEventRepository.Object, mockTagRepository.Object, mockOrganizerRepository.Object, mockModeratorRepository.Object);
 
         // Act
         eventService.Invoking(s =>
@@ -321,7 +330,7 @@ public class EventServiceTests
         mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(_events.First());
         mockEventRepository.Setup(repo => repo.Delete(It.IsAny<Event>())).Returns(true);
 
-        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, new Mock<IOrganizerRepository>().Object);
+        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, new Mock<IOrganizerRepository>().Object, new Mock<IModeratorRepository>().Object);
 
         // Act
         var result = eventService.DeleteEvent(userId, eventId);
@@ -341,7 +350,7 @@ public class EventServiceTests
 
         mockEventRepository.Setup(repo => repo.Get(eventId)).Returns((Event?)null);
 
-        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, new Mock<IOrganizerRepository>().Object);
+        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, new Mock<IOrganizerRepository>().Object, new Mock<IModeratorRepository>().Object);
 
         // Act
         Action act = () => eventService.DeleteEvent(userId, eventId);
@@ -361,7 +370,7 @@ public class EventServiceTests
 
         mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(_events.First());
 
-        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, new Mock<IOrganizerRepository>().Object);
+        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, new Mock<IOrganizerRepository>().Object, new Mock<IModeratorRepository>().Object);
 
         // Act
         Action act = () => eventService.DeleteEvent(unauthorizedUserId, eventId);
@@ -401,7 +410,7 @@ public class EventServiceTests
         mockEventRepository.Setup(repo => repo.Update(eventId, It.IsAny<Event>())).Returns(true);
         mockOrganizerRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns(new Organizer { Id = userId });
 
-        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, mockOrganizerRepository.Object);
+        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, mockOrganizerRepository.Object, new Mock<IModeratorRepository>().Object);
 
         // Act
         var result = eventService.UpdateEvent(userId, eventId, request);
@@ -438,7 +447,7 @@ public class EventServiceTests
         // Assuming _events.First() returns an event where the organizer ID does not match `unauthorizedUserId`
         mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(_events.First());
 
-        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, new Mock<IOrganizerRepository>().Object);
+        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, new Mock<IOrganizerRepository>().Object, new Mock<IModeratorRepository>().Object);
 
         // Act
         Action act = () => eventService.UpdateEvent(unauthorizedUserId, eventId, request);
@@ -453,7 +462,7 @@ public class EventServiceTests
     {
         // Arrange
         var mockEventRepository = new Mock<IEventRepository>();
-        var mockOrganizerRepository = new Mock<IOrganizerRepository>();
+        var mockModeratorRepository = new Mock<IModeratorRepository>();
         var userId = _events.First().Publication.Moderator.Id;
         var eventId = _events.First().Id;
 
@@ -464,9 +473,9 @@ public class EventServiceTests
 
         mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(eventToUpdate);
         mockEventRepository.Setup(repo => repo.Update(eventId, It.IsAny<Event>())).Returns(true);
-        mockOrganizerRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns(new Organizer { Id = userId });
+        mockModeratorRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns(new Moderator { Id = userId });
 
-        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, new Mock<IOrganizerRepository>().Object);
+        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, new Mock<IOrganizerRepository>().Object, mockModeratorRepository.Object);
 
         // Act
         var result = eventService.UpdateEventState(userId, eventId, newState);
@@ -490,7 +499,7 @@ public class EventServiceTests
 
         mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(eventToUpdate);
 
-        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, new Mock<IOrganizerRepository>().Object);
+        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, new Mock<IOrganizerRepository>().Object, new Mock<IModeratorRepository>().Object);
 
         // Act
         Action act = () => eventService.UpdateEventState(unauthorizedUserId, eventId, newState);

@@ -1,7 +1,8 @@
-﻿using api.core.data.entities;
+using api.core.data.entities;
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.Data.Responses;
+using api.core.repositories.abstractions;
 using api.core.repositories.abstractions;
 using api.core.services.abstractions;
 
@@ -9,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace api.core.Services;
 
-public class EventService(IEventRepository evntRepo, ITagRepository tagRepo, IOrganizerRepository orgRepo) : IEventService
+public class EventService(IEventRepository evntRepo, ITagRepository tagRepo, IOrganizerRepository orgRepo, IModeratorRepository moderatorRepo) : IEventService
 {
     public IEnumerable<EventResponseDTO> GetEvents(
         DateTime? startDate,
@@ -84,7 +85,7 @@ public class EventService(IEventRepository evntRepo, ITagRepository tagRepo, IOr
         var organizer = orgRepo.Get(userId) ?? throw new UnauthorizedException();
         var evnt = evntRepo.Get(eventId);
 
-        if (CanPerformAction(userId, evnt!))
+        if (evnt!.Publication.Organizer != null && evnt.Publication.Organizer.Id == userId)
         {
             var tags = tagRepo.GetAll()
             .Where(t => request.Tags.Contains(t.Id))
@@ -116,15 +117,16 @@ public class EventService(IEventRepository evntRepo, ITagRepository tagRepo, IOr
 
     public bool UpdateEventState(Guid userId, Guid eventId, string state)
     {
+        var moderator = moderatorRepo.Get(userId) ?? throw new UnauthorizedException();
         var evnt = evntRepo.Get(eventId);
 
-        if (evnt!.Publication.Moderator != null && evnt.Publication.ModeratorId == userId)
+        if (evnt!.Publication.ModeratorId == null)
         {
-            evnt.Publication.State = state;
-            return evntRepo.Update(eventId, evnt);
+            evnt.Publication.ModeratorId = moderator.Id;
         }
 
-        throw new UnauthorizedException();
+        evnt.Publication.State = state;
+        return evntRepo.Update(eventId, evnt);
     }
     private bool CanPerformAction(Guid userId, Event evnt)
     {
