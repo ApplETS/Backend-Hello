@@ -3,7 +3,6 @@ using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.Data.Responses;
 using api.core.repositories.abstractions;
-using api.core.repositories.abstractions;
 using api.core.services.abstractions;
 
 using Microsoft.IdentityModel.Tokens;
@@ -71,12 +70,10 @@ public class EventService(IEventRepository evntRepo, ITagRepository tagRepo, IOr
         var eventToDelete = evntRepo.Get(eventId);
         NotFoundException<Event>.ThrowIfNull(eventToDelete);
 
-        if (CanPerformAction(userId, eventToDelete!))
-        {
-            return evntRepo.Delete(eventToDelete!);
-        }
-
-        throw new UnauthorizedException();
+       if (!CanPerformAction(userId, eventToDelete!))
+           throw new UnauthorizedException();
+       
+       return evntRepo.Delete(eventToDelete!);
     }
 
 
@@ -85,34 +82,32 @@ public class EventService(IEventRepository evntRepo, ITagRepository tagRepo, IOr
         var organizer = orgRepo.Get(userId) ?? throw new UnauthorizedException();
         var evnt = evntRepo.Get(eventId);
 
-        if (evnt!.Publication.Organizer != null && evnt.Publication.Organizer.Id == userId)
-        {
-            var tags = tagRepo.GetAll()
+        if (evnt!.Publication.Organizer != null && evnt.Publication.Organizer.Id != userId)
+            throw new UnauthorizedException();
+
+        var tags = tagRepo.GetAll()
             .Where(t => request.Tags.Contains(t.Id))
             ?? Enumerable.Empty<Tag>();
 
-            return evntRepo.Update(eventId, new Event
+        return evntRepo.Update(eventId, new Event
+        {
+            Id = eventId,
+            EventDate = request.EventDate,
+            Publication = new Publication
             {
                 Id = eventId,
-                EventDate = request.EventDate,
-                Publication = new Publication
-                {
-                    Id = eventId,
-                    Title = request.Title,
-                    Content = request.Content,
-                    ImageUrl = request.ImageUrl,
-                    State = request.State,
-                    PublicationDate = request.PublicationDate,
-                    Tags = tags.ToList(),
-                    Organizer = organizer,
-                    OrganizerId = organizer.Id,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
-                },
-            });
-        }
-
-        throw new UnauthorizedException();
+                Title = request.Title,
+                Content = request.Content,
+                ImageUrl = request.ImageUrl,
+                State = request.State,
+                PublicationDate = request.PublicationDate,
+                Tags = tags.ToList(),
+                Organizer = organizer,
+                OrganizerId = organizer.Id,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+            },
+        });
     }
 
     public bool UpdateEventState(Guid userId, Guid eventId, string state)
