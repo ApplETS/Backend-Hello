@@ -71,12 +71,10 @@ public class EventService(IEventRepository evntRepo, ITagRepository tagRepo, IOr
         var eventToDelete = evntRepo.Get(eventId);
         NotFoundException<Event>.ThrowIfNull(eventToDelete);
 
-        if (CanPerformAction(userId, eventToDelete!))
-        {
-            return evntRepo.Delete(eventToDelete!);
-        }
-
-        throw new UnauthorizedException();
+       if (!CanPerformAction(userId, eventToDelete!))
+           throw new UnauthorizedException();
+       
+       return evntRepo.Delete(eventToDelete!);
     }
 
 
