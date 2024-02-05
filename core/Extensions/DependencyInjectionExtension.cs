@@ -18,6 +18,7 @@ public static class DependencyInjectionExtension
         services.AddTransient<IOrganizerRepository, OrganizerRepository>();
         services.AddTransient<ITagRepository, TagRepository>();
         services.AddTransient<IEventRepository, EventRepository>();
+        services.AddTransient<IModeratorRepository, ModeratorRepository>();
 
         // Services
         services.AddTransient<IOrganizerService, OrganizerService>();
