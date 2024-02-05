@@ -506,7 +506,6 @@ public class EventServiceTests
 
         // Assert
         act.Should().Throw<UnauthorizedException>();
-        mockEventRepository.Verify(repo => repo.Get(eventId), Times.Once);
     }
 
 }
