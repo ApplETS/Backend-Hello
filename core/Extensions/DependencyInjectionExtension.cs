@@ -1,7 +1,7 @@
 ﻿using api.core.Misc;
 using api.core.repositories;
 using api.core.repositories.abstractions;
-using api.core.Repositories.Abstractions;
+using api.core.repositories.abstractions;
 using api.core.services.abstractions;
 using api.core.Services;
 

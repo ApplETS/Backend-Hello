@@ -25,7 +25,8 @@ public class EventRepository(EventManagementContext context) : IEventRepository
     {
         try
         {
-            context.Events.Remove(entity);
+            entity.Publication.DeletedAt = DateTime.UtcNow;
+            context.Update(entity.Publication);
             context.SaveChanges();
             return true;
         }
@@ -62,6 +63,7 @@ public class EventRepository(EventManagementContext context) : IEventRepository
         if (evnt != null)
         {
             context.Entry(evnt).CurrentValues.SetValues(entity);
+            context.Entry(evnt.Publication).CurrentValues.SetValues(entity.Publication);
             context.SaveChanges();
             return true;
         }

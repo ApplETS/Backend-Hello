@@ -8,7 +8,6 @@ using api.core.data.entities;
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.repositories.abstractions;
-using api.core.Repositories.Abstractions;
 using api.core.Services;
 
 using FluentAssertions;
@@ -47,6 +46,11 @@ public class EventServiceTests
                     Id = Guid.NewGuid(),
                     Name = "Test",
                     ActivityArea = "Club"
+                },
+                Moderator = new Moderator
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Test"
                 },
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
@@ -305,4 +309,195 @@ public class EventServiceTests
             s.AddEvent(Guid.Empty, new EventRequestDTO()))
                 .Should().Throw<UnauthorizedException>();
     }
+
+    [Fact]
+    public void DeleteEvent_ShouldReturnTrue_WhenEventIsDeletedSuccessfully()
+    {
+        // Arrange
+        var mockEventRepository = new Mock<IEventRepository>();
+        var userId = _events.First().Publication.Organizer.Id;
+        var eventId = _events.First().Id;
+
+        mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(_events.First());
+        mockEventRepository.Setup(repo => repo.Delete(It.IsAny<Event>())).Returns(true);
+
+        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, new Mock<IOrganizerRepository>().Object);
+
+        // Act
+        var result = eventService.DeleteEvent(userId, eventId);
+
+        // Assert
+        result.Should().BeTrue();
+        mockEventRepository.Verify(repo => repo.Delete(It.IsAny<Event>()), Times.Once);
+    }
+
+    [Fact]
+    public void DeleteEvent_ShouldThrowNotFoundException_WhenEventDoesNotExist()
+    {
+        // Arrange
+        var mockEventRepository = new Mock<IEventRepository>();
+        var userId = Guid.NewGuid();
+        var eventId = Guid.NewGuid();
+
+        mockEventRepository.Setup(repo => repo.Get(eventId)).Returns((Event?)null);
+
+        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, new Mock<IOrganizerRepository>().Object);
+
+        // Act
+        Action act = () => eventService.DeleteEvent(userId, eventId);
+
+        // Assert
+        act.Should().Throw<NotFoundException<Event>>();
+        mockEventRepository.Verify(repo => repo.Get(eventId), Times.Once);
+    }
+
+    [Fact]
+    public void DeleteEvent_ShouldThrowUnauthorizedException_WhenUserIsNotAuthorized()
+    {
+        // Arrange
+        var mockEventRepository = new Mock<IEventRepository>();
+        var unauthorizedUserId = Guid.NewGuid();
+        var eventId = _events.First().Id;
+
+        mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(_events.First());
+
+        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, new Mock<IOrganizerRepository>().Object);
+
+        // Act
+        Action act = () => eventService.DeleteEvent(unauthorizedUserId, eventId);
+
+        // Assert
+        act.Should().Throw<UnauthorizedException>();
+        mockEventRepository.Verify(repo => repo.Get(eventId), Times.Once);
+    }
+
+
+    [Fact]
+    public void UpdateEvent_ShouldReturnTrue_WhenEventIsUpdatedSuccessfully()
+    {
+        // Arrange
+        var mockEventRepository = new Mock<IEventRepository>();
+        var mockOrganizerRepository = new Mock<IOrganizerRepository>();
+        var userId = _events.First().Publication.Organizer.Id;
+        var eventId = _events.First().Id;
+
+        var request = new EventRequestDTO
+        {
+            Id = Guid.NewGuid(),
+            Title = "Sample Event Title",
+            Content = "This is a detailed description of the event.",
+            ImageUrl = "https://example.com/image.jpg",
+            State = "APPROVED",
+            PublicationDate = DateTime.UtcNow,
+            EventDate = DateTime.UtcNow.AddDays(10),
+            Tags = new List<Guid>
+            {
+                Guid.NewGuid(),
+                Guid.NewGuid()
+            }
+        };
+
+        mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(_events.First());
+        mockEventRepository.Setup(repo => repo.Update(eventId, It.IsAny<Event>())).Returns(true);
+        mockOrganizerRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns(new Organizer { Id = userId });
+
+        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, mockOrganizerRepository.Object);
+
+        // Act
+        var result = eventService.UpdateEvent(userId, eventId, request);
+
+        // Assert
+        result.Should().BeTrue();
+        mockEventRepository.Verify(repo => repo.Update(eventId, It.IsAny<Event>()), Times.Once);
+    }
+
+    [Fact]
+    public void UpdateEvent_ShouldThrowUnauthorizedException_WhenUserIsNotAuthorized()
+    {
+        // Arrange
+        var mockEventRepository = new Mock<IEventRepository>();
+        var unauthorizedUserId = Guid.NewGuid();
+        var eventId = _events.First().Id;
+
+        var request = new EventRequestDTO
+        {
+            Id = Guid.NewGuid(),
+            Title = "Sample Event Title",
+            Content = "This is a detailed description of the event.",
+            ImageUrl = "https://example.com/image.jpg",
+            State = "APPROVED",
+            PublicationDate = DateTime.UtcNow,
+            EventDate = DateTime.UtcNow.AddDays(10),
+            Tags = new List<Guid>
+            {
+                Guid.NewGuid(),
+                Guid.NewGuid()
+            }
+        };
+
+        // Assuming _events.First() returns an event where the organizer ID does not match `unauthorizedUserId`
+        mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(_events.First());
+
+        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, new Mock<IOrganizerRepository>().Object);
+
+        // Act
+        Action act = () => eventService.UpdateEvent(unauthorizedUserId, eventId, request);
+
+        // Assert
+        act.Should().Throw<UnauthorizedException>("because the user attempting to update the event does not have the proper permissions");
+    }
+
+
+    [Fact]
+    public void UpdateEventState_ShouldReturnTrue_WhenStateIsUpdatedSuccessfullyByModerator()
+    {
+        // Arrange
+        var mockEventRepository = new Mock<IEventRepository>();
+        var mockOrganizerRepository = new Mock<IOrganizerRepository>();
+        var userId = _events.First().Publication.Moderator.Id;
+        var eventId = _events.First().Id;
+
+        var newState = "NewState";
+
+        var eventToUpdate = _events.First();
+        eventToUpdate.Publication.ModeratorId = userId;
+
+        mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(eventToUpdate);
+        mockEventRepository.Setup(repo => repo.Update(eventId, It.IsAny<Event>())).Returns(true);
+        mockOrganizerRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns(new Organizer { Id = userId });
+
+        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, new Mock<IOrganizerRepository>().Object);
+
+        // Act
+        var result = eventService.UpdateEventState(userId, eventId, newState);
+
+        // Assert
+        result.Should().BeTrue();
+        mockEventRepository.Verify(repo => repo.Update(eventId, It.IsAny<Event>()), Times.Once);
+    }
+
+    [Fact]
+    public void UpdateEventState_ShouldThrowUnauthorizedException_WhenUserIsNotAuthorized()
+    {
+        // Arrange
+        var mockEventRepository = new Mock<IEventRepository>();
+        var unauthorizedUserId = Guid.NewGuid();
+        var eventId = _events.First().Id;
+        var newState = "NewState";
+
+        var eventToUpdate = _events.First();
+        eventToUpdate.Publication.ModeratorId = Guid.NewGuid();
+
+        mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(eventToUpdate);
+
+        var eventService = new EventService(mockEventRepository.Object, new Mock<ITagRepository>().Object, new Mock<IOrganizerRepository>().Object);
+
+        // Act
+        Action act = () => eventService.UpdateEventState(unauthorizedUserId, eventId, newState);
+
+        // Assert
+        act.Should().Throw<UnauthorizedException>();
+        mockEventRepository.Verify(repo => repo.Get(eventId), Times.Once);
+    }
+
 }

@@ -3,7 +3,6 @@ using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.Data.Responses;
 using api.core.repositories.abstractions;
-using api.core.Repositories.Abstractions;
 using api.core.services.abstractions;
 
 using Microsoft.IdentityModel.Tokens;
@@ -56,7 +55,7 @@ public class EventService(IEventRepository evntRepo, ITagRepository tagRepo, IOr
                 ImageUrl = request.ImageUrl,
                 State = request.State,
                 PublicationDate = request.PublicationDate,
-                Tags = (ICollection<Tag>) tags,
+                Tags = tags.ToList(),
                 Organizer = organizer,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
@@ -64,5 +63,72 @@ public class EventService(IEventRepository evntRepo, ITagRepository tagRepo, IOr
         });
         
         return EventResponseDTO.Map(inserted);
+    }
+
+    public bool DeleteEvent(Guid userId, Guid eventId)
+    {
+        var eventToDelete = evntRepo.Get(eventId);
+        NotFoundException<Event>.ThrowIfNull(eventToDelete);
+
+        if (CanPerformAction(userId, eventToDelete!))
+        {
+            return evntRepo.Delete(eventToDelete!);
+        }
+
+        throw new UnauthorizedException();
+    }
+
+
+    public bool UpdateEvent(Guid userId, Guid eventId, EventRequestDTO request)
+    {
+        var organizer = orgRepo.Get(userId) ?? throw new UnauthorizedException();
+        var evnt = evntRepo.Get(eventId);
+
+        if (CanPerformAction(userId, evnt!))
+        {
+            var tags = tagRepo.GetAll()
+            .Where(t => request.Tags.Contains(t.Id))
+            ?? Enumerable.Empty<Tag>();
+
+            return evntRepo.Update(eventId, new Event
+            {
+                Id = eventId,
+                EventDate = request.EventDate,
+                Publication = new Publication
+                {
+                    Id = eventId,
+                    Title = request.Title,
+                    Content = request.Content,
+                    ImageUrl = request.ImageUrl,
+                    State = request.State,
+                    PublicationDate = request.PublicationDate,
+                    Tags = tags.ToList(),
+                    Organizer = organizer,
+                    OrganizerId = organizer.Id,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                },
+            });
+        }
+
+        throw new UnauthorizedException();
+    }
+
+    public bool UpdateEventState(Guid userId, Guid eventId, string state)
+    {
+        var evnt = evntRepo.Get(eventId);
+
+        if (evnt!.Publication.Moderator != null && evnt.Publication.ModeratorId == userId)
+        {
+            evnt.Publication.State = state;
+            return evntRepo.Update(eventId, evnt);
+        }
+
+        throw new UnauthorizedException();
+    }
+    private bool CanPerformAction(Guid userId, Event evnt)
+    {
+        return (evnt!.Publication.Moderator != null && evnt.Publication.Moderator.Id == userId) ||
+            (evnt!.Publication.Organizer != null && evnt.Publication.Organizer.Id == userId);
     }
 }

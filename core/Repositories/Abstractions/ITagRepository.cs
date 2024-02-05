@@ -1,7 +1,6 @@
 ﻿using api.core.data.entities;
-using api.core.repositories.abstractions;
 
-namespace api.core.Repositories.Abstractions;
+namespace api.core.repositories.abstractions;
 
 public interface ITagRepository : IRepository<Tag>
 {

@@ -1,6 +1,6 @@
 ﻿using api.core.data;
 using api.core.data.entities;
-using api.core.Repositories.Abstractions;
+using api.core.repositories.abstractions;
 
 namespace api.core.repositories;
 
@@ -22,7 +22,8 @@ public class TagRepository(EventManagementContext context) : ITagRepository
     {
         try
         {
-            context.Tags.Remove(entity);
+            entity.DeletedAt = DateTime.UtcNow;
+            context.Update(entity);
             context.SaveChanges();
             return true;
         }
