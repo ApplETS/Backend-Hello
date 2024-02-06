@@ -6,8 +6,6 @@ public class UserRequestDTO
 
     public required string Email { get; set; }
 
-    public required string Password { get; set; }
-
     public string? Organisation { get; set; } = null!;
 
     public string? ActivityArea { get; set; } = null!;
