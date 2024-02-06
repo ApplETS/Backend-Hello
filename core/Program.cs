@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using api.core.Misc;
+using api.emails;
+using api.emails.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,6 +70,9 @@ builder.Services.AddSwaggerGen(options =>
          }
      });
 });
+
+builder.Services.AddEmailService(builder.Configuration);
+
 builder.Services.AddDependencyInjection();
 
 var app = builder.Build();
