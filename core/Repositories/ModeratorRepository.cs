@@ -33,6 +33,15 @@ public class ModeratorRepository(EventManagementContext context) : IModeratorRep
 
     public bool Update(Guid id, Moderator entity)
     {
-        throw new NotImplementedException();
+        var existingEntity = Get(id);
+
+        if (existingEntity != null)
+        {
+            context.Entry(existingEntity).CurrentValues.SetValues(entity);
+            context.SaveChanges();
+            return true;
+        }
+
+        return false;
     }
 }

@@ -13,32 +13,32 @@ namespace api.core.controllers;
 [Authorize]
 [ApiController]
 [Route("api/user")]
-public class UserController(IOrganizerService service) : ControllerBase
+public class UserController(IUserService service) : ControllerBase
 {
     [HttpPost("organizer")]
-    public ActionResult<OrganizerResponseDTO> CreateOrganizer([FromBody] OrganizerRequestDTO organizer)
+    public ActionResult<UserResponseDTO> CreateOrganizer([FromBody] UserRequestDTO organizer)
     {
         var created = service.AddOrganizer(organizer);
         return Ok(created);
     }
 
-    [HttpGet("organizer")]
-    public IActionResult GetOrganizer()
+    [HttpGet]
+    public IActionResult GetUser()
     {
         var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
-        var organizer = service.GetOrganizer(userId);
+        var organizer = service.GetUser(userId);
 
         return new OkObjectResult(
-             new Response<OrganizerResponseDTO>
+             new Response<UserResponseDTO>
              {
                  Data = organizer,
              });
     }
 
-    [HttpPatch("organizer")]
-    public IActionResult GetOrganizer([FromBody] OrganizerRequestDTO organizer)
+    [HttpPatch]
+    public IActionResult UpdateUser([FromBody] UserRequestDTO user)
     {
         var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
-        return service.UpdateOrganizer(userId, organizer) ? Ok() : BadRequest();
+        return service.UpdateUser(userId, user) ? Ok() : BadRequest();
     }
 }
