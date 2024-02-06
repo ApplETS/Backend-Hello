@@ -8,7 +8,6 @@ using api.core.data.entities;
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.repositories.abstractions;
-using api.core.repositories.abstractions;
 using api.core.Services;
 
 using FluentAssertions;

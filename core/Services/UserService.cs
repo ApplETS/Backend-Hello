@@ -66,7 +66,5 @@ public class UserService(IOrganizerRepository organizerRepository, IModeratorRep
             default:
                 throw new Exception("No users associated witht thid ID can be updated");
         }
-
-        
     }
 }
