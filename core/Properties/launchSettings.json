@@ -34,13 +34,11 @@
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
       "environmentVariables": {
         "ASPNETCORE_HTTPS_PORTS": "8081",
-        "ASPNETCORE_HTTP_PORTS": "8080",
-        "CONNECTION_STRING": "User ID=postgres;Password=test123;Host=host.docker.internal;Port=5432;Database=ps;",
-        "SUPABASE_SECRET_KEY": "WCLA+SEo/mB9J2/I++wZpQITeX+Npt/gWD4kEyM235E6AURf3UFsMxZKuNs9anD0rZgSYJ+fSzUbs0VNb1KdvA==",
-        "SUPABASE_PROJECT_ID": "ekjsmadkoplhbuafidaa"
+        "ASPNETCORE_HTTP_PORTS": "8080"
       },
       "publishAllPorts": true,
-      "useSSL": true
+      "useSSL": true,
+      "DockerfileRunArguments": "--env-file .env"
     }
   },
   "$schema": "http://json.schemastore.org/launchsettings.json",

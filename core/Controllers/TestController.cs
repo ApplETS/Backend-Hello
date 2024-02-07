@@ -19,7 +19,11 @@ public class TestController(IEmailService service) : ControllerBase
         var result = await service.SendEmailAsync(
             "test recipient",
             "test subject",
-            new HelloWorldModel { Name = "Test name" },
+            new HelloWorldModel
+            {
+                Title = "Hello World",
+                Name = "Test name"
+            },
             emails.EmailsUtils.ComplexHelloWorldTemplate);
 
         return Ok();
