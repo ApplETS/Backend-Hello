@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace api.core.controllers;
 
 [ApiController]
-[Route("api/test")]
+[Route("api/mail")]
 public class MailTestController(IEmailService service) : ControllerBase
 {
     [HttpPost]
