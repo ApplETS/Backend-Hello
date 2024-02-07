@@ -12,7 +12,7 @@ namespace api.core.controllers;
 public class MailTestController(IEmailService service) : ControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<OrganizerResponseDTO>> Create()
+    public async Task<IActionResult> Create()
     {
         var result = await service.SendEmailAsync(
             "test recipient",
