@@ -7,6 +7,9 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <UserSecretsId>d65d8ed2-e38b-45b2-b24e-88385df1ce57</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
+    <MvcRazorExcludeRefAssembliesFromPublish>false</MvcRazorExcludeRefAssembliesFromPublish>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,5 +27,11 @@
     <PackageReference Include="supabase-csharp" Version="0.15.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\emails\api.emails.csproj" />
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="https://json.schemastore.org/aurora-1.0.json" /></VisualStudio></ProjectExtensions>
 
 </Project>

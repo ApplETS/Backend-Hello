@@ -8,12 +8,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using api.core.Misc;
+using api.emails;
+using api.emails.Models;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var supabaseSecretKey = Environment.GetEnvironmentVariable("SUPABASE_SECRET_KEY") ?? throw new Exception("SUPABASE_SECRET_KEY is not set");
 var supabaseProjectId = Environment.GetEnvironmentVariable("SUPABASE_PROJECT_ID") ?? throw new Exception("SUPABASE_PROJECT_ID is not set");
 var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new Exception("CONNECTION_STRING is not set");
+
+builder.Configuration.AddEnvironmentVariables(prefix: "EMAIL_");
 
 builder.Services.AddDbContext<EventManagementContext>(opt => opt.UseNpgsql(connectionString));
 
@@ -68,6 +73,9 @@ builder.Services.AddSwaggerGen(options =>
          }
      });
 });
+
+builder.Services.AddEmailService(builder.Configuration);
+
 builder.Services.AddDependencyInjection();
 
 var app = builder.Build();
