@@ -41,6 +41,15 @@ public class OrganizerRepository(EventManagementContext context) : IOrganizerRep
 
     public bool Update(Guid id, Organizer entity)
     {
-        throw new NotImplementedException();
+        var existingEntity = Get(id);
+
+        if (existingEntity != null)
+        {
+            context.Entry(existingEntity).CurrentValues.SetValues(entity);
+            context.SaveChanges();
+            return true;
+        }
+
+        return false;
     }
 }

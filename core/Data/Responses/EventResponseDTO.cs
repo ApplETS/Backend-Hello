@@ -22,9 +22,9 @@ public class EventResponseDTO
 
     public DateTime UpdatedAt { get; set; }
 
-    public ModeratorResponseDTO? Moderator { get; set; }
+    public UserResponseDTO? Moderator { get; set; }
 
-    public OrganizerResponseDTO Organizer { get; set; } = null!;
+    public UserResponseDTO Organizer { get; set; } = null!;
 
     public virtual ICollection<Guid> Tags { get; set; } = new List<Guid>();
 
@@ -41,8 +41,8 @@ public class EventResponseDTO
             EventDate = oneEvent.EventDate,
             CreatedAt = oneEvent.Publication.CreatedAt,
             UpdatedAt = oneEvent.Publication.UpdatedAt,
-            Moderator = oneEvent.Publication.Moderator != null ? ModeratorResponseDTO.Map(oneEvent.Publication.Moderator!) : null,
-            Organizer = OrganizerResponseDTO.Map(oneEvent.Publication.Organizer),
+            Moderator = oneEvent.Publication.Moderator != null ? UserResponseDTO.Map(oneEvent.Publication.Moderator!) : null,
+            Organizer = UserResponseDTO.Map(oneEvent.Publication.Organizer),
         };
     }
 }

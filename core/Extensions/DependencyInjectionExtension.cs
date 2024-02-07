@@ -20,7 +20,7 @@ public static class DependencyInjectionExtension
         services.AddTransient<IModeratorRepository, ModeratorRepository>();
 
         // Services
-        services.AddTransient<IOrganizerService, OrganizerService>();
+        services.AddTransient<IUserService, UserService>();
         services.AddTransient<IEventService, EventService>();
 
         return services;
