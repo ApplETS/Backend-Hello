@@ -44,13 +44,11 @@ public class EventServiceTests
                 Organizer = new Organizer
                 {
                     Id = Guid.NewGuid(),
-                    Name = "Test",
                     ActivityArea = "Club"
                 },
                 Moderator = new Moderator
                 {
                     Id = Guid.NewGuid(),
-                    Name = "Test"
                 },
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
@@ -78,7 +76,6 @@ public class EventServiceTests
                 Organizer = new Organizer
                 {
                     Id = Guid.NewGuid(),
-                    Name = "Test",
                     ActivityArea = "School"
                 },
                 CreatedAt = DateTime.Now,
@@ -100,7 +97,6 @@ public class EventServiceTests
                 Organizer = new Organizer
                 {
                     Id = Guid.NewGuid(),
-                    Name = "Test",
                     ActivityArea = "School"
                 },
                 CreatedAt = DateTime.Now,
@@ -129,7 +125,6 @@ public class EventServiceTests
                 Organizer = new Organizer
                 {
                     Id = Guid.NewGuid(),
-                    Name = "Test",
                     ActivityArea = "School"
                 },
                 CreatedAt = DateTime.Now,

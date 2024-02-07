@@ -25,7 +25,6 @@ public class UserResponseDTO
         return new UserResponseDTO
         {
             Id = organizer.Id,
-            Name = organizer.Name,
             Email = organizer.Email,
             Type = "Organizer",
             Organisation = organizer.Organisation,
@@ -40,7 +39,6 @@ public class UserResponseDTO
         return new UserResponseDTO
         {
             Id = moderator.Id,
-            Name = moderator.Name,
             Email = moderator.Email,
             Type = "Moderator",
             CreatedAt = moderator.CreatedAt,

@@ -13,7 +13,7 @@ public class UserService(IOrganizerRepository organizerRepository, IModeratorRep
     {
         var inserted = organizerRepository.Add(new Organizer
         {
-            Name = organizerDto.Name,
+            Id = organizerDto.Id,
             Email = organizerDto.Email,
             Organisation = organizerDto.Organisation ?? "",
             ActivityArea = organizerDto.ActivityArea ?? "",
@@ -47,7 +47,6 @@ public class UserService(IOrganizerRepository organizerRepository, IModeratorRep
                 return moderatorRepository.Update(id, new Moderator
                 {
                     Id = id,
-                    Name = dto.Name,
                     Email = dto.Email,
                     CreatedAt = user.CreatedAt,
                     UpdatedAt = DateTime.UtcNow
@@ -56,7 +55,6 @@ public class UserService(IOrganizerRepository organizerRepository, IModeratorRep
                 return organizerRepository.Update(id, new Organizer
                 {
                     Id = id,
-                    Name = dto.Name,
                     Email = dto.Email,
                     Organisation = dto.Organisation,
                     ActivityArea = dto.ActivityArea,

@@ -2,7 +2,7 @@
 
 public class UserRequestDTO
 {
-    public required string Name { get; set; }
+    public Guid Id { get; set; }
 
     public required string Email { get; set; }
 

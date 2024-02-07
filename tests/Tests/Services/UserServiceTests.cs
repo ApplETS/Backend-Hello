@@ -28,7 +28,6 @@ public class UserServiceTests
         // Arrange
         var organizerDto = new UserRequestDTO
         {
-            Name = "John Doe",
             Email = "john.doe@example.com",
             Organisation = "ExampleOrg",
             ActivityArea = "Tech"
@@ -36,7 +35,6 @@ public class UserServiceTests
 
         var organizer = new Organizer
         {
-            Name = organizerDto.Name,
             Email = organizerDto.Email,
             Organisation = organizerDto.Organisation,
             ActivityArea = organizerDto.ActivityArea,
@@ -51,7 +49,6 @@ public class UserServiceTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Name.Should().Be(organizerDto.Name);
         result.Email.Should().Be(organizerDto.Email);
         result.Organisation.Should().Be(organizerDto.Organisation);
         result.ActivityArea.Should().Be(organizerDto.ActivityArea);
@@ -67,7 +64,6 @@ public class UserServiceTests
         var organizer = new Organizer
         {
             Id = organizerId,
-            Name = "John Doe",
             Email = "john.doe@example.com",
             Organisation = "ExampleOrg",
             ActivityArea = "Tech",
@@ -83,7 +79,6 @@ public class UserServiceTests
         // Assert
         result.Should().NotBeNull();
         result.Id.Should().Be(organizerId);
-        result.Name.Should().Be(organizer.Name);
         result.Email.Should().Be(organizer.Email);
 
         _organizerRepositoryMock.Verify(repo => repo.Get(organizerId), Times.Once);
@@ -97,7 +92,6 @@ public class UserServiceTests
         var moderator = new Moderator
         {
             Id = moderatorId,
-            Name = "Jane Doe",
             Email = "jane.doe@example.com",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -112,7 +106,6 @@ public class UserServiceTests
         // Assert
         result.Should().NotBeNull();
         result.Id.Should().Be(moderatorId);
-        result.Name.Should().Be(moderator.Name);
         result.Email.Should().Be(moderator.Email);
 
         _organizerRepositoryMock.Verify(repo => repo.Get(moderatorId), Times.Once);
@@ -146,7 +139,6 @@ public class UserServiceTests
         var organizerId = Guid.NewGuid();
         var updateDto = new UserRequestDTO
         {
-            Name = "Jane Doe",
             Email = "jane.doe@example.com",
             Organisation = "NewOrg",
             ActivityArea = "Health"
@@ -155,7 +147,6 @@ public class UserServiceTests
         var existingOrganizer = new Organizer
         {
             Id = organizerId,
-            Name = "John Doe",
             Email = "john.doe@example.com",
             Organisation = "ExampleOrg",
             ActivityArea = "Tech",
@@ -182,14 +173,12 @@ public class UserServiceTests
         var moderatorId = Guid.NewGuid();
         var updateDto = new UserRequestDTO
         {
-            Name = "John Updated",
             Email = "john.updated@example.com"
         };
 
         var existingModerator = new Moderator
         {
             Id = moderatorId,
-            Name = "John Doe",
             Email = "john.doe@example.com",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
