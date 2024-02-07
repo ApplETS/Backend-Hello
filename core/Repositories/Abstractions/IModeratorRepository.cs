@@ -2,6 +2,6 @@
 
 namespace api.core.repositories.abstractions;
 
-public interface ITagRepository : IRepository<Tag>
+public interface IModeratorRepository : IRepository<Moderator>
 {
 }

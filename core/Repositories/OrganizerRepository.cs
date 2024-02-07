@@ -26,7 +26,12 @@ public class OrganizerRepository(EventManagementContext context) : IOrganizerRep
 
     public Organizer? Get(Guid id)
     {
-        throw new NotImplementedException();
+        var entity = context.Organizers.Find(id);
+        if (entity != null && entity.DeletedAt == null)
+        {
+            return entity;
+        }
+        return null;
     }
 
     public IEnumerable<Organizer> GetAll()
