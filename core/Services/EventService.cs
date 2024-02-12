@@ -5,11 +5,16 @@ using api.core.Data.Responses;
 using api.core.repositories.abstractions;
 using api.core.services.abstractions;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace api.core.Services;
 
-public class EventService(IEventRepository evntRepo, ITagRepository tagRepo, IOrganizerRepository orgRepo, IModeratorRepository moderatorRepo) : IEventService
+public class EventService(
+    IEventRepository evntRepo,
+    ITagRepository tagRepo,
+    IOrganizerRepository orgRepo,
+    IModeratorRepository moderatorRepo) : IEventService
 {
     public IEnumerable<EventResponseDTO> GetEvents(
         DateTime? startDate,
@@ -21,8 +26,9 @@ public class EventService(IEventRepository evntRepo, ITagRepository tagRepo, IOr
 
         return events.Where(e =>
          e.Publication.DeletedAt == null &&
+         e.Publication.PublicationDate <= DateTime.UtcNow &&
          (startDate == null || e.EventDate >= startDate) &&
-         (endDate == null || e.EventDate <= endDate) &&  
+         (endDate == null || e.EventDate <= endDate) &&
          (tags.IsNullOrEmpty() || e.Publication.Tags.Any(t => tags.Any(tt => t.Id == tt))) &&
          (activityAreas.IsNullOrEmpty() || activityAreas.Any(aa => aa == e.Publication.Organizer.ActivityArea)))
             .OrderBy(e => e.EventDate)
