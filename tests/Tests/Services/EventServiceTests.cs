@@ -32,7 +32,7 @@ public class EventServiceTests
                 Title = "EVENT IN 5 DAYS",
                 Content = "Test",
                 ImageUrl = "Test",
-                State = State.OnHold,
+                State = State.Published,
                 PublicationDate = DateTime.Now,
                 Tags = new List<Tag>
                 {
@@ -64,7 +64,7 @@ public class EventServiceTests
                 Title = "EVENT TOMORROW, DIFFERENT ACTIVITY AREA",
                 Content = "Test",
                 ImageUrl = "Test",
-                State = State.OnHold,
+                State = State.Published,
                 PublicationDate = DateTime.Now,
                 Tags = new List<Tag>
                 {
@@ -92,7 +92,7 @@ public class EventServiceTests
                 Title = "EVENT TOMORROW, WITHOUT TAGS",
                 Content = "Test",
                 ImageUrl = "Test",
-                State = State.OnHold,
+                State = State.Published,
                 PublicationDate = DateTime.Now,
                 Tags = new List<Tag>(),
                 Organizer = new Organizer
@@ -113,7 +113,7 @@ public class EventServiceTests
                 Title = "DELETED EVENT",
                 Content = "Test",
                 ImageUrl = "Test",
-                State = State.OnHold,
+                State = State.Deleted,
                 PublicationDate = DateTime.Now,
                 Tags = new List<Tag>
                 {
@@ -149,7 +149,7 @@ public class EventServiceTests
         mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
         // Act
-        var events = eventService.GetEvents(null, null, null, null, State.All);
+        var events = eventService.GetEvents(null, null, null, null, State.Published);
 
         // Assert
         mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);

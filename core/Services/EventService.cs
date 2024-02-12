@@ -33,7 +33,7 @@ public class EventService(
          (endDate == null || e.EventDate <= endDate) &&
          (tags.IsNullOrEmpty() || e.Publication.Tags.Any(t => tags.Any(tt => t.Id == tt))) &&
          (activityAreas.IsNullOrEmpty() || activityAreas.Any(aa => aa == e.Publication.Organizer.ActivityArea)) &&
-         (e.Publication.State == state))
+         ((state == State.All) || (e.Publication.State & state) != 0))
             .OrderBy(e => e.EventDate)
             .Select(EventResponseDTO.Map);
     }
