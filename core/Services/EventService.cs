@@ -1,11 +1,11 @@
 using api.core.data.entities;
+using api.core.Data.Entities;
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.Data.Responses;
 using api.core.repositories.abstractions;
 using api.core.services.abstractions;
 
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace api.core.Services;
@@ -20,17 +20,20 @@ public class EventService(
         DateTime? startDate,
         DateTime? endDate,
         IEnumerable<string>? activityAreas,
-        IEnumerable<Guid>? tags)
+        IEnumerable<Guid>? tags, 
+        State state,
+        bool ignorePublicationDate = false)
     {
         var events = evntRepo.GetAll();
 
         return events.Where(e =>
          e.Publication.DeletedAt == null &&
-         e.Publication.PublicationDate <= DateTime.UtcNow &&
+         (ignorePublicationDate || e.Publication.PublicationDate <= DateTime.UtcNow) &&
          (startDate == null || e.EventDate >= startDate) &&
          (endDate == null || e.EventDate <= endDate) &&
          (tags.IsNullOrEmpty() || e.Publication.Tags.Any(t => tags.Any(tt => t.Id == tt))) &&
-         (activityAreas.IsNullOrEmpty() || activityAreas.Any(aa => aa == e.Publication.Organizer.ActivityArea)))
+         (activityAreas.IsNullOrEmpty() || activityAreas.Any(aa => aa == e.Publication.Organizer.ActivityArea)) &&
+         (e.Publication.State == state))
             .OrderBy(e => e.EventDate)
             .Select(EventResponseDTO.Map);
     }
@@ -59,7 +62,7 @@ public class EventService(
                 Title = request.Title,
                 Content = request.Content,
                 ImageUrl = request.ImageUrl,
-                State = request.State,
+                State = State.OnHold,
                 PublicationDate = request.PublicationDate,
                 Tags = tags.ToList(),
                 Organizer = organizer,
@@ -116,7 +119,7 @@ public class EventService(
         });
     }
 
-    public bool UpdateEventState(Guid userId, Guid eventId, string state)
+    public bool UpdateEventState(Guid userId, Guid eventId, State state)
     {
         var moderator = moderatorRepo.Get(userId) ?? throw new UnauthorizedException();
         var evnt = evntRepo.Get(eventId);

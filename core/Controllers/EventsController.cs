@@ -1,4 +1,6 @@
 using api.core.Data;
+using api.core.Data.Entities;
+using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.Data.Requests;
 using api.core.Data.Responses;
@@ -13,7 +15,7 @@ namespace api.core.controllers;
 
 [ApiController]
 [Route("api/events")]
-public class EventsController(ILogger<EventsController> logger, IEventService eventService) : ControllerBase
+public class EventsController(ILogger<EventsController> logger, IEventService eventService, IUserService userService) : ControllerBase
 {
     /// <summary>
     /// Get events by date, activity area and tags
@@ -34,7 +36,40 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
         logger.LogInformation("Getting events");
         var validFilter = new PaginationRequest(pagination.PageNumber, pagination.PageSize);
 
-        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags);
+        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags, State.Published);
+        var totalRecords = events.Count();
+        var paginatedRes = events
+            .Skip((pagination.PageNumber - 1) * pagination.PageSize)
+            .Take(pagination.PageSize)
+            .ToList();
+
+        var response = PaginationHelper.CreatePaginatedReponse(paginatedRes, validFilter, totalRecords, "/api/campaigns");
+
+        return Ok(response);
+    }
+
+    [HttpGet("moderator")]
+    [Authorize]
+    public ActionResult<IEnumerable<EventResponseDTO>> GetEventsModerator(
+        [FromQuery] DateTime? startDate,
+        [FromQuery] DateTime? endDate,
+        [FromQuery] IEnumerable<string>? activityAreas,
+        [FromQuery] IEnumerable<Guid>? tags,
+        [FromQuery] PaginationRequest pagination,
+        [FromQuery] State state = State.All
+        )
+    {
+        logger.LogInformation("Getting events");
+        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
+
+        if (userService.GetUser(userId).Type != "Moderator")
+        {
+            throw new UnauthorizedException();
+        }
+
+        var validFilter = new PaginationRequest(pagination.PageNumber, pagination.PageSize);
+
+        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags, state, ignorePublicationDate: true);
         var totalRecords = events.Count();
         var paginatedRes = events
             .Skip((pagination.PageNumber - 1) * pagination.PageSize)
@@ -95,7 +130,7 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
 
     [Authorize]
     [HttpPatch("{id}/state")]
-    public IActionResult UpdateEventState(Guid id, [FromQuery] string newState)
+    public IActionResult UpdateEventState(Guid id, [FromQuery] State newState)
     {
         var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         return eventService.UpdateEventState(userId, id, newState) ? Ok() : BadRequest();
