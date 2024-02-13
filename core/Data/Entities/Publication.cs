@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using api.core.Data.Entities;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace api.core.data.entities;
@@ -22,7 +24,7 @@ public partial class Publication
 
     public string ImageUrl { get; set; } = null!;
 
-    public string State { get; set; } = null!;
+    public State State { get; set; }
 
     public DateTime PublicationDate { get; set; }
 

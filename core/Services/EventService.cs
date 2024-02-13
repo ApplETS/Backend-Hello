@@ -1,4 +1,5 @@
 using api.core.data.entities;
+using api.core.Data.Entities;
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.Data.Responses;
@@ -9,20 +10,28 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace api.core.Services;
 
-public class EventService(IEventRepository evntRepo, ITagRepository tagRepo, IOrganizerRepository orgRepo, IModeratorRepository moderatorRepo) : IEventService
+public class EventService(
+    IEventRepository evntRepo,
+    ITagRepository tagRepo,
+    IOrganizerRepository orgRepo,
+    IModeratorRepository moderatorRepo) : IEventService
 {
     public IEnumerable<EventResponseDTO> GetEvents(
         DateTime? startDate,
         DateTime? endDate,
         IEnumerable<string>? activityAreas,
-        IEnumerable<Guid>? tags)
+        IEnumerable<Guid>? tags, 
+        State state,
+        bool ignorePublicationDate = false)
     {
         var events = evntRepo.GetAll();
 
         return events.Where(e =>
          e.Publication.DeletedAt == null &&
+         (ignorePublicationDate || e.Publication.PublicationDate <= DateTime.UtcNow) &&
          (startDate == null || e.EventDate >= startDate) &&
-         (endDate == null || e.EventDate <= endDate) &&  
+         (endDate == null || e.EventDate <= endDate) &&
+         (state.HasFlag(e.Publication.State)) &&
          (tags.IsNullOrEmpty() || e.Publication.Tags.Any(t => tags.Any(tt => t.Id == tt))) &&
          (activityAreas.IsNullOrEmpty() || activityAreas.Any(aa => aa == e.Publication.Organizer.ActivityArea)))
             .OrderBy(e => e.EventDate)
@@ -53,7 +62,7 @@ public class EventService(IEventRepository evntRepo, ITagRepository tagRepo, IOr
                 Title = request.Title,
                 Content = request.Content,
                 ImageUrl = request.ImageUrl,
-                State = request.State,
+                State = State.OnHold,
                 PublicationDate = request.PublicationDate,
                 Tags = tags.ToList(),
                 Organizer = organizer,
@@ -110,7 +119,7 @@ public class EventService(IEventRepository evntRepo, ITagRepository tagRepo, IOr
         });
     }
 
-    public bool UpdateEventState(Guid userId, Guid eventId, string state)
+    public bool UpdateEventState(Guid userId, Guid eventId, State state)
     {
         var moderator = moderatorRepo.Get(userId) ?? throw new UnauthorizedException();
         var evnt = evntRepo.Get(eventId);
