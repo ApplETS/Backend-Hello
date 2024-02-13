@@ -31,9 +31,9 @@ public class EventService(
          (ignorePublicationDate || e.Publication.PublicationDate <= DateTime.UtcNow) &&
          (startDate == null || e.EventDate >= startDate) &&
          (endDate == null || e.EventDate <= endDate) &&
+         (state.HasFlag(e.Publication.State)) &&
          (tags.IsNullOrEmpty() || e.Publication.Tags.Any(t => tags.Any(tt => t.Id == tt))) &&
-         (activityAreas.IsNullOrEmpty() || activityAreas.Any(aa => aa == e.Publication.Organizer.ActivityArea)) &&
-         ((state == State.All) || (e.Publication.State & state) != 0))
+         (activityAreas.IsNullOrEmpty() || activityAreas.Any(aa => aa == e.Publication.Organizer.ActivityArea)))
             .OrderBy(e => e.EventDate)
             .Select(EventResponseDTO.Map);
     }

@@ -15,7 +15,7 @@ namespace api.core.controllers;
 
 [ApiController]
 [Route("api/events")]
-public class EventsController(ILogger<EventsController> logger, IEventService eventService, IUserService userService) : ControllerBase
+public class EventsController(ILogger<EventsController> logger, IEventService eventService) : ControllerBase
 {
     /// <summary>
     /// Get events by date, activity area and tags
@@ -43,40 +43,7 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
             .Take(pagination.PageSize)
             .ToList();
 
-        var response = PaginationHelper.CreatePaginatedReponse(paginatedRes, validFilter, totalRecords, "/api/campaigns");
-
-        return Ok(response);
-    }
-
-    [HttpGet("moderator")]
-    [Authorize]
-    public ActionResult<IEnumerable<EventResponseDTO>> GetEventsModerator(
-        [FromQuery] DateTime? startDate,
-        [FromQuery] DateTime? endDate,
-        [FromQuery] IEnumerable<string>? activityAreas,
-        [FromQuery] IEnumerable<Guid>? tags,
-        [FromQuery] PaginationRequest pagination,
-        [FromQuery] State state = State.All
-        )
-    {
-        logger.LogInformation("Getting events");
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
-
-        if (userService.GetUser(userId).Type != "Moderator")
-        {
-            throw new UnauthorizedException();
-        }
-
-        var validFilter = new PaginationRequest(pagination.PageNumber, pagination.PageSize);
-
-        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags, state, ignorePublicationDate: true);
-        var totalRecords = events.Count();
-        var paginatedRes = events
-            .Skip((pagination.PageNumber - 1) * pagination.PageSize)
-            .Take(pagination.PageSize)
-            .ToList();
-
-        var response = PaginationHelper.CreatePaginatedReponse(paginatedRes, validFilter, totalRecords, "/api/campaigns");
+        var response = PaginationHelper.CreatePaginatedReponse(paginatedRes, validFilter, totalRecords);
 
         return Ok(response);
     }
@@ -126,13 +93,5 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
     {
         var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         return eventService.UpdateEvent(userId, id, dto) ? Ok() : BadRequest();
-    }
-
-    [Authorize]
-    [HttpPatch("{id}/state")]
-    public IActionResult UpdateEventState(Guid id, [FromQuery] State newState)
-    {
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
-        return eventService.UpdateEventState(userId, id, newState) ? Ok() : BadRequest();
     }
 }

@@ -3,10 +3,10 @@
 [Flags]
 public enum State
 {
-    OnHold = 0,
-    Deleted = 1,
-    Denied = 2,
-    Approved = 4,
-    Published = 8,
+    OnHold = 1,
+    Deleted = 2,
+    Denied = 4,
+    Approved = 8,
+    Published = 16,
     All = OnHold | Deleted | Denied | Approved | Published
 }
