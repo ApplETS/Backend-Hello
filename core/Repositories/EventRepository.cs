@@ -53,6 +53,8 @@ public class EventRepository(EventManagementContext context) : IEventRepository
         return context.Events
             .Include(x => x.Publication)
                 .ThenInclude(x => x.Tags)
+            .Include(x => x.Publication)
+                .ThenInclude(x => x.Organizer)
             .ToList();
     }
 

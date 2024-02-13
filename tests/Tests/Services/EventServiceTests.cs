@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 using api.core.data.entities;
+using api.core.Data.Entities;
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.repositories.abstractions;
@@ -31,7 +32,7 @@ public class EventServiceTests
                 Title = "EVENT IN 5 DAYS",
                 Content = "Test",
                 ImageUrl = "Test",
-                State = "Test",
+                State = State.Published,
                 PublicationDate = DateTime.Now,
                 Tags = new List<Tag>
                 {
@@ -63,7 +64,7 @@ public class EventServiceTests
                 Title = "EVENT TOMORROW, DIFFERENT ACTIVITY AREA",
                 Content = "Test",
                 ImageUrl = "Test",
-                State = "Test",
+                State = State.Published,
                 PublicationDate = DateTime.Now,
                 Tags = new List<Tag>
                 {
@@ -91,7 +92,7 @@ public class EventServiceTests
                 Title = "EVENT TOMORROW, WITHOUT TAGS",
                 Content = "Test",
                 ImageUrl = "Test",
-                State = "Test",
+                State = State.Published,
                 PublicationDate = DateTime.Now,
                 Tags = new List<Tag>(),
                 Organizer = new Organizer
@@ -112,7 +113,7 @@ public class EventServiceTests
                 Title = "DELETED EVENT",
                 Content = "Test",
                 ImageUrl = "Test",
-                State = "Test",
+                State = State.Deleted,
                 PublicationDate = DateTime.Now,
                 Tags = new List<Tag>
                 {
@@ -148,7 +149,7 @@ public class EventServiceTests
         mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
         // Act
-        var events = eventService.GetEvents(null, null, null, null);
+        var events = eventService.GetEvents(null, null, null, null, State.Published);
 
         // Assert
         mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
@@ -170,7 +171,7 @@ public class EventServiceTests
         mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
         // Act
-        var events = eventService.GetEvents(DateTime.Now.AddDays(2), null, null, null);
+        var events = eventService.GetEvents(DateTime.Now.AddDays(2), null, null, null, State.All);
 
         // Assert
         mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
@@ -192,7 +193,7 @@ public class EventServiceTests
         mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
         // Act
-        var events = eventService.GetEvents(null, DateTime.Now.AddDays(3), null, null);
+        var events = eventService.GetEvents(null, DateTime.Now.AddDays(3), null, null, State.All);
 
         // Assert
         mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
@@ -217,7 +218,7 @@ public class EventServiceTests
         var events = eventService.GetEvents(null, null, new List<string>
         {
             "Club"
-        }, null);
+        }, null, State.All);
 
         // Assert
         mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
@@ -242,7 +243,7 @@ public class EventServiceTests
         var events = eventService.GetEvents(null, null, null, new List<Guid>
         {
             _tagId
-        });
+        }, State.All);
 
         // Assert
         mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
@@ -390,7 +391,7 @@ public class EventServiceTests
             Title = "Sample Event Title",
             Content = "This is a detailed description of the event.",
             ImageUrl = "https://example.com/image.jpg",
-            State = "APPROVED",
+            State = State.Approved,
             PublicationDate = DateTime.UtcNow,
             EventDate = DateTime.UtcNow.AddDays(10),
             Tags = new List<Guid>
@@ -428,7 +429,7 @@ public class EventServiceTests
             Title = "Sample Event Title",
             Content = "This is a detailed description of the event.",
             ImageUrl = "https://example.com/image.jpg",
-            State = "APPROVED",
+            State = State.Approved,
             PublicationDate = DateTime.UtcNow,
             EventDate = DateTime.UtcNow.AddDays(10),
             Tags = new List<Guid>
@@ -460,7 +461,7 @@ public class EventServiceTests
         var userId = _events.First().Publication.Moderator.Id;
         var eventId = _events.First().Id;
 
-        var newState = "NewState";
+        var newState = core.Data.Entities.State.Approved;
 
         var eventToUpdate = _events.First();
         eventToUpdate.Publication.ModeratorId = userId;
@@ -486,7 +487,7 @@ public class EventServiceTests
         var mockEventRepository = new Mock<IEventRepository>();
         var unauthorizedUserId = Guid.NewGuid();
         var eventId = _events.First().Id;
-        var newState = "NewState";
+        var newState = State.Approved;
 
         var eventToUpdate = _events.First();
         eventToUpdate.Publication.ModeratorId = Guid.NewGuid();
