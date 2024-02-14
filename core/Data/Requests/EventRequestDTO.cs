@@ -1,4 +1,5 @@
 ﻿using api.core.data.entities;
+using api.core.Data.Entities;
 
 namespace api.core.Data.requests;
 
@@ -12,7 +13,7 @@ public class EventRequestDTO
 
     public string ImageUrl { get; set; } = null!;
 
-    public string State { get; set; } = null!;
+    public State State { get; set; }
     
     public DateTime PublicationDate { get; set; }
 

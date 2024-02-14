@@ -12,11 +12,21 @@ using api.emails;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
+// Environments setup
+string supabaseSecretKey = null!;
+string supabaseProjectId = null!;
+string connectionString = null!;
+string redisConnString = null!;
 
-var supabaseSecretKey = Environment.GetEnvironmentVariable("SUPABASE_SECRET_KEY") ?? throw new Exception("SUPABASE_SECRET_KEY is not set"); 
-var supabaseProjectId = Environment.GetEnvironmentVariable("SUPABASE_PROJECT_ID") ?? throw new Exception("SUPABASE_PROJECT_ID is not set");
-var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new Exception("CONNECTION_STRING is not set");
+connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new Exception("CONNECTION_STRING is not set");
+
 var redisConnString = Environment.GetEnvironmentVariable("REDIS_CONNECTION_STRING");
+
+if (!EF.IsDesignTime)
+{
+    supabaseSecretKey = Environment.GetEnvironmentVariable("SUPABASE_SECRET_KEY") ?? throw new Exception("SUPABASE_SECRET_KEY is not set");
+    supabaseProjectId = Environment.GetEnvironmentVariable("SUPABASE_PROJECT_ID") ?? throw new Exception("SUPABASE_PROJECT_ID is not set");
+}
 
 builder.Configuration.AddEnvironmentVariables(prefix: "EMAIL_");
 

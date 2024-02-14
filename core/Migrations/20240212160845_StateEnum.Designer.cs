@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using api.core.data;
@@ -11,9 +12,11 @@ using api.core.data;
 namespace api.core.Migrations
 {
     [DbContext(typeof(EventManagementContext))]
-    partial class EventManagementContextModelSnapshot : ModelSnapshot
+    [Migration("20240212160845_StateEnum")]
+    partial class StateEnum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -126,46 +129,18 @@ namespace api.core.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("DiscordLink")
-                        .HasColumnType("text");
-
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("FacebookLink")
-                        .HasColumnType("text");
-
-                    b.Property<string>("InstagramLink")
-                        .HasColumnType("text");
-
-                    b.Property<string>("LinkedInLink")
                         .HasColumnType("text");
 
                     b.Property<string>("Organisation")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ProfileDescription")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("RedditLink")
-                        .HasColumnType("text");
-
-                    b.Property<string>("TikTokLink")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
-
-                    b.Property<string>("WebSiteLink")
-                        .HasColumnType("text");
-
-                    b.Property<string>("XLink")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

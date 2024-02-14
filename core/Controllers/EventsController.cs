@@ -1,4 +1,6 @@
 using api.core.Data;
+using api.core.Data.Entities;
+using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.Data.Requests;
 using api.core.Data.Responses;
@@ -36,14 +38,14 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
         logger.LogInformation("Getting events");
         var validFilter = new PaginationRequest(pagination.PageNumber, pagination.PageSize);
 
-        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags);
+        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags, State.Published);
         var totalRecords = events.Count();
         var paginatedRes = events
             .Skip((pagination.PageNumber - 1) * pagination.PageSize)
             .Take(pagination.PageSize)
             .ToList();
 
-        var response = PaginationHelper.CreatePaginatedReponse(paginatedRes, validFilter, totalRecords, "/api/campaigns");
+        var response = PaginationHelper.CreatePaginatedReponse(paginatedRes, validFilter, totalRecords);
 
         return Ok(response);
     }
@@ -93,13 +95,5 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
     {
         var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         return eventService.UpdateEvent(userId, id, dto) ? Ok() : BadRequest();
-    }
-
-    [Authorize]
-    [HttpPatch("{id}/state")]
-    public IActionResult UpdateEventState(Guid id, [FromQuery] string newState)
-    {
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
-        return eventService.UpdateEventState(userId, id, newState) ? Ok() : BadRequest();
     }
 }
