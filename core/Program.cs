@@ -108,7 +108,9 @@ app.UseAuthorization();
 
 app.MapHealthChecks("/health");
 
-app.UseOutputCache();
+
+if (redisConnString != null)
+    app.UseOutputCache();
 
 app.MapControllers();
 
