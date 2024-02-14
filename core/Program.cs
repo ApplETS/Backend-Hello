@@ -9,14 +9,14 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using api.core.Misc;
 using api.emails;
-using api.emails.Models;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var supabaseSecretKey = Environment.GetEnvironmentVariable("SUPABASE_SECRET_KEY") ?? throw new Exception("SUPABASE_SECRET_KEY is not set");
+var supabaseSecretKey = Environment.GetEnvironmentVariable("SUPABASE_SECRET_KEY") ?? throw new Exception("SUPABASE_SECRET_KEY is not set"); 
 var supabaseProjectId = Environment.GetEnvironmentVariable("SUPABASE_PROJECT_ID") ?? throw new Exception("SUPABASE_PROJECT_ID is not set");
 var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new Exception("CONNECTION_STRING is not set");
+var redisConnString = Environment.GetEnvironmentVariable("REDIS_CONNECTION_STRING");
 
 builder.Configuration.AddEnvironmentVariables(prefix: "EMAIL_");
 
@@ -33,6 +33,19 @@ builder.Services.AddAuthentication().AddJwtBearer(o =>
     };
 });
 
+if (redisConnString != null)
+{
+    builder.Services.AddStackExchangeRedisOutputCache(options =>
+    {
+        options.Configuration = redisConnString;
+    });
+}
+
+builder.Services.AddOutputCache(options =>
+{
+    options.AddBasePolicy(builder =>
+        builder.Cache());
+});
 
 // Errors handling
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -94,6 +107,8 @@ app.UseMiddleware<CustomExceptionsCheckerMiddleware>();
 app.UseAuthorization();
 
 app.MapHealthChecks("/health");
+
+app.UseOutputCache();
 
 app.MapControllers();
 

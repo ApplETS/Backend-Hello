@@ -7,6 +7,7 @@ using api.core.services.abstractions;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.Logging;
 
 namespace api.core.controllers;
@@ -24,6 +25,7 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
     /// <param name="tags"></param>
     /// <returns></returns>
     [HttpGet]
+    [OutputCache(VaryByQueryKeys = [ "startDate", "endDate", "activityAreas", "tags", "pagination" ])]
     public ActionResult<IEnumerable<EventResponseDTO>> GetEvents(
         [FromQuery] DateTime? startDate,
         [FromQuery] DateTime? endDate,
