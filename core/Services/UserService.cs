@@ -17,6 +17,15 @@ public class UserService(IOrganizerRepository organizerRepository, IModeratorRep
             Email = organizerDto.Email,
             Organisation = organizerDto.Organisation ?? "",
             ActivityArea = organizerDto.ActivityArea ?? "",
+            ProfileDescription = organizerDto.ProfileDescription ?? "",
+            FacebookLink = organizerDto.FacebookLink,
+            InstagramLink = organizerDto.InstagramLink,
+            TikTokLink = organizerDto.TikTokLink,
+            XLink = organizerDto.XLink,
+            DiscordLink = organizerDto.DiscordLink,
+            LinkedInLink = organizerDto.LinkedInLink,
+            RedditLink = organizerDto.RedditLink,
+            WebSiteLink = organizerDto.WebSiteLink,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         });
@@ -58,6 +67,15 @@ public class UserService(IOrganizerRepository organizerRepository, IModeratorRep
                     Email = dto.Email,
                     Organisation = dto.Organisation,
                     ActivityArea = dto.ActivityArea,
+                    ProfileDescription = dto.ProfileDescription,
+                    FacebookLink = dto.FacebookLink,
+                    InstagramLink = dto.InstagramLink,
+                    TikTokLink = dto.TikTokLink,
+                    XLink = dto.XLink,
+                    DiscordLink = dto.DiscordLink,
+                    LinkedInLink = dto.LinkedInLink,
+                    RedditLink = dto.RedditLink,
+                    WebSiteLink = dto.WebSiteLink,
                     CreatedAt = user.CreatedAt,
                     UpdatedAt = DateTime.UtcNow
                 });
