@@ -9,7 +9,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using api.core.Misc;
 using api.emails;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 // Environments setup
@@ -20,7 +19,7 @@ string redisConnString = null!;
 
 connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new Exception("CONNECTION_STRING is not set");
 
-var redisConnString = Environment.GetEnvironmentVariable("REDIS_CONNECTION_STRING");
+redisConnString = Environment.GetEnvironmentVariable("REDIS_CONNECTION_STRING");
 
 if (!EF.IsDesignTime)
 {
