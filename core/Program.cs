@@ -9,15 +9,17 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using api.core.Misc;
 using api.emails;
-using api.emails.Models;
-using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+// Environments setup
 string supabaseSecretKey = null!;
 string supabaseProjectId = null!;
 string connectionString = null!;
+string redisConnString = null!;
 
 connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new Exception("CONNECTION_STRING is not set");
+
+redisConnString = Environment.GetEnvironmentVariable("REDIS_CONNECTION_STRING");
 
 if (!EF.IsDesignTime)
 {
@@ -40,6 +42,19 @@ builder.Services.AddAuthentication().AddJwtBearer(o =>
     };
 });
 
+if (redisConnString != null)
+{
+    builder.Services.AddStackExchangeRedisOutputCache(options =>
+    {
+        options.Configuration = redisConnString;
+    });
+}
+
+builder.Services.AddOutputCache(options =>
+{
+    options.AddBasePolicy(builder =>
+        builder.Cache());
+});
 
 // Errors handling
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -101,6 +116,10 @@ app.UseMiddleware<CustomExceptionsCheckerMiddleware>();
 app.UseAuthorization();
 
 app.MapHealthChecks("/health");
+
+
+if (redisConnString != null)
+    app.UseOutputCache();
 
 app.MapControllers();
 

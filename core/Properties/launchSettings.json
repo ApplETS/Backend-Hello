@@ -37,7 +37,7 @@
       },
       "publishAllPorts": true,
       "useSSL": true,
-      "DockerfileRunArguments": "--env-file .env"
+      "DockerfileRunArguments": "--rm --env-file .env"
     }
   },
   "$schema": "http://json.schemastore.org/launchsettings.json",
