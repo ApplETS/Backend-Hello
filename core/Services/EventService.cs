@@ -33,7 +33,7 @@ public class EventService(
          (startDate == null || e.EventDate >= startDate) &&
          (endDate == null || e.EventDate <= endDate) &&
          (state.HasFlag(e.Publication.State)) &&
-         (userId == null || e.Publication.OrganizerId == userId) &&
+         (userId == null || e.Publication.OrganizerId == userId) &&
          (tags.IsNullOrEmpty() || e.Publication.Tags.Any(t => tags.Any(tt => t.Id == tt))) &&
          (activityAreas.IsNullOrEmpty() || activityAreas.Any(aa => aa == e.Publication.Organizer.ActivityArea)))
             .OrderBy(e => e.EventDate)
@@ -72,7 +72,7 @@ public class EventService(
                 UpdatedAt = DateTime.UtcNow,
             },
         });
-        
+
         return EventResponseDTO.Map(inserted);
     }
 
@@ -81,10 +81,10 @@ public class EventService(
         var eventToDelete = evntRepo.Get(eventId);
         NotFoundException<Event>.ThrowIfNull(eventToDelete);
 
-       if (!CanPerformAction(userId, eventToDelete!))
-           throw new UnauthorizedException();
-       
-       return evntRepo.Delete(eventToDelete!);
+        if (!CanPerformAction(userId, eventToDelete!))
+            throw new UnauthorizedException();
+
+        return evntRepo.Delete(eventToDelete!);
     }
 
 
