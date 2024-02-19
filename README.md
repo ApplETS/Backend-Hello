@@ -22,7 +22,7 @@ Simply copy and paste the `.env.template` file, rename it to `.env` and fill it 
 
 Then, run the image on your local machine
 ```bash
-docker run --env-file .env --restart always -d -p 8080:8080 --name ps-api mysticfragilist/ps-api:<VERSION>
+docker run --rm --env-file .env --restart always -d -p 8080:8080 --name ps-api mysticfragilist/ps-api:<VERSION>
 ```
 
 You can navigate to `http://localhost:8080/swagger` to check if the API is running correctly!
