@@ -38,7 +38,7 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
         logger.LogInformation("Getting events");
         var validFilter = new PaginationRequest(pagination.PageNumber, pagination.PageSize);
 
-        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags, State.Published);
+        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags, null, State.Published);
         var totalRecords = events.Count();
         var paginatedRes = events
             .Skip((pagination.PageNumber - 1) * pagination.PageSize)
@@ -62,38 +62,5 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
             {
                 Data = evnt,
             });
-    }
-
-    [Authorize]
-    [HttpPost]
-    public IActionResult AddEvent([FromBody] EventRequestDTO dto)
-    {
-        logger.LogInformation($"Adding new event");
-
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
-        var evnt = eventService.AddEvent(userId, dto);
-
-        return new OkObjectResult(
-            new Response<EventResponseDTO>
-            {
-                Data = evnt,
-            });
-    }
-
-    [Authorize]
-    [HttpDelete("{id}")]
-    public IActionResult DeleteEvent(Guid id)
-    {
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
-        var isDeleted = eventService.DeleteEvent(userId, id);
-        return isDeleted ? Ok() : BadRequest();
-    }
-
-    [Authorize]
-    [HttpPatch("{id}")]
-    public IActionResult UpdateEvent(Guid id, [FromBody] EventRequestDTO dto)
-    {
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
-        return eventService.UpdateEvent(userId, id, dto) ? Ok() : BadRequest();
     }
 }
