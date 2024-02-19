@@ -6,7 +6,7 @@ namespace api.core.services.abstractions;
 
 public interface IEventService
 {
-    public IEnumerable<EventResponseDTO> GetEvents(DateTime? startDate, DateTime? endDate, IEnumerable<string>? activityAreas, IEnumerable<Guid>? tags, Guid? userId, State state, bool ignorePublicationDate = false);
+    public IEnumerable<EventResponseDTO> GetEvents(DateTime? startDate, DateTime? endDate, IEnumerable<string>? activityAreas, IEnumerable<Guid>? tags, Guid? organizerId, State state, bool ignorePublicationDate = false);
 
     public EventResponseDTO GetEvent(Guid id);
 
