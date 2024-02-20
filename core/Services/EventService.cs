@@ -30,13 +30,13 @@ public class EventService(
         return events.Where(e =>
          e.Publication.DeletedAt == null &&
          (ignorePublicationDate || e.Publication.PublicationDate <= DateTime.UtcNow) &&
-         (startDate == null || e.EventDate >= startDate) &&
-         (endDate == null || e.EventDate <= endDate) &&
+         (startDate == null || e.EventEndDate >= startDate) &&
+         (endDate == null || e.EventStartDate <= endDate) &&
          (state.HasFlag(e.Publication.State)) &&
          (organizerId == null || e.Publication.OrganizerId == organizerId) &&
          (tags.IsNullOrEmpty() || e.Publication.Tags.Any(t => tags.Any(tt => t.Id == tt))) &&
          (activityAreas.IsNullOrEmpty() || activityAreas.Any(aa => aa == e.Publication.Organizer.ActivityArea)))
-            .OrderBy(e => e.EventDate)
+            .OrderBy(e => e.EventStartDate)
             .Select(EventResponseDTO.Map);
     }
 
@@ -58,7 +58,8 @@ public class EventService(
 
         var inserted = evntRepo.Add(new Event
         {
-            EventDate = request.EventDate,
+            EventStartDate = request.EventStartDate,
+            EventEndDate = request.EventEndDate,
             Publication = new Publication
             {
                 Title = request.Title,
@@ -103,7 +104,8 @@ public class EventService(
         return evntRepo.Update(eventId, new Event
         {
             Id = eventId,
-            EventDate = request.EventDate,
+            EventStartDate = request.EventStartDate,
+            EventEndDate = request.EventEndDate,
             Publication = new Publication
             {
                 Id = eventId,

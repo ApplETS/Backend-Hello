@@ -17,7 +17,8 @@ public class EventResponseDTO
     
     public DateTime PublicationDate { get; set; }
 
-    public DateTime EventDate { get; set; }
+    public DateTime EventStartDate { get; set; }
+    public DateTime EventEndDate { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
@@ -39,7 +40,8 @@ public class EventResponseDTO
             ImageUrl = oneEvent.Publication.ImageUrl,
             State = oneEvent.Publication.State,
             PublicationDate = oneEvent.Publication.PublicationDate,
-            EventDate = oneEvent.EventDate,
+            EventStartDate = oneEvent.EventStartDate,
+            EventEndDate = oneEvent.EventEndDate,
             CreatedAt = oneEvent.Publication.CreatedAt,
             UpdatedAt = oneEvent.Publication.UpdatedAt,
             Moderator = oneEvent.Publication.Moderator != null ? UserResponseDTO.Map(oneEvent.Publication.Moderator!) : null,

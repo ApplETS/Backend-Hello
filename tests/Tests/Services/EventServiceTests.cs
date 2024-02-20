@@ -26,7 +26,8 @@ public class EventServiceTests
         new Event
         {
             Id = Guid.NewGuid(),
-            EventDate = DateTime.Now.AddDays(5),
+            EventStartDate = DateTime.Now.AddDays(5),
+            EventEndDate = DateTime.Now.AddDays(5).AddHours(1),
             Publication = new Publication
             {
                 Title = "EVENT IN 5 DAYS",
@@ -58,7 +59,8 @@ public class EventServiceTests
         new Event
         {
             Id = Guid.NewGuid(),
-            EventDate = DateTime.Now.AddDays(1),
+            EventStartDate = DateTime.Now.AddDays(1),
+            EventEndDate = DateTime.Now.AddDays(1).AddHours(1),
             Publication = new Publication
             {
                 Title = "EVENT TOMORROW, DIFFERENT ACTIVITY AREA",
@@ -86,7 +88,8 @@ public class EventServiceTests
         new Event
         {
             Id = Guid.NewGuid(),
-            EventDate = DateTime.Now.AddDays(1),
+            EventStartDate = DateTime.Now.AddDays(1),
+            EventEndDate = DateTime.Now.AddDays(1).AddHours(1),
             Publication = new Publication
             {
                 Title = "EVENT TOMORROW, WITHOUT TAGS",
@@ -107,7 +110,8 @@ public class EventServiceTests
         new Event
         {
             Id = Guid.NewGuid(),
-            EventDate = DateTime.Now.AddDays(2),
+            EventStartDate = DateTime.Now.AddDays(2),
+            EventEndDate = DateTime.Now.AddDays(2).AddHours(1),
             Publication = new Publication
             {
                 Title = "DELETED EVENT",
@@ -393,7 +397,8 @@ public class EventServiceTests
             ImageUrl = "https://example.com/image.jpg",
             State = State.Approved,
             PublicationDate = DateTime.UtcNow,
-            EventDate = DateTime.UtcNow.AddDays(10),
+            EventStartDate = DateTime.UtcNow.AddDays(10),
+            EventEndDate = DateTime.UtcNow.AddDays(10).AddHours(1),
             Tags = new List<Guid>
             {
                 Guid.NewGuid(),
@@ -431,7 +436,8 @@ public class EventServiceTests
             ImageUrl = "https://example.com/image.jpg",
             State = State.Approved,
             PublicationDate = DateTime.UtcNow,
-            EventDate = DateTime.UtcNow.AddDays(10),
+            EventStartDate = DateTime.UtcNow.AddDays(10),
+            EventEndDate = DateTime.UtcNow.AddDays(10).AddHours(1),
             Tags = new List<Guid>
             {
                 Guid.NewGuid(),
