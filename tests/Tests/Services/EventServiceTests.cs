@@ -153,7 +153,7 @@ public class EventServiceTests
         mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
         // Act
-        var events = eventService.GetEvents(null, null, null, null, State.Published);
+        var events = eventService.GetEvents(null, null, null, null, null, State.Published);
 
         // Assert
         mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
@@ -175,7 +175,7 @@ public class EventServiceTests
         mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
         // Act
-        var events = eventService.GetEvents(DateTime.Now.AddDays(2), null, null, null, State.All);
+        var events = eventService.GetEvents(DateTime.Now.AddDays(2), null, null, null, null, State.All);
 
         // Assert
         mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
@@ -197,7 +197,7 @@ public class EventServiceTests
         mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
         // Act
-        var events = eventService.GetEvents(null, DateTime.Now.AddDays(3), null, null, State.All);
+        var events = eventService.GetEvents(null, DateTime.Now.AddDays(3), null, null, null, State.All);
 
         // Assert
         mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
@@ -222,7 +222,7 @@ public class EventServiceTests
         var events = eventService.GetEvents(null, null, new List<string>
         {
             "Club"
-        }, null, State.All);
+        }, null, null, State.All);
 
         // Assert
         mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
@@ -247,7 +247,7 @@ public class EventServiceTests
         var events = eventService.GetEvents(null, null, null, new List<Guid>
         {
             _tagId
-        }, State.All);
+        }, null, State.All);
 
         // Assert
         mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
