@@ -17,7 +17,9 @@ public class EventRequestDTO
     
     public DateTime PublicationDate { get; set; }
 
-    public DateTime EventDate { get; set; }
+    public DateTime EventStartDate { get; set; }
+
+    public DateTime EventEndDate { get; set; }
 
     public virtual ICollection<Guid> Tags { get; set; } = new List<Guid>();
 }
