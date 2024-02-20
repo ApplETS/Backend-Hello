@@ -17,7 +17,8 @@ public class EventResponseDTO
     
     public DateTime PublicationDate { get; set; }
 
-    public DateTime EventDate { get; set; }
+    public DateTime EventStartDate { get; set; }
+    public DateTime EventEndDate { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

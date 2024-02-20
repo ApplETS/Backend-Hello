@@ -37,6 +37,8 @@
       },
       "publishAllPorts": true,
       "useSSL": true,
+      "httpPort": 8080,
+      "sslPort": 8081,
       "DockerfileRunArguments": "--rm --env-file .env"
     }
   },
