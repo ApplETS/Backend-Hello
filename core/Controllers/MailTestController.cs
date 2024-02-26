@@ -26,6 +26,7 @@ public class MailTestController(IEmailService service) : ControllerBase
                 StatusRefusalHeader = "Raison du refus :",
                 StatusRefusalReason = "La publication ne respecte pas les règles de publication",
                 ButtonSeePublicationText = "Voir la publication",
+                ButtonLink = new Uri("https://github.com/ApplETS/Backend-Hello/compare/ftr/first-email-and-layout?expand=1"),
             },
             emails.EmailsUtils.StatusChangeTemplate);
 
