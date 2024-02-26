@@ -12,6 +12,7 @@ public class EventResponseDTO
     public string Content { get; set; } = null!;
 
     public string ImageUrl { get; set; } = null!;
+    public string ImageThumbnail { get; set; } = null!;
 
     public State State { get; set; }
     
@@ -38,6 +39,7 @@ public class EventResponseDTO
             Title = oneEvent.Publication.Title,
             Content = oneEvent.Publication.Content,
             ImageUrl = oneEvent.Publication.ImageUrl,
+            ImageThumbnail = Convert.ToBase64String(oneEvent.Publication.ImageThumbnail),
             State = oneEvent.Publication.State,
             PublicationDate = oneEvent.Publication.PublicationDate,
             EventStartDate = oneEvent.EventStartDate,

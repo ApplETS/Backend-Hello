@@ -22,7 +22,10 @@ public partial class Publication
 
     public string Content { get; set; } = null!;
 
-    public string ImageUrl { get; set; } = null!;
+    public string? ImageUrl { get; set; }
+
+    [Column("image_thumbnail", TypeName = "BYTEA")]
+    public byte[] ImageThumbnail { get; set; } = null!;
 
     public State State { get; set; }
 
