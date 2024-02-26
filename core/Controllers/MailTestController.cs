@@ -17,12 +17,17 @@ public class MailTestController(IEmailService service) : ControllerBase
         var result = await service.SendEmailAsync(
             "test recipient",
             "test subject",
-            new HelloWorldModel
+            new StatusChangeModel
             {
-                Title = "Hello World",
-                Name = "Test name"
+                Title = "Changement de status",
+                Salutation = "Bonjour ApplETS,",
+                StatusHeaderText = "La publication « Compétition de développement mobile » a été",
+                StatusNameText = "refusée",
+                StatusRefusalHeader = "Raison du refus :",
+                StatusRefusalReason = "La publication ne respecte pas les règles de publication",
+                ButtonSeePublicationText = "Voir la publication",
             },
-            emails.EmailsUtils.ComplexHelloWorldTemplate);
+            emails.EmailsUtils.StatusChangeTemplate);
 
         return Ok();
     }
