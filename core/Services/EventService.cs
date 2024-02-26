@@ -56,7 +56,7 @@ public class EventService(
         return EventResponseDTO.Map(evnt);
     }
 
-    public EventResponseDTO AddEvent(Guid userId, EventRequestDTO request)
+    public EventResponseDTO AddEvent(Guid userId, EventCreationRequestDTO request)
     {
         var organizer = orgRepo.Get(userId) ?? throw new UnauthorizedException();
 
@@ -66,8 +66,7 @@ public class EventService(
 
         byte[] imageBytes = [];
 
-        if (request.Image != null)
-            imageBytes  = HandleImageSaving(request.Image);
+        imageBytes  = HandleImageSaving(request.Image);
         
         var id = Guid.NewGuid();
 
@@ -106,7 +105,7 @@ public class EventService(
     }
 
 
-    public bool UpdateEvent(Guid userId, Guid eventId, EventRequestDTO request)
+    public bool UpdateEvent(Guid userId, Guid eventId, EventUpdateRequestDTO request)
     {
         var organizer = orgRepo.Get(userId) ?? throw new UnauthorizedException();
         var evnt = evntRepo.Get(eventId);
