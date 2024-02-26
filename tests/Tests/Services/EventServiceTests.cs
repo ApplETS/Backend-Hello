@@ -13,6 +13,8 @@ using api.core.Services;
 
 using FluentAssertions;
 
+using Microsoft.AspNetCore.Http;
+
 using Moq;
 
 namespace api.tests.Tests.Services;
@@ -33,6 +35,7 @@ public class EventServiceTests
                 Title = "EVENT IN 5 DAYS",
                 Content = "Test",
                 ImageUrl = "Test",
+                ImageThumbnail = [],
                 State = State.Published,
                 PublicationDate = DateTime.Now,
                 Tags = new List<Tag>
@@ -66,6 +69,7 @@ public class EventServiceTests
                 Title = "EVENT TOMORROW, DIFFERENT ACTIVITY AREA",
                 Content = "Test",
                 ImageUrl = "Test",
+                ImageThumbnail = [],
                 State = State.Published,
                 PublicationDate = DateTime.Now,
                 Tags = new List<Tag>
@@ -95,6 +99,7 @@ public class EventServiceTests
                 Title = "EVENT TOMORROW, WITHOUT TAGS",
                 Content = "Test",
                 ImageUrl = "Test",
+                ImageThumbnail = [],
                 State = State.Published,
                 PublicationDate = DateTime.Now,
                 Tags = new List<Tag>(),
@@ -117,6 +122,7 @@ public class EventServiceTests
                 Title = "DELETED EVENT",
                 Content = "Test",
                 ImageUrl = "Test",
+                ImageThumbnail = [],
                 State = State.Deleted,
                 PublicationDate = DateTime.Now,
                 Tags = new List<Tag>
@@ -314,7 +320,7 @@ public class EventServiceTests
 
         // Act
         eventService.Invoking(s =>
-            s.AddEvent(Guid.Empty, new EventRequestDTO()))
+            s.AddEvent(Guid.Empty, new EventCreationRequestDTO()))
                 .Should().Throw<UnauthorizedException>();
     }
 
@@ -389,13 +395,11 @@ public class EventServiceTests
         var userId = _events.First().Publication.Organizer.Id;
         var eventId = _events.First().Id;
 
-        var request = new EventRequestDTO
+        var request = new EventUpdateRequestDTO
         {
-            Id = Guid.NewGuid(),
             Title = "Sample Event Title",
             Content = "This is a detailed description of the event.",
-            ImageUrl = "https://example.com/image.jpg",
-            State = State.Approved,
+            Image = null,
             PublicationDate = DateTime.UtcNow,
             EventStartDate = DateTime.UtcNow.AddDays(10),
             EventEndDate = DateTime.UtcNow.AddDays(10).AddHours(1),
@@ -428,13 +432,10 @@ public class EventServiceTests
         var unauthorizedUserId = Guid.NewGuid();
         var eventId = _events.First().Id;
 
-        var request = new EventRequestDTO
+        var request = new EventUpdateRequestDTO
         {
-            Id = Guid.NewGuid(),
             Title = "Sample Event Title",
             Content = "This is a detailed description of the event.",
-            ImageUrl = "https://example.com/image.jpg",
-            State = State.Approved,
             PublicationDate = DateTime.UtcNow,
             EventStartDate = DateTime.UtcNow.AddDays(10),
             EventEndDate = DateTime.UtcNow.AddDays(10).AddHours(1),
