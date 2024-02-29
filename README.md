@@ -13,7 +13,7 @@ The default one is `latest`
 
 ℹ️ If your database is already created and running, you can skip this step and directly go to [Run the image](#run-the-image).
 
-Access this [repository](https://github.com/projets-fin-bac-24/database-setup) to get started!
+Access this [repository](https://github.com/ApplETS/Hello-Database-Setup) to get started!
 
 ## Run the image
 You'll need to setup the environment variables in the `.env` file
