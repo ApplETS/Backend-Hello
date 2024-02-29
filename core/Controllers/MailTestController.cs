@@ -17,12 +17,18 @@ public class MailTestController(IEmailService service) : ControllerBase
         var result = await service.SendEmailAsync(
             "test recipient",
             "test subject",
-            new HelloWorldModel
+            new StatusChangeModel
             {
-                Title = "Hello World",
-                Name = "Test name"
+                Title = "Changement de status",
+                Salutation = "Bonjour ApplETS,",
+                StatusHeaderText = "La publication « Compétition de développement mobile » a été",
+                StatusNameText = "refusée",
+                StatusRefusalHeader = "Raison du refus :",
+                StatusRefusalReason = "La publication ne respecte pas les règles de publication",
+                ButtonSeePublicationText = "Voir la publication",
+                ButtonLink = new Uri("https://github.com/ApplETS/Backend-Hello/compare/ftr/first-email-and-layout?expand=1"),
             },
-            emails.EmailsUtils.ComplexHelloWorldTemplate);
+            emails.EmailsUtils.StatusChangeTemplate);
 
         return Ok();
     }

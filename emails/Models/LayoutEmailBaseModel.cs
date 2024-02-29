@@ -1,7 +1,7 @@
 ﻿
 namespace api.emails.Models;
 
-public class EmailBaseModel
+public class LayoutEmailBaseModel
 {
     public string Title { get; set; }
 }

@@ -1,219 +1,296 @@
 ﻿@using RazorLight;
 <!DOCTYPE html>
-<html>
-<head>
+<html
+  lang="en"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+  xmlns:v="urn:schemas-microsoft-com:vml"
+>
+  <head>
     <title></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <style type="text/css">
-        /* FONTS */
-        @@media screen {
-            @@font-face {
-                font-family: 'Lato';
-                font-style: normal;
-                font-weight: 400;
-                src: local('Lato Regular'), local('Lato-Regular'), url(https://fonts.gstatic.com/s/lato/v11/qIIYRU-oROkIk8vfvxw6QvesZW2xOQ-xsNqO47m55DA.woff) format('woff');
-            }
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <!--[if mso
+      ]><xml
+        ><o:OfficeDocumentSettings
+          ><o:PixelsPerInch>96</o:PixelsPerInch
+          ><o:AllowPNG /></o:OfficeDocumentSettings></xml
+    ><![endif]-->
+    <!--[if !mso]><!-->
+    <!--<![endif]-->
+    <style>
+      * {
+        box-sizing: border-box;
+      }
 
-            @@font-face {
-                font-family: 'Lato';
-                font-style: normal;
-                font-weight: 700;
-                src: local('Lato Bold'), local('Lato-Bold'), url(https://fonts.gstatic.com/s/lato/v11/qdgUG4U09HnJwhYI-uK18wLUuEpTyoUstqEm5AMlJo4.woff) format('woff');
-            }
+      body {
+        margin: 0;
+        padding: 0;
+      }
 
-            @@font-face {
-                font-family: 'Lato';
-                font-style: italic;
-                font-weight: 400;
-                src: local('Lato Italic'), local('Lato-Italic'), url(https://fonts.gstatic.com/s/lato/v11/RYyZNoeFgb0l7W3Vu1aSWOvvDin1pK8aKteLpeZ5c0A.woff) format('woff');
-            }
+      a[x-apple-data-detectors] {
+        color: inherit !important;
+        text-decoration: inherit !important;
+      }
 
-            @@font-face {
-                font-family: 'Lato';
-                font-style: italic;
-                font-weight: 700;
-                src: local('Lato Bold Italic'), local('Lato-BoldItalic'), url(https://fonts.gstatic.com/s/lato/v11/HkF_qI1x_noxlxhrhMQYELO3LdcAZYWl9Si6vvxL-qU.woff) format('woff');
-            }
+      #MessageViewBody a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      p {
+        line-height: inherit;
+      }
+
+      .desktop_hide,
+      .desktop_hide table {
+        mso-hide: all;
+        display: none;
+        max-height: 0px;
+        overflow: hidden;
+      }
+
+      .image_block img + div {
+        display: none;
+      }
+
+        @@media (max-width: 620px) {
+        .desktop_hide table.icons-inner {
+          display: inline-block !important;
         }
 
-        /* CLIENT-SPECIFIC STYLES */
-        body, table, td, a {
-            -webkit-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
+        .icons-inner {
+          text-align: center;
         }
 
-        table, td {
-            mso-table-lspace: 0pt;
-            mso-table-rspace: 0pt;
+        .icons-inner td {
+          margin: 0 auto;
         }
 
-        img {
-            -ms-interpolation-mode: bicubic;
+        .mobile_hide {
+          display: none;
         }
 
-        /* RESET STYLES */
-        img {
-            border: 0;
-            height: auto;
-            line-height: 100%;
-            outline: none;
-            text-decoration: none;
+        .row-content {
+          width: 100% !important;
         }
 
-        table {
-            border-collapse: collapse !important;
+        .stack .column {
+          width: 100%;
+          display: block;
         }
 
-        body {
-            height: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100% !important;
+        .mobile_hide {
+          min-height: 0;
+          max-height: 0;
+          max-width: 0;
+          overflow: hidden;
+          font-size: 0px;
         }
 
-        /* iOS BLUE LINKS */
-        a[x-apple-data-detectors] {
-            color: inherit !important;
-            text-decoration: none !important;
-            font-size: inherit !important;
-            font-family: inherit !important;
-            font-weight: inherit !important;
-            line-height: inherit !important;
+        .desktop_hide,
+        .desktop_hide table {
+          display: table !important;
+          max-height: none !important;
         }
-
-        /* MOBILE STYLES */
-        @@media screen and (max-width:600px) {
-            h1 {
-                font-size: 32px !important;
-                line-height: 32px !important;
-            }
-        }
-
-        /* ANDROID CENTER FIX */
-        div[style*="margin: 16px 0;"] {
-            margin: 0 !important;
-        }
+      }
     </style>
-</head>
-<body style="background-color: #f4f4f4; margin: 0 !important; padding: 0 !important;">
-
-    <!-- HIDDEN PREHEADER TEXT -->
-    <div style="display: none; font-size: 1px; color: #fefefe; line-height: 1px; font-family: 'Lato', Helvetica, Arial, sans-serif; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
-        We're thrilled to have you here! Get ready to dive into your new account.
-    </div>
-
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-        <!-- LOGO -->
+    <!--[if true
+      ]><style>
+        .forceBgColor {
+          background-color: white !important;
+        }
+      </style><!
+    [endif]-->
+  </head>
+  <body
+    class="forceBgColor"
+    style="
+      background-color: transparent;
+      margin: 0;
+      padding: 0;
+      -webkit-text-size-adjust: none;
+      text-size-adjust: none;
+    "
+  >
+    <table
+      border="0"
+      cellpadding="0"
+      cellspacing="0"
+      class="nl-container"
+      role="presentation"
+      style="
+        mso-table-lspace: 0pt;
+        mso-table-rspace: 0pt;
+        background-color: transparent;
+      "
+      width="100%"
+    >
+      <tbody>
         <tr>
-            <td bgcolor="#539be2" align="center">
-                <!--[if (gte mso 9)|(IE)]>
-                <table align="center" border="0" cellspacing="0" cellpadding="0" width="600">
+          <td>
+            <div
+              class="spacer_block block-5"
+              style="height: 15px; line-height: 15px; font-size: 1px"
+            ></div>
+            <table
+              align="center"
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+              class="row row-1"
+              role="presentation"
+              style="mso-table-lspace: 0pt; mso-table-rspace: 0pt"
+              width="100%"
+            >
+              <tbody>
                 <tr>
-                <td align="center" valign="top" width="600">
-                <![endif]-->
-                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-                    <tr>
-                        <td align="center" valign="top" style="padding: 40px 10px 40px 10px;">
-                            <a href="http://litmus.com" target="_blank">
-                                <img alt="Logo" src="http://litmuswww.s3.amazonaws.com/community/template-gallery/ceej/logo.png" width="40" height="40" style="display: block; width: 40px; max-width: 40px; min-width: 40px; font-family: 'Lato', Helvetica, Arial, sans-serif; color: #ffffff; font-size: 18px;" border="0">
-                            </a>
-                        </td>
-                    </tr>
-                </table>
-                <!--[if (gte mso 9)|(IE)]>
-                </td>
+                  <td>
+                    <table
+                      align="center"
+                      border="0"
+                      cellpadding="0"
+                      cellspacing="0"
+                      class="row-content stack"
+                      role="presentation"
+                      style="
+                        mso-table-lspace: 0pt;
+                        mso-table-rspace: 0pt;
+                        background-color: #15191e;
+                        border-radius: 15px 15px 0 0;
+                        color: #000000;
+                        width: 600px;
+                        margin: 0 auto;
+                      "
+                      width="600"
+                    >
+                      <tbody>
+                        <tr>
+                          <td
+                            class="column column-1"
+                            style="
+                              mso-table-lspace: 0pt;
+                              mso-table-rspace: 0pt;
+                              font-weight: 400;
+                              text-align: left;
+                              padding-bottom: 10px;
+                              padding-left: 25px;
+                              padding-right: 25px;
+                              padding-top: 10px;
+                              vertical-align: top;
+                              border-top: 0px;
+                              border-right: 0px;
+                              border-bottom: 0px;
+                              border-left: 0px;
+                            "
+                            width="100%"
+                          >
+                            <table
+                              border="0"
+                              cellpadding="0"
+                              cellspacing="0"
+                              class="icons_block block-1"
+                              role="presentation"
+                              style="
+                                mso-table-lspace: 0pt;
+                                mso-table-rspace: 0pt;
+                              "
+                              width="100%"
+                            >
+                              <tr>
+                                <td
+                                  class="pad"
+                                  style="
+                                    vertical-align: middle;
+                                    color: #ffffff;
+                                    font-family: inherit;
+                                    font-size: 14px;
+                                    font-weight: 400;
+                                    text-align: center;
+                                  "
+                                >
+                                  <table
+                                    align="center"
+                                    cellpadding="0"
+                                    cellspacing="0"
+                                    class="alignment"
+                                    role="presentation"
+                                    style="
+                                      mso-table-lspace: 0pt;
+                                      mso-table-rspace: 0pt;
+                                    "
+                                  >
+                                    <tr>
+                                      <td
+                                        style="
+                                          vertical-align: middle;
+                                          text-align: center;
+                                          padding-top: 5px;
+                                          padding-bottom: 5px;
+                                          padding-left: 5px;
+                                          padding-right: 5px;
+                                        "
+                                      >
+                                      <img
+                                          align="center"
+                                          class="icon"
+                                          height="32"
+                                          src="data:image/png;base64,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"
+                                          style="
+                                            display: block;
+                                            height: auto;
+                                            margin: 0 auto;
+                                            border: 0;
+                                          "
+                                          width="32"
+                                        />
+                                        
+                                        <h2 style="
+                                          display: inline-block;
+                                          height: auto;
+                                          margin: 0 auto;
+                                          font-family: Helvetica Neue, Helvetica,
+                                            Arial, sans-serif;
+                                          border: 0;
+                                          ;
+                                        ">
+                                            @Model.Title
+                                        </h2>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
                 </tr>
-                </table>
-                <![endif]-->
-            </td>
-        </tr>
-        <!-- HERO -->
-        <tr>
-            <td bgcolor="#539be2" align="center" style="padding: 0px 10px 0px 10px;">
-                <!--[if (gte mso 9)|(IE)]>
-                <table align="center" border="0" cellspacing="0" cellpadding="0" width="600">
+              </tbody>
+            </table>
+            <table
+              align="center"
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+              class="row row-2"
+              role="presentation"
+              style="mso-table-lspace: 0pt; mso-table-rspace: 0pt"
+              width="100%"
+            >
+              <tbody>
                 <tr>
-                <td align="center" valign="top" width="600">
-                <![endif]-->
-                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-                    <tr>
-                        <td bgcolor="#ffffff" align="center" valign="top" style="padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;">
-                            <h1 style="font-size: 48px; font-weight: 400; margin: 0;">@Model.Title</h1>
-                        </td>
-                    </tr>
-                </table>
-                <!--[if (gte mso 9)|(IE)]>
-                </td>
+                  <td>
+                      @RenderBody()
+                  </td>
                 </tr>
-                </table>
-                <![endif]-->
-            </td>
+              </tbody>
+            </table>
+          </td>
         </tr>
-        <!-- COPY BLOCK -->
-        <tr>
-            <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;">
-                <!--[if (gte mso 9)|(IE)]>
-                <table align="center" border="0" cellspacing="0" cellpadding="0" width="600">
-                <tr>
-                <td align="center" valign="top" width="600">
-                <![endif]-->
-                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-                    <!-- COPY -->
-                    <tr>
-                        <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                            @RenderBody()
-                        </td>
-                    </tr>
-                </table>
-                <!--[if (gte mso 9)|(IE)]>
-                </td>
-                </tr>
-                </table>
-                <![endif]-->
-            </td>
-        </tr>
-        <!-- FOOTER -->
-        <tr>
-            <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;">
-                <!--[if (gte mso 9)|(IE)]>
-                <table align="center" border="0" cellspacing="0" cellpadding="0" width="600">
-                <tr>
-                <td align="center" valign="top" width="600">
-                <![endif]-->
-                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-                    <!-- NAVIGATION -->
-                    <tr>
-                        <td bgcolor="#f4f4f4" align="left" style="padding: 30px 30px 30px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 18px;">
-                            <p style="margin: 0;">
-                                <a href="http://litmus.com" target="_blank" style="color: #111111; font-weight: 700;">Dashboard</a> -
-                                <a href="http://litmus.com" target="_blank" style="color: #111111; font-weight: 700;">Billing</a> -
-                                <a href="http://litmus.com" target="_blank" style="color: #111111; font-weight: 700;">Help</a>
-                            </p>
-                        </td>
-                    </tr>
-                    <!-- UNSUBSCRIBE -->
-                    <tr>
-                        <td bgcolor="#f4f4f4" align="left" style="padding: 0px 30px 30px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 18px;">
-                            <p style="margin: 0;">If these emails get annoying, please feel free to <a href="http://litmus.com" target="_blank" style="color: #111111; font-weight: 700;">unsubscribe</a>.</p>
-                        </td>
-                    </tr>
-                    <!-- ADDRESS -->
-                    <tr>
-                        <td bgcolor="#f4f4f4" align="left" style="padding: 0px 30px 30px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 18px;">
-                            <p style="margin: 0;">Contoso - 1234 Main Street - Anywhere, MA - 56789</p>
-                        </td>
-                    </tr>
-                </table>
-                <!--[if (gte mso 9)|(IE)]>
-                </td>
-                </tr>
-                </table>
-                <![endif]-->
-            </td>
-        </tr>
+      </tbody>
     </table>
-
-</body>
+    <!-- End -->
+  </body>
 </html>

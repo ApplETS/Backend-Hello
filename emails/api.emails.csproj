@@ -10,19 +10,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Views\ComplexHelloWorld - Copy.cshtml" />
-    <None Remove="Views\ComplexHelloWorld.cshtml" />
-    <None Remove="Views\HelloWorld.cshtml" />
+    <None Remove="Views\StatusChange.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Views\StatusChange.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\Shared\_Layout.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\HelloWorld.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\ComplexHelloWorld.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
