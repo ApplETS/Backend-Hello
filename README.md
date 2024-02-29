@@ -3,11 +3,11 @@
 ## Installation Docker
 Start by pulling the image from docker hub
 ```bash
-docker pull mysticfragilist/ps-api:<VERSION>
+docker pull ghcr.io/applets/backend-hello:<VERSION>
 ```
 multiple versions are available, you can check them [here](https://hub.docker.com/repository/docker/mysticfragilist/ps-api/tags?page=1&ordering=last_updated)
 
-The default one is `latest`
+The default one is `latest` but for cutting edge updates you can use `main` branch name.
 
 ## Create the DB
 
