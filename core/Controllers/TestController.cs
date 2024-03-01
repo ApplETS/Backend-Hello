@@ -22,23 +22,4 @@ public class TestController(IEmailService service, IConfiguration configuration)
         var response = await client.Auth.SignInWithPassword(req.Email, req.Password);
         return Ok(response);
     }
-
-#if DEBUG
-    [HttpPost("mail")]
-    public async Task<IActionResult> Create()
-    {
-        var result = await service.SendEmailAsync(
-            "test recipient",
-            "test subject",
-            new HelloWorldModel
-            {
-                Title = "Hello World",
-                Name = "Test name"
-            },
-            emails.EmailsUtils.ComplexHelloWorldTemplate);
-
-        return Ok();
-    }
-#endif
-
 }

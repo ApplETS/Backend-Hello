@@ -72,7 +72,7 @@ public class EventService(
 
         var id = Guid.NewGuid();
         var cdnUrl = configuration.GetValue<string>("CDN_URL");
-        var completePath = $"{cdnUrl}/{organizer.Id}/{request.Image.FileName}";
+        var completePath = $"{cdnUrl}/{id}/{request.Image.FileName}";
         var uri = new Uri(completePath);
 
         HandleImageSaving(id, request.Image);
@@ -124,12 +124,16 @@ public class EventService(
             .Where(t => request.Tags.Contains(t.Id))
             ?? Enumerable.Empty<Tag>();
 
-        var cdnUrl = configuration.GetValue<string>("CDN_URL");
-        var completePath = $"{cdnUrl}/{organizer.Id}/{request.Image.FileName}";
-        var uri = new Uri(completePath);
+        Uri uri = new Uri(evnt.Publication.ImageUrl);
 
         if (request.Image != null)
+        {
+            var cdnUrl = configuration.GetValue<string>("CDN_URL");
+            var completePath = $"{cdnUrl}/{evnt.Id}/{request.Image?.FileName}";
+            uri = new Uri(completePath);
+
             HandleImageSaving(eventId, request.Image);
+        }
 
         return evntRepo.Update(eventId, new Event
         {
