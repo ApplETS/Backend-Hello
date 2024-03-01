@@ -5,6 +5,7 @@ using api.core.Data.requests;
 using api.core.Data.Responses;
 using api.core.repositories.abstractions;
 using api.core.services.abstractions;
+using api.files.Services.Abstractions;
 
 using Microsoft.IdentityModel.Tokens;
 
@@ -19,7 +20,9 @@ public class EventService(
     IEventRepository evntRepo,
     ITagRepository tagRepo,
     IOrganizerRepository orgRepo,
-    IModeratorRepository moderatorRepo) : IEventService
+    IModeratorRepository moderatorRepo,
+    IFileShareService fileShareService,
+    IConfiguration configuration) : IEventService
 {
     private const double IMAGE_RATIO_SIZE_ACCEPTANCE = 2.0; // width/height ratio
     private const double TOLERANCE_ACCEPTABILITY = 0.001;
@@ -64,11 +67,12 @@ public class EventService(
             .Where(t => request.Tags.Contains(t.Id))
             ?? Enumerable.Empty<Tag>();
 
-        byte[] imageBytes = [];
-
-        imageBytes  = HandleImageSaving(request.Image);
-        
         var id = Guid.NewGuid();
+        var cdnUrl = configuration.GetValue<string>("CDN_URL");
+        var completePath = $"{cdnUrl}/{organizer.Id}/{request.Image.FileName}";
+        var uri = new Uri(completePath);
+
+        fileShareService.FileUpload(organizer.Id.ToString(), request.Image);
 
         var inserted = evntRepo.Add(new Event
         {
@@ -80,7 +84,7 @@ public class EventService(
                 Id = id,
                 Title = request.Title,
                 Content = request.Content,
-                ImageThumbnail = imageBytes,
+                ImageUrl = uri.ToString(),
                 State = State.OnHold,
                 PublicationDate = request.PublicationDate,
                 Tags = tags.ToList(),
@@ -117,10 +121,11 @@ public class EventService(
             .Where(t => request.Tags.Contains(t.Id))
             ?? Enumerable.Empty<Tag>();
 
-        byte[] imageBytes = evnt.Publication.ImageThumbnail;
-
-        if (request.Image != null)
-            imageBytes = HandleImageSaving(request.Image);
+        var cdnUrl = configuration.GetValue<string>("CDN_URL");
+        var completePath = $"{cdnUrl}/{organizer.Id}/{request.Image.FileName}";
+        var uri = new Uri(completePath);
+        
+        fileShareService.FileUpload(organizer.Id.ToString(), request.Image);
 
         return evntRepo.Update(eventId, new Event
         {
@@ -133,7 +138,7 @@ public class EventService(
                 Title = request.Title,
                 Content = request.Content,
                 State = State.OnHold,
-                ImageThumbnail = imageBytes,
+                ImageUrl = uri.ToString(),
                 PublicationDate = request.PublicationDate,
                 Tags = tags.ToList(),
                 Organizer = organizer,
@@ -161,30 +166,5 @@ public class EventService(
     {
         return (evnt!.Publication.Moderator != null && evnt.Publication.Moderator.Id == userId) ||
             (evnt!.Publication.Organizer != null && evnt.Publication.Organizer.Id == userId);
-    }
-
-    private byte[] HandleImageSaving(IFormFile imageFile)
-    {
-        byte[] imageBytes = [];
-        try
-        {
-            using var image = Image.Load(imageFile.OpenReadStream());
-            int width = image.Size.Width;
-            int height = image.Size.Height;
-
-            if (Math.Abs((width / height) - IMAGE_RATIO_SIZE_ACCEPTANCE) > TOLERANCE_ACCEPTABILITY)
-                throw new BadParameterException<Event>(nameof(image), "Invalid image aspect ratio");
-
-            image.Mutate(c => c.Resize(400, 200));
-            using var outputStream = new MemoryStream();
-            image.Save(outputStream, new JpegEncoder());
-            imageBytes = outputStream.ToArray();
-        }
-        catch (Exception e)
-        {
-            throw new BadParameterException<Event>(nameof(imageFile), $"Invalid image metadata: {e.Message}");
-        }
-
-        return imageBytes;
     }
 }

@@ -24,9 +24,6 @@ public partial class Publication
 
     public string? ImageUrl { get; set; }
 
-    [Column("image_thumbnail", TypeName = "BYTEA")]
-    public byte[] ImageThumbnail { get; set; } = null!;
-
     public State State { get; set; }
 
     public DateTime PublicationDate { get; set; }
