@@ -6,10 +6,8 @@ using api.core.services.abstractions;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using api.core.data.entities;
 using api.core.Data.Entities;
 using api.core.Data.Requests;
-using api.core.Data.Exceptions;
 
 namespace api.core.Controllers;
 
@@ -46,7 +44,7 @@ public class OrganizerEventsController(ILogger<OrganizerEventsController> logger
     }
 
     [HttpPost]
-    public IActionResult AddEvent([FromBody] EventRequestDTO dto)
+    public IActionResult AddEvent([FromForm] EventCreationRequestDTO dto)
     {
         logger.LogInformation($"Adding new event");
 
@@ -69,7 +67,7 @@ public class OrganizerEventsController(ILogger<OrganizerEventsController> logger
     }
 
     [HttpPatch("{id}")]
-    public IActionResult UpdateEvent(Guid id, [FromBody] EventRequestDTO dto)
+    public IActionResult UpdateEvent(Guid id, [FromForm] EventUpdateRequestDTO dto)
     {
         var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         return eventService.UpdateEvent(userId, id, dto) ? Ok() : BadRequest();
