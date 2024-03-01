@@ -36,7 +36,7 @@ public class EventServiceTests
             {
                 Title = "EVENT IN 5 DAYS",
                 Content = "Test",
-                ImageUrl = "Test",
+                ImageUrl = "http://example.com",
                 State = State.Published,
                 PublicationDate = DateTime.Now,
                 Tags = new List<Tag>
@@ -69,7 +69,7 @@ public class EventServiceTests
             {
                 Title = "EVENT TOMORROW, DIFFERENT ACTIVITY AREA",
                 Content = "Test",
-                ImageUrl = "Test",
+                ImageUrl = "http://example.com",
                 State = State.Published,
                 PublicationDate = DateTime.Now,
                 Tags = new List<Tag>
@@ -98,7 +98,7 @@ public class EventServiceTests
             {
                 Title = "EVENT TOMORROW, WITHOUT TAGS",
                 Content = "Test",
-                ImageUrl = "Test",
+                ImageUrl = "http://example.com",
                 State = State.Published,
                 PublicationDate = DateTime.Now,
                 Tags = new List<Tag>(),
@@ -120,7 +120,7 @@ public class EventServiceTests
             {
                 Title = "DELETED EVENT",
                 Content = "Test",
-                ImageUrl = "Test",
+                ImageUrl = "http://example.com",
                 State = State.Deleted,
                 PublicationDate = DateTime.Now,
                 Tags = new List<Tag>
