@@ -13,17 +13,17 @@ public class FileShareService : IFileShareService
         _config = config;
     }
 
-    public void FileUpload(string subPath, IFormFile file)
+    public void FileUpload(string subPath, string fileName, Stream streamFile)
     {
         // Get the configurations and create share object
         var dir = Path.Combine(_config.GetValue<string>("CONTAINER_DIR"), subPath);
         
         Directory.CreateDirectory(dir);
-        if (file.Length > 0)
+        if (streamFile.Length > 0)
         {
-            string filePath = Path.Combine(dir, file.FileName);
+            string filePath = Path.Combine(dir, fileName);
             using Stream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
-            file.CopyTo(fileStream);
+            streamFile.CopyTo(fileStream);
         }
     }
 }

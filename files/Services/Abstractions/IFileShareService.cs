@@ -4,5 +4,5 @@ namespace api.files.Services.Abstractions;
 
 public interface IFileShareService
 {
-    void FileUpload(string subPath, IFormFile file);
+    void FileUpload(string subPath, string fileName, Stream streamFile);
 }

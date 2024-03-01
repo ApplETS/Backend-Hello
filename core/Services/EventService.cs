@@ -7,6 +7,9 @@ using api.core.repositories.abstractions;
 using api.core.services.abstractions;
 using api.files.Services.Abstractions;
 
+using Azure.Core;
+
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 using SixLabors.ImageSharp;
@@ -72,7 +75,7 @@ public class EventService(
         var completePath = $"{cdnUrl}/{organizer.Id}/{request.Image.FileName}";
         var uri = new Uri(completePath);
 
-        fileShareService.FileUpload(organizer.Id.ToString(), request.Image);
+        HandleImageSaving(id, request.Image);
 
         var inserted = evntRepo.Add(new Event
         {
@@ -124,8 +127,9 @@ public class EventService(
         var cdnUrl = configuration.GetValue<string>("CDN_URL");
         var completePath = $"{cdnUrl}/{organizer.Id}/{request.Image.FileName}";
         var uri = new Uri(completePath);
-        
-        fileShareService.FileUpload(organizer.Id.ToString(), request.Image);
+
+        if (request.Image != null)
+            HandleImageSaving(eventId, request.Image);
 
         return evntRepo.Update(eventId, new Event
         {
@@ -166,5 +170,30 @@ public class EventService(
     {
         return (evnt!.Publication.Moderator != null && evnt.Publication.Moderator.Id == userId) ||
             (evnt!.Publication.Organizer != null && evnt.Publication.Organizer.Id == userId);
+    }
+
+    private void HandleImageSaving(Guid eventId, IFormFile imageFile)
+    {
+        byte[] imageBytes = [];
+        try
+        {
+            using var image = Image.Load(imageFile.OpenReadStream());
+            int width = image.Size.Width;
+            int height = image.Size.Height;
+
+            if (Math.Abs((width / height) - IMAGE_RATIO_SIZE_ACCEPTANCE) > TOLERANCE_ACCEPTABILITY)
+                throw new BadParameterException<Event>(nameof(image), "Invalid image aspect ratio");
+            
+            image.Mutate(c => c.Resize(400, 200));
+            using var outputStream = new MemoryStream();
+            image.SaveAsWebp(outputStream);
+            outputStream.Position = 0;
+
+            fileShareService.FileUpload(eventId.ToString(), imageFile.FileName, outputStream);
+        }
+        catch (Exception e)
+        {
+            throw new BadParameterException<Event>(nameof(imageFile), $"Invalid image metadata: {e.Message}");
+        }
     }
 }
