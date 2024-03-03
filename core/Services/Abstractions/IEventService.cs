@@ -10,11 +10,11 @@ public interface IEventService
 
     public EventResponseDTO GetEvent(Guid id);
 
-    public EventResponseDTO AddEvent(Guid userId, EventRequestDTO request);
+    public EventResponseDTO AddEvent(Guid userId, EventCreationRequestDTO request);
 
     public bool DeleteEvent(Guid userId, Guid eventId);
 
-    public bool UpdateEvent(Guid userId, Guid eventId, EventRequestDTO request);
+    public bool UpdateEvent(Guid userId, Guid eventId, EventUpdateRequestDTO request);
 
     public bool UpdateEventState(Guid userId, Guid eventId, State state);
 }

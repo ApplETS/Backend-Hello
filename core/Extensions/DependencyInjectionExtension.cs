@@ -1,4 +1,4 @@
-﻿using api.core.Misc;
+using api.core.Misc;
 using api.core.repositories;
 using api.core.repositories.abstractions;
 using api.core.services.abstractions;
@@ -6,6 +6,8 @@ using api.core.Services;
 using api.core.Services.Abstractions;
 using api.emails.Services;
 using api.emails.Services.Abstractions;
+using api.files.Services;
+using api.files.Services.Abstractions;
 
 using Pipelines.Sockets.Unofficial.Arenas;
 
@@ -32,6 +34,7 @@ public static class DependencyInjectionExtension
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<IEventService, EventService>();
         services.AddTransient<IEmailService, EmailService>();
+        services.AddTransient<IFileShareService, FileShareService>();
         services.AddTransient<IAuthService, AuthService>();
 
         return services;

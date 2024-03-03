@@ -9,6 +9,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY core/api.core.csproj ./core/
 COPY emails/api.emails.csproj ./emails/
+COPY files/api.files.csproj ./files/
 COPY tests/api.tests.csproj ./tests/
 COPY Hello.sln ./
 RUN dotnet restore

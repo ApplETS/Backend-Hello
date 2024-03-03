@@ -9,6 +9,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ../core/api.core.csproj ./core/
 COPY ../emails/api.emails.csproj ./emails/
+COPY ../files/api.files.csproj ./files/
 COPY ../tests/api.tests.csproj ./tests/
 COPY ../Hello.sln ./
 RUN dotnet restore
@@ -24,4 +25,5 @@ RUN dotnet publish -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 FROM base AS runtime
 WORKDIR /app
 COPY  --chown=app --from=publish /app/publish .
+RUN mkdir -p /app/volume # create volume directory to store images
 ENTRYPOINT ["dotnet", "api.core.dll"]
