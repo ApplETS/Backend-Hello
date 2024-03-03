@@ -37,9 +37,10 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
                 TemporaryPasswordHeader = "Votre mot de passe temporaire est: ",
                 TemporaryPassword = strongPassword,
                 LoginButtonText = "Se connecter",
-                ButtonLink = new Uri("")
+                // We will probably want this in a .env or settings file for the actual site later on
+                ButtonLink = new Uri("http://localhost:3000/fr/login")
             },
-            "UserSignUp"
+            emails.EmailsUtils.UserCreationTemplate
         );
 
         return Ok(created);
