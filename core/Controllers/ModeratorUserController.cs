@@ -5,6 +5,8 @@ using api.core.Data.Responses;
 using api.core.Misc;
 using api.core.services.abstractions;
 using api.core.Services.Abstractions;
+using api.emails.Models;
+using api.emails.Services.Abstractions;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +16,7 @@ namespace api.core.controllers;
 [Authorize]
 [ApiController]
 [Route("api/moderator/organizer")]
-public class ModeratorUserController(IUserService userService, IAuthService authService) : ControllerBase
+public class ModeratorUserController(IUserService userService, IAuthService authService, IEmailService emailService) : ControllerBase
 {
     [HttpPost]
     public IActionResult CreateOrganizer([FromBody] UserCreateDTO organizer)
@@ -25,6 +27,20 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
         var supabaseUser = authService.SignUp(organizer.Email, strongPassword);
         Guid.TryParse(supabaseUser, out Guid userId);
         var created = userService.AddOrganizer(userId, organizer);
+        emailService.SendEmailAsync<UserCreationModel>(
+            organizer.Email,
+            "Votre compte Hello!",
+            new UserCreationModel
+            {
+                Salutation = $"Bonjour {organizer.Organisation},",
+                AccountCreatedText = "Votre compte Hello a été créé!",
+                TemporaryPasswordHeader = "Votre mot de passe temporaire est: ",
+                TemporaryPassword = strongPassword,
+                LoginButtonText = "Se connecter",
+                ButtonLink = new Uri("")
+            },
+            "UserSignUp"
+        );
 
         return Ok(created);
     }

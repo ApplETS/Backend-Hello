@@ -2,5 +2,5 @@
 
 public interface IAuthService
 {
-    string SignUp(string email);
+    string SignUp(string email, string password);
 }
