@@ -13,6 +13,8 @@ public class EventResponseDTO
 
     public string ImageUrl { get; set; } = null!;
 
+    public string ImageAltText { get; set; } = null!;
+
     public State State { get; set; }
     
     public DateTime PublicationDate { get; set; }
@@ -39,6 +41,7 @@ public class EventResponseDTO
             Title = oneEvent.Publication.Title,
             Content = oneEvent.Publication.Content,
             ImageUrl = oneEvent.Publication.ImageUrl,
+            ImageAltText = oneEvent.Publication.ImageAltText,
             State = oneEvent.Publication.State,
             PublicationDate = oneEvent.Publication.PublicationDate,
             EventStartDate = oneEvent.EventStartDate,
