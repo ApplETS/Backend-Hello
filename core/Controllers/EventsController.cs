@@ -1,3 +1,4 @@
+using api.core.data.entities;
 using api.core.Data;
 using api.core.Data.Entities;
 using api.core.Data.Exceptions;
@@ -16,7 +17,7 @@ namespace api.core.controllers;
 
 [ApiController]
 [Route("api/events")]
-public class EventsController(ILogger<EventsController> logger, IEventService eventService) : ControllerBase
+public class EventsController(ILogger<EventsController> logger, IEventService eventService, ITagService tagService) : ControllerBase
 {
     /// <summary>
     /// Get events by date, activity area and tags
@@ -27,7 +28,7 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
     /// <param name="tags"></param>
     /// <returns></returns>
     [HttpGet]
-    [OutputCache(VaryByQueryKeys = [ "startDate", "endDate", "activityAreas", "tags", "pagination" ])]
+    [OutputCache(VaryByQueryKeys = ["startDate", "endDate", "activityAreas", "tags", "pagination"])]
     public ActionResult<IEnumerable<EventResponseDTO>> GetEvents(
         [FromQuery] DateTime? startDate,
         [FromQuery] DateTime? endDate,
@@ -63,5 +64,15 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
             {
                 Data = evnt,
             });
+    }
+
+    [HttpGet("tags")]
+    public IActionResult GetTags()
+    {
+        var tags = tagService.GetTags();
+        return Ok(new Response<IEnumerable<TagResponseDTO>>
+        {
+            Data = tags,
+        });
     }
 }

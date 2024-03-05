@@ -1,4 +1,6 @@
-﻿using api.core.data.entities;
+﻿using System.Collections;
+
+using api.core.data.entities;
 using api.core.Data.Entities;
 
 namespace api.core.Data.Responses;
@@ -46,6 +48,7 @@ public class EventResponseDTO
             PublicationDate = oneEvent.Publication.PublicationDate,
             EventStartDate = oneEvent.EventStartDate,
             EventEndDate = oneEvent.EventEndDate,
+            Tags = oneEvent.Publication.Tags.Select(tag => tag.Id).ToList(),
             CreatedAt = oneEvent.Publication.CreatedAt,
             UpdatedAt = oneEvent.Publication.UpdatedAt,
             Moderator = oneEvent.Publication.Moderator != null ? UserResponseDTO.Map(oneEvent.Publication.Moderator!) : null,

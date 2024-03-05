@@ -1,4 +1,4 @@
-﻿using api.core.Misc;
+using api.core.Misc;
 using api.core.repositories;
 using api.core.repositories.abstractions;
 using api.core.services.abstractions;
@@ -28,6 +28,7 @@ public static class DependencyInjectionExtension
         services.AddTransient<IEventService, EventService>();
         services.AddTransient<IEmailService, EmailService>();
         services.AddTransient<IFileShareService, FileShareService>();
+        services.AddTransient<ITagService, TagService>();
 
         return services;
     }
