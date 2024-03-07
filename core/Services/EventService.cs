@@ -5,8 +5,17 @@ using api.core.Data.requests;
 using api.core.Data.Responses;
 using api.core.repositories.abstractions;
 using api.core.services.abstractions;
+using api.files.Services.Abstractions;
 
+using Azure.Core;
+
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Processing;
 
 namespace api.core.Services;
 
@@ -14,8 +23,13 @@ public class EventService(
     IEventRepository evntRepo,
     ITagRepository tagRepo,
     IOrganizerRepository orgRepo,
-    IModeratorRepository moderatorRepo) : IEventService
+    IModeratorRepository moderatorRepo,
+    IFileShareService fileShareService,
+    IConfiguration configuration) : IEventService
 {
+    private const double IMAGE_RATIO_SIZE_ACCEPTANCE = 2.0; // width/height ratio
+    private const double TOLERANCE_ACCEPTABILITY = 0.001;
+
     public IEnumerable<EventResponseDTO> GetEvents(
         DateTime? startDate,
         DateTime? endDate,
@@ -48,7 +62,7 @@ public class EventService(
         return EventResponseDTO.Map(evnt);
     }
 
-    public EventResponseDTO AddEvent(Guid userId, EventRequestDTO request)
+    public EventResponseDTO AddEvent(Guid userId, EventCreationRequestDTO request)
     {
         var organizer = orgRepo.Get(userId) ?? throw new UnauthorizedException();
 
@@ -56,15 +70,24 @@ public class EventService(
             .Where(t => request.Tags.Contains(t.Id))
             ?? Enumerable.Empty<Tag>();
 
+        var id = Guid.NewGuid();
+        var cdnUrl = configuration.GetValue<string>("CDN_URL");
+        var completePath = $"{cdnUrl}/{id}/{request.Image.FileName}";
+        var uri = new Uri(completePath);
+
+        HandleImageSaving(id, request.Image);
+
         var inserted = evntRepo.Add(new Event
         {
+            Id = id,
             EventStartDate = request.EventStartDate,
             EventEndDate = request.EventEndDate,
             Publication = new Publication
             {
+                Id = id,
                 Title = request.Title,
                 Content = request.Content,
-                ImageUrl = request.ImageUrl,
+                ImageUrl = uri.ToString(),
                 State = State.OnHold,
                 PublicationDate = request.PublicationDate,
                 Tags = tags.ToList(),
@@ -89,7 +112,7 @@ public class EventService(
     }
 
 
-    public bool UpdateEvent(Guid userId, Guid eventId, EventRequestDTO request)
+    public bool UpdateEvent(Guid userId, Guid eventId, EventUpdateRequestDTO request)
     {
         var organizer = orgRepo.Get(userId) ?? throw new UnauthorizedException();
         var evnt = evntRepo.Get(eventId);
@@ -101,18 +124,29 @@ public class EventService(
             .Where(t => request.Tags.Contains(t.Id))
             ?? Enumerable.Empty<Tag>();
 
+        Uri uri = new Uri(evnt.Publication.ImageUrl);
+
+        if (request.Image != null)
+        {
+            var cdnUrl = configuration.GetValue<string>("CDN_URL");
+            var completePath = $"{cdnUrl}/{evnt.Id}/{request.Image?.FileName}";
+            uri = new Uri(completePath);
+
+            HandleImageSaving(eventId, request.Image);
+        }
+
         return evntRepo.Update(eventId, new Event
         {
             Id = eventId,
             EventStartDate = request.EventStartDate,
             EventEndDate = request.EventEndDate,
-            Publication = new Publication
+            Publication = new ()
             {
                 Id = eventId,
                 Title = request.Title,
                 Content = request.Content,
-                ImageUrl = request.ImageUrl,
-                State = request.State,
+                State = State.OnHold,
+                ImageUrl = uri.ToString(),
                 PublicationDate = request.PublicationDate,
                 Tags = tags.ToList(),
                 Organizer = organizer,
@@ -140,5 +174,30 @@ public class EventService(
     {
         return (evnt!.Publication.Moderator != null && evnt.Publication.Moderator.Id == userId) ||
             (evnt!.Publication.Organizer != null && evnt.Publication.Organizer.Id == userId);
+    }
+
+    private void HandleImageSaving(Guid eventId, IFormFile imageFile)
+    {
+        byte[] imageBytes = [];
+        try
+        {
+            using var image = Image.Load(imageFile.OpenReadStream());
+            int width = image.Size.Width;
+            int height = image.Size.Height;
+
+            if (Math.Abs((width / height) - IMAGE_RATIO_SIZE_ACCEPTANCE) > TOLERANCE_ACCEPTABILITY)
+                throw new BadParameterException<Event>(nameof(image), "Invalid image aspect ratio");
+            
+            image.Mutate(c => c.Resize(400, 200));
+            using var outputStream = new MemoryStream();
+            image.SaveAsWebp(outputStream);
+            outputStream.Position = 0;
+
+            fileShareService.FileUpload(eventId.ToString(), imageFile.FileName, outputStream);
+        }
+        catch (Exception e)
+        {
+            throw new BadParameterException<Event>(nameof(imageFile), $"Invalid image metadata: {e.Message}");
+        }
     }
 }

@@ -5,6 +5,8 @@ using api.core.services.abstractions;
 using api.core.Services;
 using api.emails.Services;
 using api.emails.Services.Abstractions;
+using api.files.Services;
+using api.files.Services.Abstractions;
 
 namespace api.core.Extensions;
 
@@ -25,6 +27,7 @@ public static class DependencyInjectionExtension
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<IEventService, EventService>();
         services.AddTransient<IEmailService, EmailService>();
+        services.AddTransient<IFileShareService, FileShareService>();
 
         return services;
     }

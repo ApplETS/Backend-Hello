@@ -31,6 +31,7 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
     public ActionResult<IEnumerable<EventResponseDTO>> GetEvents(
         [FromQuery] DateTime? startDate,
         [FromQuery] DateTime? endDate,
+        [FromQuery] Guid? organizerId,
         [FromQuery] IEnumerable<string>? activityAreas,
         [FromQuery] IEnumerable<Guid>? tags,
         [FromQuery] PaginationRequest pagination)
@@ -38,7 +39,7 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
         logger.LogInformation("Getting events");
         var validFilter = new PaginationRequest(pagination.PageNumber, pagination.PageSize);
 
-        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags, null, State.Published);
+        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags, organizerId, State.Published);
         var totalRecords = events.Count();
         var paginatedRes = events
             .Skip((pagination.PageNumber - 1) * pagination.PageSize)
