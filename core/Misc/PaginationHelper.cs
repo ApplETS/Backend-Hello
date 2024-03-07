@@ -1,5 +1,5 @@
-﻿using api.core.Data;
-using api.core.Data.Requests;
+﻿using api.core.Data.Requests;
+using api.core.Data.Responses;
 
 namespace api.core.Misc;
 
