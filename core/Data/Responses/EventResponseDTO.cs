@@ -11,7 +11,7 @@ public class EventResponseDTO
 
     public string Content { get; set; } = null!;
 
-    public string ImageUrl { get; set; } = null!;
+    public string? ImageUrl { get; set; }
 
     public State State { get; set; }
     
@@ -29,7 +29,7 @@ public class EventResponseDTO
 
     public UserResponseDTO Organizer { get; set; } = null!;
 
-    public virtual ICollection<Guid> Tags { get; set; } = new List<Guid>();
+    public virtual IEnumerable<TagResponseDTO> Tags { get; set; } = new List<TagResponseDTO>();
 
     public static EventResponseDTO Map(Event oneEvent)
     {
@@ -39,6 +39,7 @@ public class EventResponseDTO
             Title = oneEvent.Publication.Title,
             Content = oneEvent.Publication.Content,
             ImageUrl = oneEvent.Publication.ImageUrl,
+            Tags = oneEvent.Publication.Tags.Select(TagResponseDTO.Map),
             State = oneEvent.Publication.State,
             PublicationDate = oneEvent.Publication.PublicationDate,
             EventStartDate = oneEvent.EventStartDate,
