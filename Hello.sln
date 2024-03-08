@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "api.emails", "emails\api.em
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "api.files", "files\api.files.csproj", "{F2425268-5799-42FF-9778-5A1BB7B9DE31}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api.tasks", "api.tasks\api.tasks.csproj", "{004DD042-A431-4B22-A6C2-66BF58D2614D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{F2425268-5799-42FF-9778-5A1BB7B9DE31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2425268-5799-42FF-9778-5A1BB7B9DE31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2425268-5799-42FF-9778-5A1BB7B9DE31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{004DD042-A431-4B22-A6C2-66BF58D2614D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{004DD042-A431-4B22-A6C2-66BF58D2614D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{004DD042-A431-4B22-A6C2-66BF58D2614D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{004DD042-A431-4B22-A6C2-66BF58D2614D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
