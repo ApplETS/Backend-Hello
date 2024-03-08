@@ -13,6 +13,7 @@ public class HelloJob : IJob
 
     public Task Execute(IJobExecutionContext context)
     {
-        
+        Console.WriteLine("HelloJob is executing.");
+        return Task.CompletedTask;
     }
 }
