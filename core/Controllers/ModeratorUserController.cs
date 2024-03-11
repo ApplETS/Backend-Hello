@@ -19,7 +19,7 @@ namespace api.core.controllers;
 public class ModeratorUserController(IUserService userService, IAuthService authService, IEmailService emailService) : ControllerBase
 {
     [HttpPost]
-    public IActionResult CreateOrganizer([FromBody] UserCreateDTO organizer)
+    public async Task<IActionResult> CreateOrganizer([FromBody] UserCreateDTO organizer)
     {
         EnsureIsModerator();
 
@@ -27,7 +27,7 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
         var supabaseUser = authService.SignUp(organizer.Email, strongPassword);
         Guid.TryParse(supabaseUser, out Guid userId);
         var created = userService.AddOrganizer(userId, organizer);
-        emailService.SendEmailAsync<UserCreationModel>(
+        await emailService.SendEmailAsync<UserCreationModel>(
             organizer.Email,
             "Votre compte Hello!",
             new UserCreationModel
@@ -43,7 +43,7 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
             emails.EmailsUtils.UserCreationTemplate
         );
 
-        return Ok(created);
+        return Ok(new Response<UserResponseDTO> { Data = created });
     }
 
     [HttpGet]
