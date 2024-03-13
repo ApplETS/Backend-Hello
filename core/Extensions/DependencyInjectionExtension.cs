@@ -9,8 +9,6 @@ using api.emails.Services.Abstractions;
 using api.files.Services;
 using api.files.Services.Abstractions;
 
-using Pipelines.Sockets.Unofficial.Arenas;
-
 using Supabase;
 
 namespace api.core.Extensions;
