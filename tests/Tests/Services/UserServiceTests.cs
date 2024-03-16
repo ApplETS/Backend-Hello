@@ -45,7 +45,7 @@ public class UserServiceTests
         _organizerRepositoryMock.Setup(repo => repo.Add(It.IsAny<Organizer>())).Returns(organizer);
 
         // Act
-        var result = _userService.AddOrganizer(organizerDto);
+        var result = _userService.AddOrganizer(Guid.NewGuid(), organizerDto);
 
         // Assert
         result.Should().NotBeNull();
