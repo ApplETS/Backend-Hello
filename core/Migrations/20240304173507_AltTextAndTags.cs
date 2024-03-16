@@ -39,6 +39,12 @@ namespace api.core.Migrations
                 type: "BYTEA",
                 nullable: false,
                 defaultValue: new byte[0]);
+
+            for(int i = 0; i < TagSeed.TagValues.Length; i++)
+            {
+                Guid id = (Guid)TagSeed.TagValues[i, 0];
+                migrationBuilder.DeleteData("Tag", "Id", id);
+            }
         }
     }
 }

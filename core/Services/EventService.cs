@@ -149,6 +149,7 @@ public class EventService(
                 State = State.OnHold,
                 ImageUrl = uri.ToString(),
                 PublicationDate = request.PublicationDate,
+                ImageAltText = request.ImageAltText,
                 Tags = tags.ToList(),
                 Organizer = organizer,
                 OrganizerId = organizer.Id,
