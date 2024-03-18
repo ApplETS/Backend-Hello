@@ -7,16 +7,16 @@ namespace api.core.Data.Requests;
 /// </summary>
 public class PaginationRequest
 {
-    public const int MINIMUM_DEFAULT_PAGE_SIZE = 10;
+    public const int DEFAULT_PAGE_SIZE = 3;
     public int PageNumber { get; set; } = 1;
-    public int PageSize { get; set; } = MINIMUM_DEFAULT_PAGE_SIZE;
+    public int PageSize { get; set; } = DEFAULT_PAGE_SIZE;
 
     public PaginationRequest()
     { }
 
     public PaginationRequest(int pageNumber, int pageSize)
     {
-        this.PageNumber = pageNumber < 1 ? 1 : pageNumber;
-        this.PageSize = pageSize <= MINIMUM_DEFAULT_PAGE_SIZE ? MINIMUM_DEFAULT_PAGE_SIZE : pageSize;
+        PageNumber = pageNumber < 1 ? 1 : pageNumber;
+        PageSize = pageSize <= 0 ? DEFAULT_PAGE_SIZE : pageSize;
     }
 }

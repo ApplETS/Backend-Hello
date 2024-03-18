@@ -1,4 +1,4 @@
-namespace api.core.Data;
+namespace api.core.Data.Responses;
 
 /// <summary>
 /// A common data response to return to the front end. Data or Error should be set but not

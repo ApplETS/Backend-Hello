@@ -28,7 +28,7 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
     /// <param name="tags"></param>
     /// <returns></returns>
     [HttpGet]
-    [OutputCache(VaryByQueryKeys = ["startDate", "endDate", "activityAreas", "tags", "pagination"])]
+    [OutputCache(VaryByQueryKeys = [ "startDate", "endDate", "activityAreas", "tags", "pageNumber", "pageSize" ])]
     public ActionResult<IEnumerable<EventResponseDTO>> GetEvents(
         [FromQuery] DateTime? startDate,
         [FromQuery] DateTime? endDate,
