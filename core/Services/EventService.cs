@@ -199,16 +199,16 @@ public class EventService(
         switch (evnt.Publication.State)
         {
             case State.Approved:
-                statusStr = "approuvée";
+                statusStr = "approuvÃ©e";
                 break;
             case State.Denied:
-                statusStr = "refusée";
+                statusStr = "refusÃ©e";
                 break;
             case State.Published:
-                statusStr = "publiée";
+                statusStr = "publiÃ©e";
                 break;
             case State.Deleted:
-                statusStr = "suprimée";
+                statusStr = "supprimÃ©e";
                 break;
             default:
                 statusStr = "Changement de status";
@@ -222,7 +222,7 @@ public class EventService(
             new StatusChangeModel
             {
                 Salutation = $"Bonjour {evnt.Publication.Organizer.Organisation}",
-                StatusHeaderText = $"La publication {evnt.Publication.Title} a été placé dans le status ",
+                StatusHeaderText = $"La publication {evnt.Publication.Title} a Ã©tÃ© placÃ© dans le status ",
                 StatusNameText = statusStr,
                 StatusRefusalReason = reason,
                 StatusRefusalHeader = "Raison du changement:",
