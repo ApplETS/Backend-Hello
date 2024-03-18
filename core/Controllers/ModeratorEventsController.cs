@@ -5,7 +5,6 @@ using api.core.Data.Requests;
 using api.core.Data.Responses;
 using api.core.Misc;
 using api.core.services.abstractions;
-using api.core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
