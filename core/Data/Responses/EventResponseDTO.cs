@@ -1,4 +1,6 @@
-﻿using api.core.data.entities;
+using System.Collections;
+
+using api.core.data.entities;
 using api.core.Data.Entities;
 
 namespace api.core.Data.Responses;
@@ -12,6 +14,8 @@ public class EventResponseDTO
     public string Content { get; set; } = null!;
 
     public string? ImageUrl { get; set; }
+
+    public string ImageAltText { get; set; } = null!;
 
     public State State { get; set; }
 
@@ -41,6 +45,7 @@ public class EventResponseDTO
             Title = oneEvent.Publication.Title,
             Content = oneEvent.Publication.Content,
             ImageUrl = oneEvent.Publication.ImageUrl,
+            ImageAltText = oneEvent.Publication.ImageAltText,
             Tags = oneEvent.Publication.Tags.Select(TagResponseDTO.Map),
             State = oneEvent.Publication.State,
             Reason = oneEvent.Publication.Reason,
