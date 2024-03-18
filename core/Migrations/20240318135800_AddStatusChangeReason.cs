@@ -10,10 +10,6 @@ namespace api.core.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "image_thumbnail",
-                table: "Publication");
-
             migrationBuilder.AddColumn<string>(
                 name: "Reason",
                 table: "Publication",
@@ -27,13 +23,6 @@ namespace api.core.Migrations
             migrationBuilder.DropColumn(
                 name: "Reason",
                 table: "Publication");
-
-            migrationBuilder.AddColumn<byte[]>(
-                name: "image_thumbnail",
-                table: "Publication",
-                type: "BYTEA",
-                nullable: false,
-                defaultValue: new byte[0]);
         }
     }
 }
