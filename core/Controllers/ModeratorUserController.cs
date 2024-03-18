@@ -1,5 +1,6 @@
 ﻿using api.core.data.entities;
 using api.core.Data;
+using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.Data.Responses;
 using api.core.Misc;
@@ -61,7 +62,7 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
         var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         var user = userService.GetUser(userId);
         if (user != null && user.Type != "Moderator")
-            throw new UnauthorizedAccessException();
+            throw new UnauthorizedException();
     }
 
     private string GenerateRandomPassword(int length)
