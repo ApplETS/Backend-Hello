@@ -3,16 +3,15 @@ name: Trigger auto deployment for backend-hello
 # When this action will be executed
 on:
   # Automatically trigger it when detected changes in repo
-  push:
-    branches: 
-      [ main ]
-    paths:
-    - '**'
-    - '.github/workflows/backend-hello-AutoDeployTrigger-d45d5726-7fd8-4133-8a65-d867c5a75d95.yml'
-
+  release:
+    types: [released]
   # Allow manual trigger 
   workflow_dispatch:      
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -35,12 +34,12 @@ jobs:
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }} 
-          registryUrl: ghcr.io
-          registryUsername: ${{ secrets.BACKENDHELLO_REGISTRY_USERNAME }}
-          registryPassword: ${{ secrets.BACKENDHELLO_REGISTRY_PASSWORD }}
+          registryUrl: ${{ env.REGISTRY }}
+          registryUsername: ${{ github.actor }}
+          registryPassword: ${{ secrets.GITHUB_TOKEN }}
           containerAppName: backend-hello
           resourceGroup: Hello
-          imageToBuild: ghcr.io/backend-hello:${{ github.sha }}
+          imageToBuild: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           _buildArgumentsKey_: |
             _buildArgumentsValues_
 
