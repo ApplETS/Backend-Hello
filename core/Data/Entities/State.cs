@@ -1,5 +1,15 @@
-﻿namespace api.core.Data.Entities;
+﻿using System.Text.Json.Serialization;
 
+namespace api.core.Data.Entities;
+
+/// <summary>
+/// 1 - OnHold
+/// 2 - Deleted
+/// 4 - Denied
+/// 8 - Approved
+/// 16 - Published
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
 [Flags]
 public enum State
 {
