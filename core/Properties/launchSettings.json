@@ -39,7 +39,7 @@
       "useSSL": true,
       "httpPort": 8080,
       "sslPort": 8081,
-      "DockerfileRunArguments": "--rm --env-file .env -v C:\\Users\\monts\\projects\\ps\\volume:/app/volume:rw"
+      "DockerfileRunArguments": "--rm --env-file .env"
     }
   },
   "$schema": "http://json.schemastore.org/launchsettings.json",
