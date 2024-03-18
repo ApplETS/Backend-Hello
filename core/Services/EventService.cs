@@ -211,7 +211,7 @@ public class EventService(
                 statusStr = "supprimée";
                 break;
             default:
-                statusStr = "Changement de status";
+                statusStr = "changement de status";
                 break;
         }
         subject = $"Publication {statusStr} - {evntName}";
