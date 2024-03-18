@@ -1,6 +1,5 @@
 ﻿using api.core.data;
 using api.core.data.entities;
-using api.core.Data.requests;
 using api.core.repositories.abstractions;
 
 namespace api.core.repositories;
@@ -36,7 +35,7 @@ public class OrganizerRepository(EventManagementContext context) : IOrganizerRep
 
     public IEnumerable<Organizer> GetAll()
     {
-        throw new NotImplementedException();
+        return context.Organizers.ToList();
     }
 
     public bool Update(Guid id, Organizer entity)

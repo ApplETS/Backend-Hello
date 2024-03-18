@@ -11,6 +11,7 @@ using api.core.Misc;
 using api.emails;
 
 var builder = WebApplication.CreateBuilder(args);
+
 // Environments setup
 string supabaseSecretKey = null!;
 string supabaseProjectId = null!;
@@ -41,6 +42,8 @@ builder.Services.AddAuthentication().AddJwtBearer(o =>
         ValidIssuer = $"https://{supabaseProjectId}.supabase.co/auth/v1"
     };
 });
+
+builder.Services.SetupScheduler();
 
 if (redisConnString != null)
 {
@@ -93,7 +96,7 @@ builder.Services.AddSwaggerGen(options =>
                },
          new string[] {}
          }
-     });
+    });
 });
 
 builder.Services.AddEmailService(builder.Configuration);
@@ -117,6 +120,7 @@ app.UseAuthorization();
 
 app.MapHealthChecks("/health");
 
+await app.Services.AddSchedulerAsync();
 
 if (redisConnString != null)
     app.UseOutputCache();

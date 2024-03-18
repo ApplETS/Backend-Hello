@@ -9,23 +9,15 @@ namespace api.core.Services;
 
 public class UserService(IOrganizerRepository organizerRepository, IModeratorRepository moderatorRepository) : IUserService
 {
-    public UserResponseDTO AddOrganizer(UserRequestDTO organizerDto)
+    public UserResponseDTO AddOrganizer(Guid id, UserCreateDTO organizerDto)
     {
         var inserted = organizerRepository.Add(new Organizer
         {
-            Id = organizerDto.Id,
+            Id = id,
             Email = organizerDto.Email,
             Organisation = organizerDto.Organisation ?? "",
             ActivityArea = organizerDto.ActivityArea ?? "",
-            ProfileDescription = organizerDto.ProfileDescription ?? "",
-            FacebookLink = organizerDto.FacebookLink,
-            InstagramLink = organizerDto.InstagramLink,
-            TikTokLink = organizerDto.TikTokLink,
-            XLink = organizerDto.XLink,
-            DiscordLink = organizerDto.DiscordLink,
-            LinkedInLink = organizerDto.LinkedInLink,
-            RedditLink = organizerDto.RedditLink,
-            WebSiteLink = organizerDto.WebSiteLink,
+            ProfileDescription = "",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         });
@@ -46,7 +38,13 @@ public class UserService(IOrganizerRepository organizerRepository, IModeratorRep
         throw new Exception("No users associated with this ID");
     }
 
-    public bool UpdateUser(Guid id, UserRequestDTO dto)
+    public IEnumerable<UserResponseDTO> GetUsers()
+    {
+        var organizers = organizerRepository.GetAll();
+        return organizers.Select(UserResponseDTO.Map);
+    }
+
+    public bool UpdateUser(Guid id, UserUpdateDTO dto)
     {
         var user = GetUser(id);
 
