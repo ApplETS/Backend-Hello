@@ -157,7 +157,7 @@ public class EventService(
         });
     }
 
-    public bool UpdateEventState(Guid userId, Guid eventId, State state)
+    public bool UpdateEventState(Guid userId, Guid eventId, State state, string? reason)
     {
         var moderator = moderatorRepo.Get(userId) ?? throw new UnauthorizedException();
         var evnt = evntRepo.Get(eventId);
@@ -167,7 +167,11 @@ public class EventService(
             evnt.Publication.ModeratorId = moderator.Id;
         }
 
+        evnt.Publication.Reason = reason;
         evnt.Publication.State = state;
+
+        // TODO send notification to organizer
+
         return evntRepo.Update(eventId, evnt);
     }
     private bool CanPerformAction(Guid userId, Event evnt)
