@@ -176,6 +176,23 @@ public class EventService(
             (evnt!.Publication.Organizer != null && evnt.Publication.Organizer.Id == userId);
     }
 
+    public int PublishedIfApprovedPassedDue()
+    {
+        var eventsToUpdate = evntRepo.GetAll()
+            .Where(x =>
+                x.Publication.PublicationDate < DateTime.UtcNow &&
+                x.Publication.DeletedAt == null &&
+                x.Publication.State == State.Approved).ToList();
+
+        foreach (var evnt in eventsToUpdate)
+        {
+            evnt.Publication.State = State.Published;
+            evntRepo.Update(evnt.Id, evnt);
+        }
+
+        return eventsToUpdate.Count;
+    }
+
     private void HandleImageSaving(Guid eventId, IFormFile imageFile)
     {
         byte[] imageBytes = [];

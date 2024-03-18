@@ -9,8 +9,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using api.core.Misc;
 using api.emails;
-using Quartz;
-using api.tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -98,7 +96,7 @@ builder.Services.AddSwaggerGen(options =>
                },
          new string[] {}
          }
-     });
+    });
 });
 
 builder.Services.AddEmailService(builder.Configuration);

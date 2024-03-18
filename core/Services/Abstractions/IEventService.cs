@@ -17,4 +17,6 @@ public interface IEventService
     public bool UpdateEvent(Guid userId, Guid eventId, EventUpdateRequestDTO request);
 
     public bool UpdateEventState(Guid userId, Guid eventId, State state);
+
+    public int PublishedIfApprovedPassedDue();
 }
