@@ -27,6 +27,7 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
         var supabaseUser = authService.SignUp(organizer.Email, strongPassword);
         Guid.TryParse(supabaseUser, out Guid userId);
         var created = userService.AddOrganizer(userId, organizer);
+        var frontBaseUrl = Environment.GetEnvironmentVariable("FRONTEND_BASE_URL") ?? throw new Exception("FRONTEND_BASE_URL is not set");
         await emailService.SendEmailAsync<UserCreationModel>(
             organizer.Email,
             "Votre compte Hello!",
@@ -37,8 +38,7 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
                 TemporaryPasswordHeader = "Votre mot de passe temporaire est: ",
                 TemporaryPassword = strongPassword,
                 LoginButtonText = "Se connecter",
-                // We will probably want this in a .env or settings file for the actual site later on
-                ButtonLink = new Uri("http://localhost:3000/fr/login")
+                ButtonLink = new Uri($"{frontBaseUrl}/fr/login")
             },
             emails.EmailsUtils.UserCreationTemplate
         );
