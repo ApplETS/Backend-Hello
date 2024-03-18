@@ -31,7 +31,7 @@ public class EventServiceTests
                 Content = "Test",
                 ImageUrl = "http://example.com",
                 State = State.Published,
-                PublicationDate = DateTime.Now,
+                PublicationDate = DateTime.UtcNow.AddDays(5),
                 Tags = new List<Tag>
                 {
                     new Tag
@@ -64,7 +64,7 @@ public class EventServiceTests
                 Content = "Test",
                 ImageUrl = "http://example.com",
                 State = State.Published,
-                PublicationDate = DateTime.Now,
+                PublicationDate = DateTime.UtcNow.AddDays(5),
                 Tags = new List<Tag>
                 {
                     new Tag
@@ -93,7 +93,7 @@ public class EventServiceTests
                 Content = "Test",
                 ImageUrl = "http://example.com",
                 State = State.Published,
-                PublicationDate = DateTime.Now,
+                PublicationDate = DateTime.UtcNow.AddDays(5),
                 Tags = new List<Tag>(),
                 Organizer = new Organizer
                 {
@@ -115,7 +115,7 @@ public class EventServiceTests
                 Content = "Test",
                 ImageUrl = "http://example.com",
                 State = State.Deleted,
-                PublicationDate = DateTime.Now,
+                PublicationDate = DateTime.UtcNow.AddDays(-1),
                 Tags = new List<Tag>
                 {
                     new Tag
@@ -450,6 +450,34 @@ public class EventServiceTests
         _mockEmailService.Verify(service => service.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StatusChangeModel>(), It.IsAny<string>()), Times.Once);
         _mockEventRepository.Verify(repo => repo.Update(eventId, It.IsAny<Event>()), Times.Once);
     }
+
+    [Fact]
+    public void UpdateEventState_ShouldHaveStatePublished_WhenStateIsUpdatedWithApprovedAndPassedPublicationDate()
+    {
+        // Arrange
+        var userId = _events.First().Publication.Moderator.Id;
+        var eventId = _events.Last().Id;
+
+        var newState = State.Approved;
+
+        var eventToUpdate = _events.Last();
+
+        _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(eventToUpdate);
+        _mockEventRepository.Setup(repo => repo.Update(eventId, It.IsAny<Event>())).Returns(true);
+        _mockModeratorRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns(new Moderator { Id = userId });
+        _mockEmailService.Setup(service => service.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StatusChangeModel>(), It.IsAny<string>()));
+
+        // Act
+        var result = _eventService.UpdateEventState(userId, eventId, newState, null);
+
+        // Assert
+        result.Should().BeTrue();
+        eventToUpdate.Should().NotBeNull();
+        eventToUpdate.Publication.State.Should().Be(State.Published);
+        _mockEmailService.Verify(service => service.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StatusChangeModel>(), It.IsAny<string>()), Times.Once);
+        _mockEventRepository.Verify(repo => repo.Update(eventId, It.IsAny<Event>()), Times.Once);
+    }
+
 
     [Fact]
     public void UpdateEventState_ShouldThrowUnauthorizedException_WhenUserIsNotAuthorized()
