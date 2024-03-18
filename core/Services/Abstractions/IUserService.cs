@@ -5,9 +5,11 @@ namespace api.core.services.abstractions;
 
 public interface IUserService
 {
-    public UserResponseDTO AddOrganizer(UserRequestDTO organizerDto);
+    public UserResponseDTO AddOrganizer(Guid id, UserCreateDTO organizerDto);
 
     public UserResponseDTO GetUser(Guid id);
 
-    public bool UpdateUser(Guid id, UserRequestDTO dto);
+    public IEnumerable<UserResponseDTO> GetUsers();
+
+    public bool UpdateUser(Guid id, UserUpdateDTO dto);
 }

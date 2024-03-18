@@ -4,6 +4,7 @@ using api.core.Data.requests;
 using api.core.Data.Responses;
 using api.core.Misc;
 using api.core.services.abstractions;
+using api.core.Services.Abstractions;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,20 +14,13 @@ namespace api.core.controllers;
 [Authorize]
 [ApiController]
 [Route("api/user")]
-public class UserController(IUserService service) : ControllerBase
+public class UserController(IUserService userService, IAuthService authService) : ControllerBase
 {
-    [HttpPost("organizer")]
-    public ActionResult<UserResponseDTO> CreateOrganizer([FromBody] UserRequestDTO organizer)
-    {
-        var created = service.AddOrganizer(organizer);
-        return Ok(created);
-    }
-
     [HttpGet]
     public IActionResult GetUser()
     {
         var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
-        var organizer = service.GetUser(userId);
+        var organizer = userService.GetUser(userId);
 
         return new OkObjectResult(
              new Response<UserResponseDTO>
@@ -36,9 +30,9 @@ public class UserController(IUserService service) : ControllerBase
     }
 
     [HttpPatch]
-    public IActionResult UpdateUser([FromBody] UserRequestDTO user)
+    public IActionResult UpdateUser([FromBody] UserUpdateDTO user)
     {
         var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
-        return service.UpdateUser(userId, user) ? Ok() : BadRequest();
+        return userService.UpdateUser(userId, user) ? Ok() : BadRequest();
     }
 }

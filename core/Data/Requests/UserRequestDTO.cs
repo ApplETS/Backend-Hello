@@ -1,14 +1,17 @@
 ﻿namespace api.core.Data.requests;
 
-public class UserRequestDTO
+public class UserCreateDTO
 {
-    public Guid Id { get; set; }
-
     public required string Email { get; set; }
 
     public string? Organisation { get; set; } = null!;
 
     public string? ActivityArea { get; set; } = null!;
+}
+
+public class UserUpdateDTO : UserCreateDTO
+{
+    public Guid Id { get; set; }
 
     public string? ProfileDescription { get; set; } = null!;
 

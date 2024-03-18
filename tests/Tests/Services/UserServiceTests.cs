@@ -26,7 +26,7 @@ public class UserServiceTests
     public void AddOrganizer_ShouldReturnUserResponseDTO_WhenOrganizerIsAddedSuccessfully()
     {
         // Arrange
-        var organizerDto = new UserRequestDTO
+        var organizerDto = new UserUpdateDTO
         {
             Email = "john.doe@example.com",
             Organisation = "ExampleOrg",
@@ -45,7 +45,7 @@ public class UserServiceTests
         _organizerRepositoryMock.Setup(repo => repo.Add(It.IsAny<Organizer>())).Returns(organizer);
 
         // Act
-        var result = _userService.AddOrganizer(organizerDto);
+        var result = _userService.AddOrganizer(Guid.NewGuid(), organizerDto);
 
         // Assert
         result.Should().NotBeNull();
@@ -137,7 +137,7 @@ public class UserServiceTests
     {
         // Arrange
         var organizerId = Guid.NewGuid();
-        var updateDto = new UserRequestDTO
+        var updateDto = new UserUpdateDTO
         {
             Email = "jane.doe@example.com",
             Organisation = "NewOrg",
@@ -171,7 +171,7 @@ public class UserServiceTests
     {
         // Arrange
         var moderatorId = Guid.NewGuid();
-        var updateDto = new UserRequestDTO
+        var updateDto = new UserUpdateDTO
         {
             Email = "john.updated@example.com"
         };
