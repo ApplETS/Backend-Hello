@@ -4,6 +4,7 @@ using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.repositories.abstractions;
 using api.core.Services;
+using api.emails.Models;
 using api.emails.Services.Abstractions;
 using api.files.Services.Abstractions;
 using Microsoft.Extensions.Configuration;
@@ -439,12 +440,14 @@ public class EventServiceTests
         _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(eventToUpdate);
         _mockEventRepository.Setup(repo => repo.Update(eventId, It.IsAny<Event>())).Returns(true);
         _mockModeratorRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns(new Moderator { Id = userId });
-
+        _mockEmailService.Setup(service => service.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StatusChangeModel>(), It.IsAny<string>()));
+        
         // Act
         var result = _eventService.UpdateEventState(userId, eventId, newState, null);
 
         // Assert
         result.Should().BeTrue();
+        _mockEmailService.Verify(service => service.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StatusChangeModel>(), It.IsAny<string>()), Times.Once);
         _mockEventRepository.Verify(repo => repo.Update(eventId, It.IsAny<Event>()), Times.Once);
     }
 
@@ -466,6 +469,7 @@ public class EventServiceTests
 
         // Assert
         act.Should().Throw<UnauthorizedException>();
+        _mockEmailService.Verify(service => service.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StatusChangeModel>(), It.IsAny<string>()), Times.Never);
     }
 
 }
