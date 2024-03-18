@@ -5,7 +5,6 @@ using api.core.Data.Requests;
 using api.core.Data.Responses;
 using api.core.Misc;
 using api.core.services.abstractions;
-using api.core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,11 +16,11 @@ public class ModeratorEventsController(ILogger<ModeratorEventsController> logger
 {
     [Authorize]
     [HttpPatch("{id}/state")]
-    public IActionResult UpdateEventState(Guid id, [FromQuery] State newState)
+    public IActionResult UpdateEventState(Guid id, [FromQuery] State newState, [FromQuery] string? reason)
     {
         EnsureIsModerator();
         var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
-        return eventService.UpdateEventState(userId, id, newState) ? Ok() : BadRequest();
+        return eventService.UpdateEventState(userId, id, newState, reason) ? Ok() : BadRequest();
     }
 
     [Authorize]

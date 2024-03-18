@@ -1,28 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using api.core.data.entities;
 using api.core.Data.Entities;
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.repositories.abstractions;
 using api.core.Services;
+using api.emails.Models;
+using api.emails.Services.Abstractions;
 using api.files.Services.Abstractions;
-
-using FluentAssertions;
-
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
 using Moq;
 
 namespace api.tests.Tests.Services;
 
-public class EventServiceTests
+public class EventServiceTests 
 {
+
     private static readonly Guid _tagId = Guid.NewGuid();
 
     private readonly List<Event> _events = new List<Event>
@@ -38,7 +31,7 @@ public class EventServiceTests
                 Content = "Test",
                 ImageUrl = "http://example.com",
                 State = State.Published,
-                PublicationDate = DateTime.Now,
+                PublicationDate = DateTime.UtcNow,
                 Tags = new List<Tag>
                 {
                     new Tag
@@ -71,7 +64,7 @@ public class EventServiceTests
                 Content = "Test",
                 ImageUrl = "http://example.com",
                 State = State.Published,
-                PublicationDate = DateTime.Now,
+                PublicationDate = DateTime.UtcNow,
                 Tags = new List<Tag>
                 {
                     new Tag
@@ -100,7 +93,7 @@ public class EventServiceTests
                 Content = "Test",
                 ImageUrl = "http://example.com",
                 State = State.Published,
-                PublicationDate = DateTime.Now,
+                PublicationDate = DateTime.UtcNow,
                 Tags = new List<Tag>(),
                 Organizer = new Organizer
                 {
@@ -122,7 +115,7 @@ public class EventServiceTests
                 Content = "Test",
                 ImageUrl = "http://example.com",
                 State = State.Deleted,
-                PublicationDate = DateTime.Now,
+                PublicationDate = DateTime.UtcNow.AddDays(-1),
                 Tags = new List<Tag>
                 {
                     new Tag
@@ -142,33 +135,48 @@ public class EventServiceTests
             }
         }
     };
+    private EventService _eventService;
+
+    private readonly Mock<IEventRepository> _mockEventRepository;
+    private readonly Mock<ITagRepository> _mockTagRepository;
+    private readonly Mock<IOrganizerRepository> _mockOrganizerRepository;
+    private readonly Mock<IModeratorRepository> _mockModeratorRepository;
+    private readonly Mock<IFileShareService> _mockFileShareService;
+    private readonly Mock<IEmailService> _mockEmailService;
+    private readonly Mock<IConfiguration> _mockConfig;
+
+    public EventServiceTests()
+    {
+        _mockEventRepository = new Mock<IEventRepository>();
+        _mockTagRepository = new Mock<ITagRepository>();
+        _mockOrganizerRepository = new Mock<IOrganizerRepository>();
+        _mockModeratorRepository = new Mock<IModeratorRepository>();
+        _mockFileShareService = new Mock<IFileShareService>();
+        _mockEmailService = new Mock<IEmailService>();
+        _mockConfig = new Mock<IConfiguration>();
+
+        _eventService = new EventService(
+            _mockEventRepository.Object,
+            _mockTagRepository.Object,
+            _mockOrganizerRepository.Object,
+            _mockModeratorRepository.Object,
+            _mockFileShareService.Object,
+            _mockConfig.Object,
+            _mockEmailService.Object
+            );
+    }
 
     [Fact]
     public void GetEvents_ShouldReturnAllEventsExceptDeletedOnes()
     {
         // Arrange
-        var mockEventRepository = new Mock<IEventRepository>();
-        var mockTagRepository = new Mock<ITagRepository>();
-        var mockOrganizerRepository = new Mock<IOrganizerRepository>();
-        var mockModeratorRepository = new Mock<IModeratorRepository>();
-        var mockFileShareService = new Mock<IFileShareService>();
-        var mockConfig = new Mock<IConfiguration>();
-
-        var eventService = new EventService(
-            mockEventRepository.Object,
-            mockTagRepository.Object,
-            mockOrganizerRepository.Object,
-            mockModeratorRepository.Object,
-            mockFileShareService.Object,
-            mockConfig.Object);
-        
-        mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
+        _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
         // Act
-        var events = eventService.GetEvents(null, null, null, null, null, State.Published);
+        var events = _eventService.GetEvents(null, null, null, null, null, State.Published);
 
         // Assert
-        mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
+        _mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
         events.Should().NotBeEmpty();
         events.Should().HaveCount(3);
     }
@@ -177,28 +185,13 @@ public class EventServiceTests
     public void GetEvents_ShouldReturnOnlyEventsAfterStartDate()
     {
         // Arrange
-        var mockEventRepository = new Mock<IEventRepository>();
-        var mockTagRepository = new Mock<ITagRepository>();
-        var mockOrganizerRepository = new Mock<IOrganizerRepository>();
-        var mockModeratorRepository = new Mock<IModeratorRepository>();
-        var mockFileShareService = new Mock<IFileShareService>();
-        var mockConfig = new Mock<IConfiguration>();
-
-        var eventService = new EventService(
-            mockEventRepository.Object,
-            mockTagRepository.Object,
-            mockOrganizerRepository.Object,
-            mockModeratorRepository.Object,
-            mockFileShareService.Object,
-            mockConfig.Object);
-
-        mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
+        _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
         // Act
-        var events = eventService.GetEvents(DateTime.Now.AddDays(2), null, null, null, null, State.All);
+        var events = _eventService.GetEvents(DateTime.Now.AddDays(2), null, null, null, null, State.All);
 
         // Assert
-        mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
+        _mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
         events.Should().NotBeEmpty();
         events.Should().HaveCount(1);
     }
@@ -207,28 +200,14 @@ public class EventServiceTests
     public void GetEvents_ShouldReturnOnlyEventsBeforeEndDate()
     {
         // Arrange
-        var mockEventRepository = new Mock<IEventRepository>();
-        var mockTagRepository = new Mock<ITagRepository>();
-        var mockOrganizerRepository = new Mock<IOrganizerRepository>();
-        var mockModeratorRepository = new Mock<IModeratorRepository>();
-        var mockFileShareService = new Mock<IFileShareService>();
-        var mockConfig = new Mock<IConfiguration>();
 
-        var eventService = new EventService(
-            mockEventRepository.Object,
-            mockTagRepository.Object,
-            mockOrganizerRepository.Object,
-            mockModeratorRepository.Object,
-            mockFileShareService.Object,
-            mockConfig.Object);
-
-        mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
+        _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
         // Act
-        var events = eventService.GetEvents(null, DateTime.Now.AddDays(3), null, null, null, State.All);
+        var events = _eventService.GetEvents(null, DateTime.Now.AddDays(3), null, null, null, State.All);
 
         // Assert
-        mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
+        _mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
         events.Should().NotBeEmpty();
         events.Should().HaveCount(2);
     }
@@ -237,31 +216,16 @@ public class EventServiceTests
     public void GetEvents_ShouldReturnOnlyEventsOnlyActivityAreaClub()
     {
         // Arrange
-        var mockEventRepository = new Mock<IEventRepository>();
-        var mockTagRepository = new Mock<ITagRepository>();
-        var mockOrganizerRepository = new Mock<IOrganizerRepository>();
-        var mockModeratorRepository = new Mock<IModeratorRepository>();
-        var mockFileShareService = new Mock<IFileShareService>();
-        var mockConfig = new Mock<IConfiguration>();
-
-        var eventService = new EventService(
-            mockEventRepository.Object,
-            mockTagRepository.Object,
-            mockOrganizerRepository.Object,
-            mockModeratorRepository.Object,
-            mockFileShareService.Object,
-            mockConfig.Object);
-
-        mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
+        _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
         // Act
-        var events = eventService.GetEvents(null, null, new List<string>
+        var events = _eventService.GetEvents(null, null, new List<string>
         {
             "Club"
         }, null, null, State.All);
 
         // Assert
-        mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
+        _mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
         events.Should().NotBeEmpty();
         events.Should().HaveCount(1);
     }
@@ -270,31 +234,16 @@ public class EventServiceTests
     public void GetEvents_ShouldReturnOnlyEventsOnlyTagTest()
     {
         // Arrange
-        var mockEventRepository = new Mock<IEventRepository>();
-        var mockTagRepository = new Mock<ITagRepository>();
-        var mockOrganizerRepository = new Mock<IOrganizerRepository>();
-        var mockModeratorRepository = new Mock<IModeratorRepository>();
-        var mockFileShareService = new Mock<IFileShareService>();
-        var mockConfig = new Mock<IConfiguration>();
-
-        var eventService = new EventService(
-            mockEventRepository.Object,
-            mockTagRepository.Object,
-            mockOrganizerRepository.Object,
-            mockModeratorRepository.Object,
-            mockFileShareService.Object,
-            mockConfig.Object);
-
-        mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
+        _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
         // Act
-        var events = eventService.GetEvents(null, null, null, new List<Guid>
+        var events = _eventService.GetEvents(null, null, null, new List<Guid>
         {
             _tagId
         }, null, State.All);
 
         // Assert
-        mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
+        _mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
         events.Should().NotBeEmpty();
         events.Should().HaveCount(2);
     }
@@ -304,25 +253,10 @@ public class EventServiceTests
     public void GetEvent_ShouldThrowAnException()
     {
         // Arrange
-        var mockEventRepository = new Mock<IEventRepository>();
-        var mockTagRepository = new Mock<ITagRepository>();
-        var mockOrganizerRepository = new Mock<IOrganizerRepository>();
-        var mockModeratorRepository = new Mock<IModeratorRepository>();
-        var mockFileShareService = new Mock<IFileShareService>();
-        var mockConfig = new Mock<IConfiguration>();
-
-        var eventService = new EventService(
-            mockEventRepository.Object,
-            mockTagRepository.Object,
-            mockOrganizerRepository.Object,
-            mockModeratorRepository.Object,
-            mockFileShareService.Object,
-            mockConfig.Object);
-
-        mockEventRepository.Setup(repo => repo.Get(_events.First().Id)).Returns((Event?)null);
+        _mockEventRepository.Setup(repo => repo.Get(_events.First().Id)).Returns((Event?)null);
 
         // Act
-        eventService.Invoking(s =>
+        _eventService.Invoking(s =>
             s.GetEvent(_events.First().Id))
                 .Should().Throw<NotFoundException<Event>>();
     }
@@ -332,28 +266,13 @@ public class EventServiceTests
     public void GetEvent_ShouldReturnEvent()
     {
         // Arrange
-        var mockEventRepository = new Mock<IEventRepository>();
-        var mockTagRepository = new Mock<ITagRepository>();
-        var mockOrganizerRepository = new Mock<IOrganizerRepository>();
-        var mockModeratorRepository = new Mock<IModeratorRepository>();
-        var mockFileShareService = new Mock<IFileShareService>();
-        var mockConfig = new Mock<IConfiguration>();
-
-        var eventService = new EventService(
-            mockEventRepository.Object,
-            mockTagRepository.Object,
-            mockOrganizerRepository.Object,
-            mockModeratorRepository.Object,
-            mockFileShareService.Object,
-            mockConfig.Object);
-
-        mockEventRepository.Setup(repo => repo.Get(_events.First().Id)).Returns(_events.First());
+        _mockEventRepository.Setup(repo => repo.Get(_events.First().Id)).Returns(_events.First());
 
         // Act
-        var evnt = eventService.GetEvent(_events.First().Id);
+        var evnt = _eventService.GetEvent(_events.First().Id);
 
         // Assert
-        mockEventRepository.Verify(repo => repo.Get(It.IsAny<Guid>()), Times.Once);
+        _mockEventRepository.Verify(repo => repo.Get(It.IsAny<Guid>()), Times.Once);
         evnt.Should().NotBeNull();
     }
 
@@ -362,26 +281,10 @@ public class EventServiceTests
     public void AddEvents_ShouldThrowAnExceptionWhenOrganizerIsUnknown()
     {
         // Arrange
-        var mockEventRepository = new Mock<IEventRepository>();
-        var mockTagRepository = new Mock<ITagRepository>();
-        var mockOrganizerRepository = new Mock<IOrganizerRepository>();
-        var mockModeratorRepository = new Mock<IModeratorRepository>();
-
-        var mockFileShareService = new Mock<IFileShareService>();
-        var mockConfig = new Mock<IConfiguration>();
-
-        var eventService = new EventService(
-            mockEventRepository.Object,
-            mockTagRepository.Object,
-            mockOrganizerRepository.Object,
-            mockModeratorRepository.Object,
-            mockFileShareService.Object,
-            mockConfig.Object);
-
-        mockOrganizerRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns((Organizer?)null);
+        _mockOrganizerRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns((Organizer?)null);
 
         // Act
-        eventService.Invoking(s =>
+        _eventService.Invoking(s =>
             s.AddEvent(Guid.Empty, new EventCreationRequestDTO()))
                 .Should().Throw<UnauthorizedException>();
     }
@@ -390,94 +293,52 @@ public class EventServiceTests
     public void DeleteEvent_ShouldReturnTrue_WhenEventIsDeletedSuccessfully()
     {
         // Arrange
-        var mockEventRepository = new Mock<IEventRepository>();
-        var mockTagRepository = new Mock<ITagRepository>();
-        var mockOrganizerRepository = new Mock<IOrganizerRepository>();
-        var mockModeratorRepository = new Mock<IModeratorRepository>();
         var userId = _events.First().Publication.Organizer.Id;
         var eventId = _events.First().Id;
 
-        mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(_events.First());
-        mockEventRepository.Setup(repo => repo.Delete(It.IsAny<Event>())).Returns(true);
-
-        var mockFileShareService = new Mock<IFileShareService>();
-        var mockConfig = new Mock<IConfiguration>();
-
-        var eventService = new EventService(
-            mockEventRepository.Object,
-            mockTagRepository.Object,
-            mockOrganizerRepository.Object,
-            mockModeratorRepository.Object,
-            mockFileShareService.Object,
-            mockConfig.Object);
+        _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(_events.First());
+        _mockEventRepository.Setup(repo => repo.Delete(It.IsAny<Event>())).Returns(true);
 
         // Act
-        var result = eventService.DeleteEvent(userId, eventId);
+        var result = _eventService.DeleteEvent(userId, eventId);
 
         // Assert
         result.Should().BeTrue();
-        mockEventRepository.Verify(repo => repo.Delete(It.IsAny<Event>()), Times.Once);
+        _mockEventRepository.Verify(repo => repo.Delete(It.IsAny<Event>()), Times.Once);
     }
 
     [Fact]
     public void DeleteEvent_ShouldThrowNotFoundException_WhenEventDoesNotExist()
     {
         // Arrange
-        var mockEventRepository = new Mock<IEventRepository>();
-        var mockTagRepository = new Mock<ITagRepository>();
-        var mockOrganizerRepository = new Mock<IOrganizerRepository>();
-        var mockModeratorRepository = new Mock<IModeratorRepository>();
-        var mockFileShareService = new Mock<IFileShareService>();
-        var mockConfig = new Mock<IConfiguration>();
         var userId = Guid.NewGuid();
         var eventId = Guid.NewGuid();
 
-        mockEventRepository.Setup(repo => repo.Get(eventId)).Returns((Event?)null);
+        _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns((Event?)null);
 
-        var eventService = new EventService(
-            mockEventRepository.Object,
-            mockTagRepository.Object,
-            mockOrganizerRepository.Object,
-            mockModeratorRepository.Object,
-            mockFileShareService.Object,
-            mockConfig.Object);
         // Act
-        Action act = () => eventService.DeleteEvent(userId, eventId);
+        Action act = () => _eventService.DeleteEvent(userId, eventId);
 
         // Assert
         act.Should().Throw<NotFoundException<Event>>();
-        mockEventRepository.Verify(repo => repo.Get(eventId), Times.Once);
+        _mockEventRepository.Verify(repo => repo.Get(eventId), Times.Once);
     }
 
     [Fact]
     public void DeleteEvent_ShouldThrowUnauthorizedException_WhenUserIsNotAuthorized()
     {
         // Arrange
-        var mockEventRepository = new Mock<IEventRepository>();
-        var mockTagRepository = new Mock<ITagRepository>();
-        var mockOrganizerRepository = new Mock<IOrganizerRepository>();
-        var mockModeratorRepository = new Mock<IModeratorRepository>();
-        var mockFileShareService = new Mock<IFileShareService>();
-        var mockConfig = new Mock<IConfiguration>();
         var unauthorizedUserId = Guid.NewGuid();
         var eventId = _events.First().Id;
 
-        mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(_events.First());
-
-        var eventService = new EventService(
-            mockEventRepository.Object,
-            mockTagRepository.Object,
-            mockOrganizerRepository.Object,
-            mockModeratorRepository.Object,
-            mockFileShareService.Object,
-            mockConfig.Object);
+        _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(_events.First());
 
         // Act
-        Action act = () => eventService.DeleteEvent(unauthorizedUserId, eventId);
+        Action act = () => _eventService.DeleteEvent(unauthorizedUserId, eventId);
 
         // Assert
         act.Should().Throw<UnauthorizedException>();
-        mockEventRepository.Verify(repo => repo.Get(eventId), Times.Once);
+        _mockEventRepository.Verify(repo => repo.Get(eventId), Times.Once);
     }
 
 
@@ -485,12 +346,6 @@ public class EventServiceTests
     public void UpdateEvent_ShouldReturnTrue_WhenEventIsUpdatedSuccessfully()
     {
         // Arrange
-        var mockEventRepository = new Mock<IEventRepository>();
-        var mockTagRepository = new Mock<ITagRepository>();
-        var mockOrganizerRepository = new Mock<IOrganizerRepository>();
-        var mockModeratorRepository = new Mock<IModeratorRepository>();
-        var mockFileShareService = new Mock<IFileShareService>();
-
         var inMemorySettings = new Dictionary<string, string> {
             {"CDN_URL", "http://example.com"},
         };
@@ -516,36 +371,31 @@ public class EventServiceTests
             }
         };
 
-        mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(_events.First());
-        mockEventRepository.Setup(repo => repo.Update(eventId, It.IsAny<Event>())).Returns(true);
-        mockOrganizerRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns(new Organizer { Id = userId });
+        _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(_events.First());
+        _mockEventRepository.Setup(repo => repo.Update(eventId, It.IsAny<Event>())).Returns(true);
+        _mockOrganizerRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns(new Organizer { Id = userId });
 
-        var eventService = new EventService(
-            mockEventRepository.Object,
-            mockTagRepository.Object,
-            mockOrganizerRepository.Object,
-            mockModeratorRepository.Object,
-            mockFileShareService.Object,
-            configuration);
+        _eventService = new EventService(
+            _mockEventRepository.Object,
+            _mockTagRepository.Object,
+            _mockOrganizerRepository.Object,
+            _mockModeratorRepository.Object,
+            _mockFileShareService.Object,
+            configuration,
+            _mockEmailService.Object);
 
         // Act
-        var result = eventService.UpdateEvent(userId, eventId, request);
+        var result = _eventService.UpdateEvent(userId, eventId, request);
 
         // Assert
         result.Should().BeTrue();
-        mockEventRepository.Verify(repo => repo.Update(eventId, It.IsAny<Event>()), Times.Once);
+        _mockEventRepository.Verify(repo => repo.Update(eventId, It.IsAny<Event>()), Times.Once);
     }
 
     [Fact]
     public void UpdateEvent_ShouldThrowUnauthorizedException_WhenUserIsNotAuthorized()
     {
         // Arrange
-        var mockEventRepository = new Mock<IEventRepository>();
-        var mockTagRepository = new Mock<ITagRepository>();
-        var mockOrganizerRepository = new Mock<IOrganizerRepository>();
-        var mockModeratorRepository = new Mock<IModeratorRepository>();
-        var mockFileShareService = new Mock<IFileShareService>();
-        var mockConfig = new Mock<IConfiguration>();
         var unauthorizedUserId = Guid.NewGuid();
         var eventId = _events.First().Id;
 
@@ -564,18 +414,11 @@ public class EventServiceTests
         };
 
         // Assuming _events.First() returns an event where the organizer ID does not match `unauthorizedUserId`
-        mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(_events.First());
+        _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(_events.First());
 
-        var eventService = new EventService(
-            mockEventRepository.Object,
-            mockTagRepository.Object,
-            mockOrganizerRepository.Object,
-            mockModeratorRepository.Object,
-            mockFileShareService.Object,
-            mockConfig.Object);
 
         // Act
-        Action act = () => eventService.UpdateEvent(unauthorizedUserId, eventId, request);
+        Action act = () => _eventService.UpdateEvent(unauthorizedUserId, eventId, request);
 
         // Assert
         act.Should().Throw<UnauthorizedException>("because the user attempting to update the event does not have the proper permissions");
@@ -586,12 +429,6 @@ public class EventServiceTests
     public void UpdateEventState_ShouldReturnTrue_WhenStateIsUpdatedSuccessfullyByModerator()
     {
         // Arrange
-        var mockEventRepository = new Mock<IEventRepository>();
-        var mockTagRepository = new Mock<ITagRepository>();
-        var mockOrganizerRepository = new Mock<IOrganizerRepository>();
-        var mockModeratorRepository = new Mock<IModeratorRepository>();
-        var mockFileShareService = new Mock<IFileShareService>();
-        var mockConfig = new Mock<IConfiguration>();
         var userId = _events.First().Publication.Moderator.Id;
         var eventId = _events.First().Id;
 
@@ -600,36 +437,52 @@ public class EventServiceTests
         var eventToUpdate = _events.First();
         eventToUpdate.Publication.ModeratorId = userId;
 
-        mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(eventToUpdate);
-        mockEventRepository.Setup(repo => repo.Update(eventId, It.IsAny<Event>())).Returns(true);
-        mockModeratorRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns(new Moderator { Id = userId });
-
-        var eventService = new EventService(
-            mockEventRepository.Object,
-            mockTagRepository.Object,
-            mockOrganizerRepository.Object,
-            mockModeratorRepository.Object,
-            mockFileShareService.Object,
-            mockConfig.Object);
-
+        _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(eventToUpdate);
+        _mockEventRepository.Setup(repo => repo.Update(eventId, It.IsAny<Event>())).Returns(true);
+        _mockModeratorRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns(new Moderator { Id = userId });
+        _mockEmailService.Setup(service => service.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StatusChangeModel>(), It.IsAny<string>()));
+        
         // Act
-        var result = eventService.UpdateEventState(userId, eventId, newState);
+        var result = _eventService.UpdateEventState(userId, eventId, newState, null);
 
         // Assert
         result.Should().BeTrue();
-        mockEventRepository.Verify(repo => repo.Update(eventId, It.IsAny<Event>()), Times.Once);
+        _mockEmailService.Verify(service => service.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StatusChangeModel>(), It.IsAny<string>()), Times.Once);
+        _mockEventRepository.Verify(repo => repo.Update(eventId, It.IsAny<Event>()), Times.Once);
     }
+
+    [Fact]
+    public void UpdateEventState_ShouldHaveStatePublished_WhenStateIsUpdatedWithApprovedAndPassedPublicationDate()
+    {
+        // Arrange
+        var userId = _events.First().Publication.Moderator.Id;
+        var eventId = _events.Last().Id;
+
+        var newState = State.Approved;
+
+        var eventToUpdate = _events.Last();
+
+        _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(eventToUpdate);
+        _mockEventRepository.Setup(repo => repo.Update(eventId, It.IsAny<Event>())).Returns(true);
+        _mockModeratorRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns(new Moderator { Id = userId });
+        _mockEmailService.Setup(service => service.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StatusChangeModel>(), It.IsAny<string>()));
+
+        // Act
+        var result = _eventService.UpdateEventState(userId, eventId, newState, null);
+
+        // Assert
+        result.Should().BeTrue();
+        eventToUpdate.Should().NotBeNull();
+        eventToUpdate.Publication.State.Should().Be(State.Published);
+        _mockEmailService.Verify(service => service.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StatusChangeModel>(), It.IsAny<string>()), Times.Once);
+        _mockEventRepository.Verify(repo => repo.Update(eventId, It.IsAny<Event>()), Times.Once);
+    }
+
 
     [Fact]
     public void UpdateEventState_ShouldThrowUnauthorizedException_WhenUserIsNotAuthorized()
     {
         // Arrange
-        var mockEventRepository = new Mock<IEventRepository>();
-        var mockTagRepository = new Mock<ITagRepository>();
-        var mockOrganizerRepository = new Mock<IOrganizerRepository>();
-        var mockModeratorRepository = new Mock<IModeratorRepository>();
-        var mockFileShareService = new Mock<IFileShareService>();
-        var mockConfig = new Mock<IConfiguration>();
         var unauthorizedUserId = Guid.NewGuid();
         var eventId = _events.First().Id;
         var newState = State.Approved;
@@ -637,21 +490,14 @@ public class EventServiceTests
         var eventToUpdate = _events.First();
         eventToUpdate.Publication.ModeratorId = Guid.NewGuid();
 
-        mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(eventToUpdate);
-
-        var eventService = new EventService(
-            mockEventRepository.Object,
-            mockTagRepository.Object,
-            mockOrganizerRepository.Object,
-            mockModeratorRepository.Object,
-            mockFileShareService.Object,
-            mockConfig.Object);
+        _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(eventToUpdate);
 
         // Act
-        Action act = () => eventService.UpdateEventState(unauthorizedUserId, eventId, newState);
+        Action act = () => _eventService.UpdateEventState(unauthorizedUserId, eventId, newState, null);
 
         // Assert
         act.Should().Throw<UnauthorizedException>();
+        _mockEmailService.Verify(service => service.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StatusChangeModel>(), It.IsAny<string>()), Times.Never);
     }
 
 }
