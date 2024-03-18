@@ -16,6 +16,8 @@ public class EventRequestDTO
     public DateTime EventEndDate { get; set; }
 
     public virtual ICollection<Guid> Tags { get; set; } = new List<Guid>();
+
+    public string ImageAltText { get; set; }
 }
 
 

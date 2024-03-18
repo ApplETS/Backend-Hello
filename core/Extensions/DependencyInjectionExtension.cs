@@ -33,6 +33,7 @@ public static class DependencyInjectionExtension
         services.AddTransient<IEventService, EventService>();
         services.AddTransient<IEmailService, EmailService>();
         services.AddTransient<IFileShareService, FileShareService>();
+        services.AddTransient<ITagService, TagService>();
         services.AddTransient<IAuthService, AuthService>();
 
         return services;

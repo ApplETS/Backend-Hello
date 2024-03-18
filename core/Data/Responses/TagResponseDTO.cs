@@ -1,4 +1,4 @@
-﻿using api.core.data.entities;
+using api.core.data.entities;
 
 namespace api.core.Data.Responses;
 
