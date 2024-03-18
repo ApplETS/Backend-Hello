@@ -40,7 +40,7 @@ public static class SchedulerSetup
             .WithIdentity(TriggerEveryMinutes, BackgroundTaskKey)
             .StartNow()
             .WithSimpleSchedule(x => x
-                .WithInterval(new TimeSpan(0, 0, 1, 0, 0, 0))
+                .WithInterval(new TimeSpan(0, 1, 0, 0, 0, 0))
                 .RepeatForever())
             .Build();
 
