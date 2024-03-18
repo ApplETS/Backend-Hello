@@ -26,9 +26,8 @@ public class EmailService: IEmailService
     {
         logger.LogInformation($"Sending email to {emailTo} with subject {subject} and template {templateName}");
 
-#if DEBUG
-        emailTo = settings.ToWhenDebugging;
-#endif
+        if (!string.IsNullOrEmpty(settings.ToWhenDebugging))
+            emailTo = settings.ToWhenDebugging;
 
         var email = Email
             .From(settings.From)
