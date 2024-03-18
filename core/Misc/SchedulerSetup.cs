@@ -14,9 +14,7 @@ public static class SchedulerSetup
     {
         LogProvider.SetCurrentLogProvider(new ConsoleLogProvider());
 
-        services.AddQuartz(opt =>
-        {
-        });
+        services.AddQuartz();
 
         services.AddQuartzHostedService(opt =>
         {
