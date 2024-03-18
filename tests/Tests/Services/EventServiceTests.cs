@@ -31,7 +31,7 @@ public class EventServiceTests
                 Content = "Test",
                 ImageUrl = "http://example.com",
                 State = State.Published,
-                PublicationDate = DateTime.UtcNow.AddDays(5),
+                PublicationDate = DateTime.UtcNow,
                 Tags = new List<Tag>
                 {
                     new Tag
@@ -64,7 +64,7 @@ public class EventServiceTests
                 Content = "Test",
                 ImageUrl = "http://example.com",
                 State = State.Published,
-                PublicationDate = DateTime.UtcNow.AddDays(5),
+                PublicationDate = DateTime.UtcNow,
                 Tags = new List<Tag>
                 {
                     new Tag
@@ -93,7 +93,7 @@ public class EventServiceTests
                 Content = "Test",
                 ImageUrl = "http://example.com",
                 State = State.Published,
-                PublicationDate = DateTime.UtcNow.AddDays(5),
+                PublicationDate = DateTime.UtcNow,
                 Tags = new List<Tag>(),
                 Organizer = new Organizer
                 {
