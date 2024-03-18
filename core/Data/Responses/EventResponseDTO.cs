@@ -14,7 +14,9 @@ public class EventResponseDTO
     public string? ImageUrl { get; set; }
 
     public State State { get; set; }
-    
+
+    public string? Reason{ get; set; }
+
     public DateTime PublicationDate { get; set; }
 
     public DateTime EventStartDate { get; set; }
@@ -41,6 +43,7 @@ public class EventResponseDTO
             ImageUrl = oneEvent.Publication.ImageUrl,
             Tags = oneEvent.Publication.Tags.Select(TagResponseDTO.Map),
             State = oneEvent.Publication.State,
+            Reason = oneEvent.Publication.Reason,
             PublicationDate = oneEvent.Publication.PublicationDate,
             EventStartDate = oneEvent.EventStartDate,
             EventEndDate = oneEvent.EventEndDate,
