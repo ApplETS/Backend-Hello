@@ -121,10 +121,6 @@ public class EventService(
         if (evnt!.Publication.Organizer != null && evnt.Publication.Organizer.Id != userId)
             throw new UnauthorizedException();
 
-        var tags = tagRepo.GetAll()
-            .Where(t => request.Tags.Contains(t.Id))
-            ?? Enumerable.Empty<Tag>();
-
         Uri uri = new Uri(evnt.Publication.ImageUrl);
 
         if (request.Image != null)
@@ -136,27 +132,34 @@ public class EventService(
             HandleImageSaving(eventId, request.Image);
         }
 
-        return evntRepo.Update(eventId, new Event
+        evntRepo.ResetTags(eventId);
+
+        evnt.EventStartDate = request.EventStartDate;
+        evnt.EventEndDate = request.EventEndDate;
+        evnt.Publication.Title = request.Title;
+        evnt.Publication.Content = request.Content;
+        evnt.Publication.State = State.OnHold;
+        evnt.Publication.ImageUrl = uri.ToString();
+        evnt.Publication.PublicationDate = request.PublicationDate;
+        evnt.Publication.ImageAltText = request.ImageAltText;
+        evnt.Publication.Tags = GetAssociatedTags(request.Tags);
+        evnt.Publication.UpdatedAt = DateTime.UtcNow;
+
+        return evntRepo.Update(eventId, evnt);
+    }
+
+    private ICollection<Tag> GetAssociatedTags(ICollection<Guid> tagIds)
+    {
+        var tags = new List<Tag>();
+
+        if (tagIds != null && tagIds.Any())
         {
-            Id = eventId,
-            EventStartDate = request.EventStartDate,
-            EventEndDate = request.EventEndDate,
-            Publication = new ()
-            {
-                Id = eventId,
-                Title = request.Title,
-                Content = request.Content,
-                State = State.OnHold,
-                ImageUrl = uri.ToString(),
-                PublicationDate = request.PublicationDate,
-                ImageAltText = request.ImageAltText,
-                Tags = tags.ToList(),
-                Organizer = organizer,
-                OrganizerId = organizer.Id,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-            },
-        });
+            tags = tagIds
+                .Select(tagRepo.Get)
+                .ToList();
+        }
+
+        return tags;
     }
 
     public bool UpdateEventState(Guid userId, Guid eventId, State state)

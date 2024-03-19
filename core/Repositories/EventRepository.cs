@@ -43,6 +43,8 @@ public class EventRepository(EventManagementContext context) : IEventRepository
                 .ThenInclude(x => x.Organizer)
             .Include(x => x.Publication)
                 .ThenInclude(x => x.Moderator)
+             .Include(x => x.Publication)
+                .ThenInclude(x => x.Tags)
             .FirstOrDefault(x => x.Id == id);
 
         return evnt != null ? evnt : throw new Exception($"Unable to fetch an event {id}");
@@ -56,6 +58,17 @@ public class EventRepository(EventManagementContext context) : IEventRepository
             .Include(x => x.Publication)
                 .ThenInclude(x => x.Organizer)
             .ToList();
+    }
+
+    public void ResetTags(Guid eventId)
+    {
+        var evnt = Get(eventId);
+
+        if (evnt.Publication != null)
+        {
+            evnt.Publication.Tags.Clear();
+            context.SaveChanges();
+        }
     }
 
     public bool Update(Guid id, Event entity)
