@@ -58,3 +58,25 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+      
+      - name: Azure Login
+        uses: azure/login@v1
+        if: github.event_name == 'tags'
+        with:
+          client-id: ${{ secrets.BACKENDHELLO_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.BACKENDHELLO_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.BACKENDHELLO_AZURE_SUBSCRIPTION_ID }}
+    
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        if: github.event_name == 'tags'
+        with:
+          appSourcePath: ${{ github.workspace }} 
+          registryUrl: ${{ env.REGISTRY }}
+          registryUsername: ${{ github.actor }}
+          registryPassword: ${{ secrets.GITHUB_TOKEN }}
+          containerAppName: backend-hello
+          resourceGroup: Hello
+          imageToBuild: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          _buildArgumentsKey_: |
+            _buildArgumentsValues_
