@@ -9,10 +9,14 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+    contents: 'read'
+    id-token: 'write'
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  
+
 jobs:
   build:
     runs-on: ubuntu-latest
