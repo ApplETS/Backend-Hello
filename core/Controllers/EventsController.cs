@@ -7,6 +7,7 @@ using api.core.Data.Requests;
 using api.core.Data.Responses;
 using api.core.Misc;
 using api.core.services.abstractions;
+using api.core.Services.Abstractions;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ namespace api.core.controllers;
 
 [ApiController]
 [Route("api/events")]
-public class EventsController(ILogger<EventsController> logger, IEventService eventService, ITagService tagService) : ControllerBase
+public class EventsController(ILogger<EventsController> logger, IEventService eventService, ITagService tagService, IReportService reportService) : ControllerBase
 {
     /// <summary>
     /// Get events by date, activity area and tags
@@ -64,6 +65,16 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
             {
                 Data = evnt,
             });
+    }
+
+    [HttpPost("{id}/reports")]
+    public IActionResult ReportEvent(Guid id, [FromBody] CreateReportRequestDTO request)
+    {
+        logger.LogInformation($"Reporting event {id}");
+
+        reportService.ReportEvent(id, request);
+
+        return Ok();
     }
 
     [HttpGet("tags")]

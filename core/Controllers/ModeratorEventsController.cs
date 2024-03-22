@@ -1,4 +1,6 @@
 ﻿using api.core.controllers;
+using api.core.data.entities;
+using api.core.Data;
 using api.core.Data.Entities;
 using api.core.Data.Exceptions;
 using api.core.Data.Requests;
@@ -6,6 +8,8 @@ using api.core.Data.Responses;
 using api.core.Misc;
 using api.core.services.abstractions;
 using api.core.Services;
+using api.core.Services.Abstractions;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,7 +17,7 @@ namespace api.core.Controllers;
 
 [ApiController]
 [Route("api/moderator/events")]
-public class ModeratorEventsController(ILogger<ModeratorEventsController> logger, IEventService eventService, IUserService userService) : ControllerBase
+public class ModeratorEventsController(ILogger<ModeratorEventsController> logger, IEventService eventService, IUserService userService, IReportService reportService) : ControllerBase
 {
     [Authorize]
     [HttpPatch("{id}/state")]
@@ -51,6 +55,20 @@ public class ModeratorEventsController(ILogger<ModeratorEventsController> logger
         var response = PaginationHelper.CreatePaginatedReponse(paginatedRes, validFilter, totalRecords);
 
         return Ok(response);
+    }
+
+    [Authorize]
+    [HttpGet("reports")]
+    public ActionResult<IEnumerable<ReportResponseDTO>> GetEventsReports()
+    {
+        EnsureIsModerator();
+
+        var reports = reportService.GetReports();
+
+        return Ok(new Response<IEnumerable<ReportResponseDTO>>
+        {
+            Data = reports,
+        });
     }
 
     private void EnsureIsModerator()
