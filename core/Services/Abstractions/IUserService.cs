@@ -12,4 +12,6 @@ public interface IUserService
     public IEnumerable<UserResponseDTO> GetUsers();
 
     public bool UpdateUser(Guid id, UserUpdateDTO dto);
+
+    public bool ToggleUserActiveState(Guid id);
 }

@@ -57,6 +57,14 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
         return Ok(new Response<IEnumerable<UserResponseDTO>> { Data = users });
     }
 
+    [HttpPatch("{organizerId}/toggle")]
+    public IActionResult ToggleOrganizer(Guid organizerId)
+    {
+        EnsureIsModerator();
+        var success = userService.ToggleUserActiveState(organizerId);
+        return success ? Ok() : BadRequest();
+    }
+
     private void EnsureIsModerator()
     {
         var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
