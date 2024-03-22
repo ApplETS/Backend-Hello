@@ -26,8 +26,8 @@ public class ReportService(IEventRepository eventRepository, IReportRepository r
             PublicationId = eventId,
             Reason = request.Reason,
             Date = request.Date,
-            CreatedAt = DateTime.Now,
-            UpdatedAt = DateTime.Now
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
         reportRepository.Add(report);
     }
