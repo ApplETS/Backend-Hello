@@ -24,6 +24,8 @@ public partial class Publication
 
     public string? ImageUrl { get; set; }
 
+    public string? Reason { get; set; }
+  
     public string ImageAltText { get; set; } = null!;
 
     public State State { get; set; }
