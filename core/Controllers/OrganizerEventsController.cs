@@ -14,7 +14,7 @@ namespace api.core.Controllers;
 [ApiController]
 [Authorize(Policy = AuthPolicies.OrganizerIsActive)]
 [Route("api/organizer/events")]
-public class OrganizerEventsController(ILogger<OrganizerEventsController> logger, IEventService eventService, IUserService userService) : ControllerBase
+public class OrganizerEventsController(ILogger<OrganizerEventsController> logger, IEventService eventService) : ControllerBase
 {
     [HttpGet]
     public IActionResult MyEvents(
