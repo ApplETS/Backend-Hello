@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using api.core.Misc;
 using api.emails;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -94,9 +95,14 @@ builder.Services.AddSwaggerGen(options =>
                          Id = "Bearer"
                      }
                },
-         new string[] {}
+         Array.Empty<string>()
          }
     });
+    options.UseInlineDefinitionsForEnums();
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
 });
 
 builder.Services.AddEmailService(builder.Configuration);
@@ -113,7 +119,8 @@ await db.Database.MigrateAsync();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseMiddleware<CustomExceptionsCheckerMiddleware>();
+
+app.UseExceptionMiddleware();
 
 // app.UseHttpsRedirection();
 

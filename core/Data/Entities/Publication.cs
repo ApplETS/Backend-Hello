@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-using api.core.Data.Entities;
+using api.core.Data.Enums;
 
 using Microsoft.EntityFrameworkCore;
 
