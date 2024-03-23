@@ -109,6 +109,8 @@ builder.Services.AddEmailService(builder.Configuration);
 
 builder.Services.AddDependencyInjection();
 
+builder.Services.AddRateLimiters();
+
 var app = builder.Build();
 
 await using var scope = app.Services.CreateAsyncScope();

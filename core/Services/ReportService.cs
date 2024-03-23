@@ -3,8 +3,7 @@ using api.core.Data.Exceptions;
 using api.core.Data.Requests;
 using api.core.Data.Responses;
 using api.core.repositories.abstractions;
-using api.core.Repositories.Abstractions;
-using api.core.Services.Abstractions;
+using api.core.services.abstractions;
 
 namespace api.core.Services;
 

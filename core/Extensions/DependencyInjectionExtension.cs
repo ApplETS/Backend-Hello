@@ -1,11 +1,8 @@
 using api.core.Misc;
 using api.core.repositories;
 using api.core.repositories.abstractions;
-using api.core.Repositories;
-using api.core.Repositories.Abstractions;
 using api.core.services.abstractions;
 using api.core.Services;
-using api.core.Services.Abstractions;
 using api.emails.Services;
 using api.emails.Services.Abstractions;
 using api.files.Services;

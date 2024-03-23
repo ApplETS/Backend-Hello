@@ -1,10 +1,10 @@
 ﻿using api.core.data;
 using api.core.data.entities;
-using api.core.Repositories.Abstractions;
+using api.core.repositories.abstractions;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace api.core.Repositories;
+namespace api.core.repositories;
 
 public class ReportRepository(EventManagementContext context) : IReportRepository
 {

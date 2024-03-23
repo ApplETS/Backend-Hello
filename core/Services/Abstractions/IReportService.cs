@@ -1,7 +1,7 @@
 ﻿using api.core.Data.Requests;
 using api.core.Data.Responses;
 
-namespace api.core.Services.Abstractions;
+namespace api.core.services.abstractions;
 
 public interface IReportService
 {

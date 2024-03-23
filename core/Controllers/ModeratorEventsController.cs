@@ -1,4 +1,4 @@
-using api.core.controllers;
+using api.core.Data;
 using api.core.Data.Enums;
 using api.core.Data.Exceptions;
 using api.core.Data.Requests;
