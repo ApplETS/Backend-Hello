@@ -1,7 +1,4 @@
-﻿using api.core.data.entities;
-using api.core.Data.Entities;
-
-namespace api.core.Data.requests;
+﻿namespace api.core.Data.requests;
 
 public class EventRequestDTO
 {

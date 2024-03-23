@@ -1,5 +1,5 @@
 using api.core.data.entities;
-using api.core.Data.Entities;
+using api.core.Data.Enums;
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.Data.Responses;
