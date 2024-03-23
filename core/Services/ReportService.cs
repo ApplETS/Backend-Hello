@@ -27,7 +27,7 @@ public class ReportService(IEventRepository eventRepository, IReportRepository r
         {
             PublicationId = eventId,
             Reason = request.Reason,
-            Date = request.Date,
+            Category = request.Category,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -36,10 +36,10 @@ public class ReportService(IEventRepository eventRepository, IReportRepository r
 
     private bool AvoidDuplicates(Guid publicationId, CreateReportRequestDTO request)
     {
-        // If a request with a duplicated reason is submitted within the time window of the rate limiter,
+        // If a request with a duplicated reason, publication id anbd category is submitted within the time window of the rate limiter,
         // we ignore the request
         var timeWindow = int.Parse(Environment.GetEnvironmentVariable("RATE_LIMIT_TIME_WINDOW_SECONDS") ?? "10");
         var reports = reportRepository.GetRecentReports(timeWindow);
-        return reports.Any(r => r.Reason == request.Reason && r.PublicationId == publicationId);
+        return reports.Any(r => r.Reason == request.Reason && r.PublicationId == publicationId && r.Category == request.Category);
     }
 }

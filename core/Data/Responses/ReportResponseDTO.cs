@@ -1,4 +1,5 @@
 ﻿using api.core.data.entities;
+using api.core.Data.Enums;
 
 namespace api.core.Data.Responses;
 
@@ -8,7 +9,7 @@ public class ReportResponseDTO
 
     public string Reason { get; set; }
 
-    public DateTime Date { get; set; }
+    public ReportCategory Category { get; set; }
 
     public EventResponseDTO Publication { get; set; }
 
@@ -22,7 +23,7 @@ public class ReportResponseDTO
         {
             Id = report.Id,
             Reason = report.Reason,
-            Date = report.Date,
+            Category = report.Category,
             CreatedAt = report.CreatedAt,
             UpdatedAt = report.UpdatedAt,
             Publication = new EventResponseDTO

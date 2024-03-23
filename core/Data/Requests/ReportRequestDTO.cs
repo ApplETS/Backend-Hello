@@ -1,8 +1,10 @@
-﻿namespace api.core.Data.Requests;
+﻿using api.core.Data.Enums;
+
+namespace api.core.Data.Requests;
 
 public class CreateReportRequestDTO
 {
     public string Reason { get; set; }
 
-    public DateTime Date { get; set; }
+    public ReportCategory Category { get; set; }
 }
