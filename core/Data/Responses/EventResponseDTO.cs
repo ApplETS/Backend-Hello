@@ -1,7 +1,7 @@
 using System.Collections;
 
 using api.core.data.entities;
-using api.core.Data.Entities;
+using api.core.Data.Enums;
 
 namespace api.core.Data.Responses;
 

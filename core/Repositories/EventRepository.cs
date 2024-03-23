@@ -54,8 +54,7 @@ public class EventRepository(EventManagementContext context) : IEventRepository
             .Include(x => x.Publication)
                 .ThenInclude(x => x.Tags)
             .Include(x => x.Publication)
-                .ThenInclude(x => x.Organizer)
-            .ToList();
+                .ThenInclude(x => x.Organizer);
     }
 
     public bool Update(Guid id, Event entity)

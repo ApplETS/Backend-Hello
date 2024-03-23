@@ -1,17 +1,12 @@
-using api.core.data.entities;
 using api.core.Data;
-using api.core.Data.Entities;
-using api.core.Data.Exceptions;
-using api.core.Data.requests;
+using api.core.Data.Enums;
 using api.core.Data.Requests;
 using api.core.Data.Responses;
 using api.core.Misc;
 using api.core.services.abstractions;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
-using Microsoft.Extensions.Logging;
 
 namespace api.core.controllers;
 

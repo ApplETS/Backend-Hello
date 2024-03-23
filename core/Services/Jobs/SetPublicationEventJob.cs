@@ -1,7 +1,4 @@
-﻿using System.Reflection.Metadata;
-
-using api.core.Data.Entities;
-using api.core.Misc;
+﻿using api.core.Misc;
 using api.core.services.abstractions;
 
 using Quartz;

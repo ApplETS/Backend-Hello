@@ -6,8 +6,8 @@ using api.core.services.abstractions;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using api.core.Data.Entities;
 using api.core.Data.Requests;
+using api.core.Data.Enums;
 
 namespace api.core.Controllers;
 
