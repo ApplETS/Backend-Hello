@@ -58,10 +58,27 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
     }
 
     [HttpPatch("{organizerId}/toggle")]
-    public IActionResult ToggleOrganizer(Guid organizerId)
+    public async Task<IActionResult> ToggleOrganizer(Guid organizerId, [FromQuery] string? reason)
     {
         EnsureIsModerator();
         var success = userService.ToggleUserActiveState(organizerId);
+        var organizer = userService.GetUser(organizerId);
+
+        if (success && !organizer.IsActive)
+        {
+            await emailService.SendEmailAsync<UserDeactivationModel>(
+                organizer.Email,
+                "Votre compte Hello a été désactivé",
+                new UserDeactivationModel
+                {
+                    Salutation = $"Bonjour {organizer.Organisation},",
+                    UserDeactivationHeader = "Votre compte Hello a été désactivé pour la raison suivate: ",
+                    UserDeactivationReason = reason ?? "",
+                },
+                emails.EmailsUtils.UserDeactivationTemplate
+            );
+        }
+
         return success ? Ok() : BadRequest();
     }
 
