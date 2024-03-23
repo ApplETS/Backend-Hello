@@ -9,11 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 using api.core.Data.Entities;
 using api.core.Data.Requests;
 using api.core.Data.Exceptions;
+using api.core.Extensions;
 
 namespace api.core.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Policy = AuthPolicies.OrganizerIsActive)]
 [Route("api/organizer/events")]
 public class OrganizerEventsController(ILogger<OrganizerEventsController> logger, IEventService eventService, IUserService userService) : ControllerBase
 {
@@ -27,8 +28,6 @@ public class OrganizerEventsController(ILogger<OrganizerEventsController> logger
         [FromQuery] State state = State.All
         )
     {
-        EnsureOrganizerIsActive();
-
         var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
 
         logger.LogInformation("Getting events");
@@ -49,7 +48,6 @@ public class OrganizerEventsController(ILogger<OrganizerEventsController> logger
     public IActionResult AddEvent([FromForm] EventCreationRequestDTO dto)
     {
         logger.LogInformation($"Adding new event");
-        EnsureOrganizerIsActive();
 
         var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         var evnt = eventService.AddEvent(userId, dto);
@@ -64,7 +62,6 @@ public class OrganizerEventsController(ILogger<OrganizerEventsController> logger
     [HttpDelete("{id}")]
     public IActionResult DeleteEvent(Guid id)
     {
-        EnsureOrganizerIsActive();
         var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         var isDeleted = eventService.DeleteEvent(userId, id);
         return isDeleted ? Ok() : BadRequest();
@@ -73,17 +70,7 @@ public class OrganizerEventsController(ILogger<OrganizerEventsController> logger
     [HttpPatch("{id}")]
     public IActionResult UpdateEvent(Guid id, [FromForm] EventUpdateRequestDTO dto)
     {
-        EnsureOrganizerIsActive();
         var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         return eventService.UpdateEvent(userId, id, dto) ? Ok() : BadRequest();
-    }
-
-    private void EnsureOrganizerIsActive()
-    {
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
-        var user = userService.GetUser(userId);
-
-        if (user.Type != "Organizer" || !user.IsActive)
-            throw new UnauthorizedException();
     }
 }

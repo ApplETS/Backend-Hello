@@ -102,6 +102,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddEmailService(builder.Configuration);
 
 builder.Services.AddDependencyInjection();
+builder.Services.AddPolicies();
 
 var app = builder.Build();
 
