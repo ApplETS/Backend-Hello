@@ -47,8 +47,14 @@ public class ReportRepository(EventManagementContext context) : IReportRepositor
     public IEnumerable<Report> GetAll()
     {
         return context.Reports
-            .Include(r => r.Publication)
-            .ToList();
+            .Include(r => r.Publication);
+    }
+
+    public IEnumerable<Report> GetRecentReports(int lastSeconds)
+    {
+        return context.Reports
+            .Where(r => r.CreatedAt >= DateTime.UtcNow.AddSeconds(-lastSeconds))
+            .Include(r => r.Publication);
     }
 
     public bool Update(Guid id, Report entity)
