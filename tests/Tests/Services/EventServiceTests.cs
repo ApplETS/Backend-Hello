@@ -1,5 +1,5 @@
 using api.core.data.entities;
-using api.core.Data.Entities;
+using api.core.Data.Enums;
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.repositories.abstractions;
@@ -7,6 +7,7 @@ using api.core.Services;
 using api.emails.Models;
 using api.emails.Services.Abstractions;
 using api.files.Services.Abstractions;
+
 using Microsoft.Extensions.Configuration;
 
 using Moq;

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace api.core.Data.Entities;
+namespace api.core.Data.Enums;
 
 /// <summary>
 /// 1 - OnHold
