@@ -18,7 +18,7 @@ public class ReportService(IEventRepository eventRepository, IReportRepository r
 
     public void ReportEvent(Guid eventId, CreateReportRequestDTO request)
     {
-        if (AvoidDuplicates(request)) return;
+        if (AvoidDuplicates(eventId, request)) return;
 
         var evnt = eventRepository.Get(eventId);
         NotFoundException<Event>.ThrowIfNull(evnt);
@@ -34,12 +34,12 @@ public class ReportService(IEventRepository eventRepository, IReportRepository r
         reportRepository.Add(report);
     }
 
-    private bool AvoidDuplicates(CreateReportRequestDTO request)
+    private bool AvoidDuplicates(Guid publicationId, CreateReportRequestDTO request)
     {
         // If a request with a duplicated reason is submitted within the time window of the rate limiter,
         // we ignore the request
         var timeWindow = int.Parse(Environment.GetEnvironmentVariable("RATE_LIMIT_TIME_WINDOW_SECONDS") ?? "10");
         var reports = reportRepository.GetRecentReports(timeWindow);
-        return reports.Any(r => r.Reason == request.Reason);
+        return reports.Any(r => r.Reason == request.Reason && r.PublicationId == publicationId);
     }
 }
