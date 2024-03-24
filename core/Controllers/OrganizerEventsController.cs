@@ -1,4 +1,4 @@
-﻿using api.core.Data.requests;
+using api.core.Data.requests;
 using api.core.Data.Responses;
 using api.core.Data;
 using api.core.Misc;
@@ -12,9 +12,9 @@ using api.core.Data.Enums;
 namespace api.core.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Policy = AuthPolicies.OrganizerIsActive)]
 [Route("api/organizer/events")]
-public class OrganizerEventsController(ILogger<OrganizerEventsController> logger, IEventService eventService, IUserService userService) : ControllerBase
+public class OrganizerEventsController(ILogger<OrganizerEventsController> logger, IEventService eventService) : ControllerBase
 {
     [HttpGet]
     public IActionResult MyEvents(
@@ -26,7 +26,6 @@ public class OrganizerEventsController(ILogger<OrganizerEventsController> logger
         [FromQuery] State state = State.All
         )
     {
-        
         var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
 
         logger.LogInformation("Getting events");
