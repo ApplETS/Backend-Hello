@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using api.core.data;
@@ -11,9 +12,11 @@ using api.core.data;
 namespace api.core.Migrations
 {
     [DbContext(typeof(EventManagementContext))]
-    partial class EventManagementContextModelSnapshot : ModelSnapshot
+    [Migration("20240323215510_ReportCategory")]
+    partial class ReportCategory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -142,13 +145,10 @@ namespace api.core.Migrations
                     b.Property<string>("InstagramLink")
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("LinkedInLink")
                         .HasColumnType("text");
 
-                    b.Property<string>("Organization")
+                    b.Property<string>("Organisation")
                         .IsRequired()
                         .HasColumnType("text");
 

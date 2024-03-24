@@ -13,5 +13,7 @@ public interface IUserService
 
     public bool UpdateUser(Guid id, UserUpdateDTO dto);
 
+    public bool ToggleUserActiveState(Guid id);
+
     public string UpdateUserAvatar(Guid id, IFormFile avatarFile);
 }

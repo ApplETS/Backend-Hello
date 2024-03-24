@@ -31,6 +31,7 @@ public class UserService(
             Organization = organizerDto.Organization ?? "",
             ActivityArea = organizerDto.ActivityArea ?? "",
             ProfileDescription = "",
+            IsActive = true,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         });
@@ -69,6 +70,23 @@ public class UserService(
         return organizers.Select(UserResponseDTO.Map);
     }
 
+    public bool ToggleUserActiveState(Guid id)
+    {
+        EnsureIsOrganizer(id);
+
+        var user = organizerRepository.Get(id);
+        user!.IsActive = !user.IsActive;
+        return organizerRepository.Update(id, user);
+    }
+
+    private void EnsureIsOrganizer(Guid id)
+    {
+        var user = GetUser(id);
+
+        if (user.Type == "Moderator")
+            throw new Exception("Moderators cannot be disabled");
+    }
+
     public bool UpdateUser(Guid id, UserUpdateDTO dto)
     {
         var user = GetUser(id);
@@ -91,6 +109,7 @@ public class UserService(
                     Organization = dto.Organization ?? "",
                     ActivityArea = dto.ActivityArea ?? "",
                     ProfileDescription = dto.ProfileDescription ?? "",
+                    IsActive = user.IsActive,
                     FacebookLink = dto.FacebookLink,
                     InstagramLink = dto.InstagramLink,
                     TikTokLink = dto.TikTokLink,

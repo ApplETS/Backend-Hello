@@ -14,6 +14,8 @@ public partial class Organizer : User
 
     public string ProfileDescription { get; set; } = null!;
 
+    public bool IsActive { get; set; }
+
     public string? FacebookLink { get; set; }
     
     public string? InstagramLink { get; set; }

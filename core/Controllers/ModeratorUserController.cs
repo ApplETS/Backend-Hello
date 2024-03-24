@@ -1,11 +1,8 @@
-﻿using api.core.data.entities;
-using api.core.Data;
-using api.core.Data.Exceptions;
+﻿using api.core.Data;
 using api.core.Data.requests;
 using api.core.Data.Responses;
 using api.core.Misc;
 using api.core.services.abstractions;
-using api.core.Services.Abstractions;
 using api.emails.Models;
 using api.emails.Services.Abstractions;
 
@@ -14,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace api.core.controllers;
 
-[Authorize]
+[Authorize(Policy = AuthPolicies.IsModerator)]
 [ApiController]
 [Route("api/moderator/organizer")]
 public class ModeratorUserController(IUserService userService, IAuthService authService, IEmailService emailService) : ControllerBase
@@ -22,8 +19,6 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
     [HttpPost]
     public async Task<IActionResult> CreateOrganizer([FromBody] UserCreateDTO organizer)
     {
-        EnsureIsModerator();
-
         var strongPassword = GenerateRandomPassword(12);
         var supabaseUser = authService.SignUp(organizer.Email, strongPassword);
         Guid.TryParse(supabaseUser, out Guid userId);
@@ -51,19 +46,33 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
     [HttpGet]
     public IActionResult GetUsers()
     {
-        EnsureIsModerator();
-
         var users = userService.GetUsers();
-
         return Ok(new Response<IEnumerable<UserResponseDTO>> { Data = users });
     }
 
-    private void EnsureIsModerator()
+    [HttpPatch("{organizerId}/toggle")]
+    public async Task<IActionResult> ToggleOrganizer(Guid organizerId, [FromQuery] string? reason)
     {
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
-        var user = userService.GetUser(userId);
-        if (user != null && user.Type != "Moderator")
-            throw new UnauthorizedException();
+        var success = userService.ToggleUserActiveState(organizerId);
+        var organizer = userService.GetUser(organizerId);
+
+        if (success && !organizer.IsActive)
+        {
+            await emailService.SendEmailAsync(
+                organizer.Email,
+                "Votre compte Hello a été désactivé",
+                new UserDeactivationModel
+                {
+                    Title = "Désactivation de votre compte Hello",
+                    Salutation = $"Bonjour {organizer.Organisation},",
+                    UserDeactivationHeader = "Votre compte Hello a été désactivé pour la raison suivate: ",
+                    UserDeactivationReason = reason ?? "",
+                },
+                emails.EmailsUtils.UserDeactivationTemplate
+            );
+        }
+
+        return success ? Ok() : BadRequest();
     }
 
     private string GenerateRandomPassword(int length)

@@ -1,5 +1,4 @@
-﻿using api.core.Services.Abstractions;
-using api.emails.Services.Abstractions;
+﻿using api.core.services.abstractions;
 
 using Supabase;
 

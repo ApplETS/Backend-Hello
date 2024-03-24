@@ -7,13 +7,17 @@ using api.core.services.abstractions;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace api.core.controllers;
 
 [ApiController]
 [Route("api/events")]
-public class EventsController(ILogger<EventsController> logger, IEventService eventService, ITagService tagService) : ControllerBase
+public class EventsController(ILogger<EventsController> logger, IEventService eventService, ITagService tagService, IReportService reportService) : ControllerBase
 {
+
+    public const string RATE_LIMITING_POLICY_NAME = "EventsControllerRateLimitPolicy";
+
     /// <summary>
     /// Get events by date, activity area and tags
     /// </summary>
@@ -61,6 +65,17 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
             {
                 Data = evnt,
             });
+    }
+
+    [HttpPost("{id}/reports")]
+    [EnableRateLimiting(RATE_LIMITING_POLICY_NAME)]
+    public IActionResult ReportEvent(Guid id, [FromBody] CreateReportRequestDTO request)
+    {
+        logger.LogInformation($"Reporting event {id}");
+
+        reportService.ReportEvent(id, request);
+
+        return Ok();
     }
 
     [HttpGet("tags")]

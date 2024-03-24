@@ -18,6 +18,8 @@ public class UserResponseDTO
 
     public string? ActivityArea { get; set; }
 
+    public bool IsActive { get; set; }
+
     public string ProfileDescription { get; set; } = null!;
 
     public string? FacebookLink { get; set; }
@@ -49,6 +51,7 @@ public class UserResponseDTO
             Type = "Organizer",
             Organisation = organizer.Organization,
             ActivityArea = organizer.ActivityArea,
+            IsActive = organizer.IsActive,
             ProfileDescription = organizer.ProfileDescription,
             FacebookLink = organizer.FacebookLink,
             InstagramLink = organizer.InstagramLink,
@@ -70,6 +73,7 @@ public class UserResponseDTO
             Id = moderator.Id,
             Email = moderator.Email,
             Type = "Moderator",
+            IsActive = true,
             CreatedAt = moderator.CreatedAt,
             UpdatedAt = moderator.UpdatedAt
         };
