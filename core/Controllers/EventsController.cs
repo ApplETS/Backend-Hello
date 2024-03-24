@@ -22,10 +22,12 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
     /// Get events by date, activity area and tags
     /// </summary>
     /// <param name="startDate">if null, will get every event until the first element</param>
-    /// <param name="endDate"></param>
-    /// <param name="activityAreas"></param>
-    /// <param name="tags"></param>
-    /// <returns></returns>
+    /// <param name="endDate">if null, will get every element unitl infinity</param>
+    /// <param name="organizerId">Filter by organizerId</param>
+    /// <param name="activityAreas">Filter by a list of OR applicable activityAreas</param>
+    /// <param name="tags">Filter by a list of OR applicable tags</param>
+    /// <param name="pagination">Sort and take only the necessary page</param>
+    /// <returns>events filtered and sorted</returns>
     [HttpGet]
     [OutputCache(VaryByQueryKeys = [ "startDate", "endDate", "activityAreas", "tags", "pageNumber", "pageSize" ])]
     public ActionResult<IEnumerable<EventResponseDTO>> GetEvents(

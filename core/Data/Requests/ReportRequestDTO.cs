@@ -4,7 +4,7 @@ namespace api.core.Data.Requests;
 
 public class CreateReportRequestDTO
 {
-    public string Reason { get; set; }
+    public required string Reason { get; set; }
 
-    public ReportCategory Category { get; set; }
+    public required ReportCategory Category { get; set; }
 }

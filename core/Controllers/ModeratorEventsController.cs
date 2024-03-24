@@ -14,7 +14,7 @@ namespace api.core.Controllers;
 [ApiController]
 [Authorize(Policy = AuthPolicies.IsModerator)]
 [Route("api/moderator/events")]
-public class ModeratorEventsController(ILogger<ModeratorEventsController> logger, IEventService eventService, IUserService userService, IReportService reportService) : ControllerBase
+public class ModeratorEventsController(ILogger<ModeratorEventsController> logger, IEventService eventService, IReportService reportService) : ControllerBase
 {
     [HttpPatch("{id}/state")]
     public IActionResult UpdateEventState(Guid id, [FromQuery] State newState, [FromQuery] string? reason)

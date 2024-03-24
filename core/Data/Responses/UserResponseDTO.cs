@@ -10,6 +10,8 @@ public class UserResponseDTO
 
     public string Email { get; set; } = null!;
 
+    public string AvatarUrl { get; set; } = null!;
+
     public string Type { get; set; } = null!;
 
     public string? Organisation { get; set; }
@@ -47,7 +49,7 @@ public class UserResponseDTO
             Id = organizer.Id,
             Email = organizer.Email,
             Type = "Organizer",
-            Organisation = organizer.Organisation,
+            Organisation = organizer.Organization,
             ActivityArea = organizer.ActivityArea,
             IsActive = organizer.IsActive,
             ProfileDescription = organizer.ProfileDescription,

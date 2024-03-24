@@ -28,9 +28,9 @@ public class TagDetailsResponseDTO : TagResponseDTO
 {
     public int PriorityValue { get; set; }
 
-    public IEnumerable<TagDetailsResponseDTO> Children { get; set; }
+    public IEnumerable<TagDetailsResponseDTO> Children { get; set; } = new List<TagDetailsResponseDTO>();
 
-    public static TagDetailsResponseDTO Map(Tag oneTag)
+    public static new TagDetailsResponseDTO Map(Tag oneTag)
     {
         return new TagDetailsResponseDTO
         {

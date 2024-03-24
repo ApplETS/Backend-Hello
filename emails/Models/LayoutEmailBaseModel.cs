@@ -3,5 +3,5 @@ namespace api.emails.Models;
 
 public class LayoutEmailBaseModel
 {
-    public string Title { get; set; }
+    public required string Title { get; set; }
 }

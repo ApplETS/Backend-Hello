@@ -10,11 +10,7 @@ public class AuthService(Client client) : IAuthService
     {
         var user = client.Auth.SignUp(email, password).Result;
 
-        if (user != null && user.User != null)
-        {
-            return user.User.Id;
-        }
-
-        throw new Exception("An error occured while signing up the user");
+        return user?.User?.Id 
+            ?? throw new Exception("An error occured while signing up the user");
     }
 }

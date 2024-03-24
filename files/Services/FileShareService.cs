@@ -1,5 +1,4 @@
 ﻿using api.files.Services.Abstractions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
 namespace api.files.Services;
@@ -13,10 +12,13 @@ public class FileShareService : IFileShareService
         _config = config;
     }
 
+    public Uri FileGetDownloadUri(string fileName)
+        => new Uri(new Uri(_config.GetValue<string>("CDN_URL")!), fileName);
+
     public void FileUpload(string subPath, string fileName, Stream streamFile)
     {
         // Get the configurations and create share object
-        var dir = Path.Combine(_config.GetValue<string>("CONTAINER_DIR"), subPath);
+        var dir = Path.Combine(_config.GetValue<string>("CONTAINER_DIR")!, subPath);
         
         Directory.CreateDirectory(dir);
         if (streamFile.Length > 0)

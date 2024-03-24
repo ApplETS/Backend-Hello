@@ -1,28 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-using Microsoft.EntityFrameworkCore;
+using api.core.Data.Entities;
+
 
 namespace api.core.data.entities;
 
 [Table("Tag")]
-public partial class Tag
+public partial class Tag : BaseEntity
 {
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    [Key]
-    public Guid Id { get; set; }
-
     public string Name { get; set; } = null!;
 
     public int PriorityValue { get; set; }
-
-    public DateTime CreatedAt { get; set; }
-
-    public DateTime UpdatedAt { get; set; }
-
-    public DateTime? DeletedAt { get; set; }
 
     [ForeignKey("ParentTagsId")]
     [InverseProperty("ParentTags")]
