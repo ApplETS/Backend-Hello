@@ -36,7 +36,7 @@ public class UserServiceTests
         var organizer = new Organizer
         {
             Email = organizerDto.Email,
-            Organisation = organizerDto.Organisation,
+            Organization = organizerDto.Organisation,
             ActivityArea = organizerDto.ActivityArea,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -65,7 +65,7 @@ public class UserServiceTests
         {
             Id = organizerId,
             Email = "john.doe@example.com",
-            Organisation = "ExampleOrg",
+            Organization = "ExampleOrg",
             ActivityArea = "Tech",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -148,7 +148,7 @@ public class UserServiceTests
         {
             Id = organizerId,
             Email = "john.doe@example.com",
-            Organisation = "ExampleOrg",
+            Organization = "ExampleOrg",
             ActivityArea = "Tech",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow

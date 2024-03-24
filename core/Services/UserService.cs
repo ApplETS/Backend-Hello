@@ -15,7 +15,7 @@ public class UserService(IOrganizerRepository organizerRepository, IModeratorRep
         {
             Id = id,
             Email = organizerDto.Email,
-            Organisation = organizerDto.Organisation ?? "",
+            Organization = organizerDto.Organisation ?? "",
             ActivityArea = organizerDto.ActivityArea ?? "",
             ProfileDescription = "",
             CreatedAt = DateTime.UtcNow,
@@ -63,7 +63,7 @@ public class UserService(IOrganizerRepository organizerRepository, IModeratorRep
                 {
                     Id = id,
                     Email = dto.Email,
-                    Organisation = dto.Organisation,
+                    Organization = dto.Organisation,
                     ActivityArea = dto.ActivityArea,
                     ProfileDescription = dto.ProfileDescription,
                     FacebookLink = dto.FacebookLink,

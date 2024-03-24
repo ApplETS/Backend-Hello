@@ -226,7 +226,7 @@ public class EventService(
             subject,
             new StatusChangeModel
             {
-                Salutation = $"Bonjour {evnt.Publication.Organizer.Organisation},",
+                Salutation = $"Bonjour {evnt.Publication.Organizer.Organization},",
                 StatusHeaderText = $"La publication « ­{evnt.Publication.Title} » a été placée dans le status ",
                 StatusNameText = statusStr,
                 StatusRefusalReason = reason,

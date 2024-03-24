@@ -45,7 +45,7 @@ public class UserResponseDTO
             Id = organizer.Id,
             Email = organizer.Email,
             Type = "Organizer",
-            Organisation = organizer.Organisation,
+            Organisation = organizer.Organization,
             ActivityArea = organizer.ActivityArea,
             ProfileDescription = organizer.ProfileDescription,
             FacebookLink = organizer.FacebookLink,
