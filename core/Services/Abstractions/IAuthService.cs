@@ -1,4 +1,4 @@
-﻿namespace api.core.Services.Abstractions;
+﻿namespace api.core.services.abstractions;
 
 public interface IAuthService
 {

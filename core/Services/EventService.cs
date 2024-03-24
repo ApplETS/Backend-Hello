@@ -10,14 +10,9 @@ using api.emails.Models;
 using api.emails.Services.Abstractions;
 using api.files.Services.Abstractions;
 
-using Azure.Core;
-
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
 
 using static System.Net.WebRequestMethods;

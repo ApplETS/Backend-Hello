@@ -1,4 +1,6 @@
-﻿using api.core.Data.Enums;
+using api.core.Data;
+using api.core.Data.Enums;
+using api.core.Data.Exceptions;
 using api.core.Data.Requests;
 using api.core.Data.Responses;
 using api.core.Misc;
@@ -12,7 +14,7 @@ namespace api.core.Controllers;
 [ApiController]
 [Authorize(Policy = AuthPolicies.IsModerator)]
 [Route("api/moderator/events")]
-public class ModeratorEventsController(ILogger<ModeratorEventsController> logger, IEventService eventService) : ControllerBase
+public class ModeratorEventsController(ILogger<ModeratorEventsController> logger, IEventService eventService, IUserService userService, IReportService reportService) : ControllerBase
 {
     [HttpPatch("{id}/state")]
     public IActionResult UpdateEventState(Guid id, [FromQuery] State newState, [FromQuery] string? reason)
@@ -45,5 +47,16 @@ public class ModeratorEventsController(ILogger<ModeratorEventsController> logger
         var response = PaginationHelper.CreatePaginatedReponse(paginatedRes, validFilter, totalRecords);
 
         return Ok(response);
+    }
+
+    [HttpGet("reports")]
+    public ActionResult<IEnumerable<ReportResponseDTO>> GetEventsReports()
+    {
+        var reports = reportService.GetReports();
+
+        return Ok(new Response<IEnumerable<ReportResponseDTO>>
+        {
+            Data = reports,
+        });
     }
 }
