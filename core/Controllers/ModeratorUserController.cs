@@ -34,9 +34,10 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
             "Votre compte Hello!",
             new UserCreationModel
             {
+                Title = "Création de compte Hello!",
                 Salutation = $"Bonjour {organizer.Organization},",
                 AccountCreatedText = "Votre compte Hello a été créé!",
-                TemporaryPasswordHeader = "Votre mot de passe temporaire est: ",
+                TemporaryPasswordHeader = "Voici votre mot de passe temporaire, assurez-vous de suivre les indications pour le modifier lors de votre première connexion. ",
                 TemporaryPassword = strongPassword,
                 LoginButtonText = "Se connecter",
                 ButtonLink = new Uri($"{frontBaseUrl}/fr/login")

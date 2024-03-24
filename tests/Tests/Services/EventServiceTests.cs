@@ -162,7 +162,6 @@ public class EventServiceTests
             _mockOrganizerRepository.Object,
             _mockModeratorRepository.Object,
             _mockFileShareService.Object,
-            _mockConfig.Object,
             _mockEmailService.Object
             );
     }
@@ -347,13 +346,6 @@ public class EventServiceTests
     public void UpdateEvent_ShouldReturnTrue_WhenEventIsUpdatedSuccessfully()
     {
         // Arrange
-        var inMemorySettings = new Dictionary<string, string> {
-            {"CDN_URL", "http://example.com"},
-        };
-        IConfiguration configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(inMemorySettings)
-            .Build();
-
         var userId = _events.First().Publication.Organizer.Id;
         var eventId = _events.First().Id;
 
@@ -382,7 +374,6 @@ public class EventServiceTests
             _mockOrganizerRepository.Object,
             _mockModeratorRepository.Object,
             _mockFileShareService.Object,
-            configuration,
             _mockEmailService.Object);
 
         // Act

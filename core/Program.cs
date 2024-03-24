@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 string supabaseSecretKey = null!;
 string supabaseProjectId = null!;
 string connectionString = null!;
-string redisConnString = null!;
+string? redisConnString = null!;
 
 connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new Exception("CONNECTION_STRING is not set");
 
@@ -46,7 +46,7 @@ builder.Services.AddAuthentication().AddJwtBearer(o =>
 
 builder.Services.SetupScheduler();
 
-if (redisConnString != null)
+if (string.IsNullOrEmpty(redisConnString))
 {
     builder.Services.AddStackExchangeRedisOutputCache(options =>
     {
@@ -113,7 +113,7 @@ var app = builder.Build();
 
 await using var scope = app.Services.CreateAsyncScope();
 await using var db = scope.ServiceProvider.GetService<EventManagementContext>();
-await db.Database.MigrateAsync();
+await db!.Database.MigrateAsync();
 
 app.UseSwagger();
 app.UseSwaggerUI();

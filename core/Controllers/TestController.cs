@@ -9,7 +9,7 @@ namespace api.core.controllers;
 
 [ApiController]
 [Route("api/test")]
-public class TestController(IEmailService service, IConfiguration configuration) : ControllerBase
+public class TestController(IConfiguration configuration) : ControllerBase
 {
 
     [HttpPost("login")]

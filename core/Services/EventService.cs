@@ -25,7 +25,6 @@ public class EventService(
     IOrganizerRepository orgRepo,
     IModeratorRepository moderatorRepo,
     IFileShareService fileShareService,
-    IConfiguration configuration,
     IEmailService emailService) : IEventService
 {
     private const double IMAGE_RATIO_SIZE_ACCEPTANCE = 2.0; // width/height ratio
@@ -50,8 +49,8 @@ public class EventService(
          (endDate == null || e.EventStartDate <= endDate) &&
          (state.HasFlag(e.Publication.State)) &&
          (organizerId == null || e.Publication.OrganizerId == organizerId) &&
-         (tags.IsNullOrEmpty() || e.Publication.Tags.Any(t => tags.Any(tt => t.Id == tt))) &&
-         (activityAreas.IsNullOrEmpty() || activityAreas.Any(aa => aa == e.Publication.Organizer.ActivityArea)))
+         (tags.IsNullOrEmpty() || e.Publication.Tags.Any(t => tags!.Any(tt => t.Id == tt))) &&
+         (activityAreas.IsNullOrEmpty() || activityAreas!.Any(aa => aa == e.Publication.Organizer.ActivityArea)))
             .OrderBy(e => e.EventStartDate)
             .Select(EventResponseDTO.Map);
     }
@@ -61,7 +60,7 @@ public class EventService(
         var evnt = evntRepo.Get(id);
         NotFoundException<Event>.ThrowIfNull(evnt);
 
-        return EventResponseDTO.Map(evnt);
+        return EventResponseDTO.Map(evnt!);
     }
 
     public EventResponseDTO AddEvent(Guid userId, EventCreationRequestDTO request)
@@ -115,18 +114,22 @@ public class EventService(
 
     public bool UpdateEvent(Guid userId, Guid eventId, EventUpdateRequestDTO request)
     {
-        var organizer = orgRepo.Get(userId) ?? throw new UnauthorizedException();
+        _ = orgRepo.Get(userId) 
+            ?? throw new UnauthorizedException();
+
         var evnt = evntRepo.Get(eventId);
+        NotFoundException<Event>.ThrowIfNull(evnt);
+        NotFoundException<Publication>.ThrowIfNull(evnt!.Publication);
 
         if (evnt!.Publication.Organizer != null && evnt.Publication.Organizer.Id != userId)
             throw new UnauthorizedException();
 
-        Uri uri = new Uri(evnt.Publication.ImageUrl);
+        string imageUrl = evnt!.Publication!.ImageUrl ?? "";
 
         if (request.Image != null)
         {
-            uri = fileShareService.FileGetDownloadUri($"{evnt.Id}/{request.Image?.FileName}");
-            HandleImageSaving(eventId, request.Image);
+            imageUrl = fileShareService.FileGetDownloadUri($"{evnt.Id}/{request.Image?.FileName}").ToString();
+            HandleImageSaving(eventId, request.Image!);
         }
 
         evntRepo.ResetTags(eventId);
@@ -136,7 +139,7 @@ public class EventService(
         evnt.Publication.Title = request.Title;
         evnt.Publication.Content = request.Content;
         evnt.Publication.State = State.OnHold;
-        evnt.Publication.ImageUrl = uri.ToString();
+        evnt.Publication.ImageUrl = imageUrl;
         evnt.Publication.PublicationDate = request.PublicationDate;
         evnt.Publication.ImageAltText = request.ImageAltText;
         evnt.Publication.Tags = GetAssociatedTags(request.Tags);
@@ -216,6 +219,7 @@ public class EventService(
             subject,
             new StatusChangeModel
             {
+                Title = "Changement de status de votre publication",
                 Salutation = $"Bonjour {evnt.Publication.Organizer.Organization},",
                 StatusHeaderText = $"La publication « ­{evnt.Publication.Title} » a été placée dans le status ",
                 StatusNameText = statusStr,

@@ -88,9 +88,9 @@ public class UserService(
                 {
                     Id = id,
                     Email = dto.Email,
-                    Organization = dto.Organization,
-                    ActivityArea = dto.ActivityArea,
-                    ProfileDescription = dto.ProfileDescription,
+                    Organization = dto.Organization ?? "",
+                    ActivityArea = dto.ActivityArea ?? "",
+                    ProfileDescription = dto.ProfileDescription ?? "",
                     FacebookLink = dto.FacebookLink,
                     InstagramLink = dto.InstagramLink,
                     TikTokLink = dto.TikTokLink,

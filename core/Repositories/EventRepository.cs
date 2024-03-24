@@ -63,9 +63,9 @@ public class EventRepository(EventManagementContext context) : IEventRepository
     {
         var evnt = Get(eventId);
 
-        if (evnt.Publication != null)
+        if (evnt!.Publication != null)
         {
-            evnt.Publication.Tags.Clear();
+            evnt!.Publication!.Tags.Clear();
             context.SaveChanges();
         }
     }

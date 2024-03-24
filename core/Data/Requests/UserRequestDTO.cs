@@ -34,5 +34,5 @@ public class UserUpdateDTO : UserCreateDTO
 
 public class UserAvatarUpdateDTO
 {
-    public IFormFile avatarFile { get; set; }
+    public required IFormFile avatarFile { get; set; }
 }

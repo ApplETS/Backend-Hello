@@ -102,7 +102,7 @@ public class UserServiceTests
             UpdatedAt = DateTime.UtcNow
         };
 
-        _organizerRepositoryMock.Setup(repo => repo.Get(moderatorId)).Returns((Organizer)null); // Simulate no organizer found
+        _organizerRepositoryMock.Setup(repo => repo.Get(moderatorId)).Returns((Organizer?)null); // Simulate no organizer found
         _moderatorRepositoryMock.Setup(repo => repo.Get(moderatorId)).Returns(moderator); // Simulate moderator found
 
         // Act

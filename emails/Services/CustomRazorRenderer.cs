@@ -9,7 +9,7 @@ public class CustomRazorRenderer : ITemplateRenderer
 {
     private readonly RazorLightEngine _engine;
 
-    public CustomRazorRenderer(string root = null)
+    public CustomRazorRenderer(string? root = null)
     {
         _engine = new RazorLightEngineBuilder()
             .SetOperatingAssembly(Assembly.GetCallingAssembly())

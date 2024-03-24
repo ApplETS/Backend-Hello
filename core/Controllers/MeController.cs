@@ -13,7 +13,7 @@ namespace api.core.controllers;
 [Authorize]
 [ApiController]
 [Route("api/me")]
-public class MeController(IUserService userService, IAuthService authService) : ControllerBase
+public class MeController(IUserService userService) : ControllerBase
 {
     [HttpGet]
     public IActionResult GetUser()
