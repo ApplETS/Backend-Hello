@@ -430,7 +430,7 @@ public class EventServiceTests
     public void UpdateEventState_ShouldReturnTrue_WhenStateIsUpdatedSuccessfullyByModerator()
     {
         // Arrange
-        var userId = _events.First().Publication.Moderator.Id;
+        var userId = _events.First().Publication!.Moderator!.Id;
         var eventId = _events.First().Id;
 
         var newState = State.Approved;
@@ -456,7 +456,7 @@ public class EventServiceTests
     public void UpdateEventState_ShouldHaveStatePublished_WhenStateIsUpdatedWithApprovedAndPassedPublicationDate()
     {
         // Arrange
-        var userId = _events.First().Publication.Moderator.Id;
+        var userId = _events.First().Publication!.Moderator!.Id;
         var eventId = _events.Last().Id;
 
         var newState = State.Approved;

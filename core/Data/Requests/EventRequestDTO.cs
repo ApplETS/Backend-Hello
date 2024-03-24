@@ -14,13 +14,13 @@ public class EventRequestDTO
 
     public virtual ICollection<Guid> Tags { get; set; } = new List<Guid>();
 
-    public string ImageAltText { get; set; }
+    public string ImageAltText { get; set; } = null!;
 }
 
 
 public class EventCreationRequestDTO : EventRequestDTO
 {
-    public IFormFile Image { get; set; }
+    public IFormFile Image { get; set; } = null!;
 }
 
 public class EventUpdateRequestDTO : EventRequestDTO

@@ -12,5 +12,5 @@ public interface IEmailService
     /// <param name="model">The model of the T type pass in param</param>
     /// <param name="templateName">The razor filename to access, You can use EmailsUtils.YOUR_TEMPLATE</param>
     /// <returns>The Send Response object provided by FluentEmail</returns>
-    Task<SendResponse> SendEmailAsync<T>(string emailTo, string subject, T model, string templateName);
+    Task<SendResponse?> SendEmailAsync<T>(string emailTo, string subject, T model, string templateName);
 }

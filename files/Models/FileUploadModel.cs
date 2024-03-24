@@ -2,6 +2,6 @@
 
 public class FileUploadModel
 {
-    public string FileName { get; set; }
-    public Stream FileStream { get; set; }
+    public required string FileName { get; set; }
+    public required Stream FileStream { get; set; }
 }
