@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace api.files.Services.Abstractions;
+﻿namespace api.files.Services.Abstractions;
 
 public interface IFileShareService
 {
+    Uri FileGetDownloadUri(string fileName);
+
     void FileUpload(string subPath, string fileName, Stream streamFile);
 }

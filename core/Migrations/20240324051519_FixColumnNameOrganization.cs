@@ -5,7 +5,7 @@
 namespace api.core.Migrations
 {
     /// <inheritdoc />
-    public partial class Test : Migration
+    public partial class FixColumnNameOrganization : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -10,14 +10,9 @@ using api.emails.Models;
 using api.emails.Services.Abstractions;
 using api.files.Services.Abstractions;
 
-using Azure.Core;
-
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
 
 using static System.Net.WebRequestMethods;
@@ -78,9 +73,7 @@ public class EventService(
             ?? Enumerable.Empty<Tag>();
 
         var id = Guid.NewGuid();
-        var cdnUrl = configuration.GetValue<string>("CDN_URL");
-        var completePath = $"{cdnUrl}/{id}/{request.Image.FileName}";
-        var uri = new Uri(completePath);
+        var uri = fileShareService.FileGetDownloadUri($"{id}/{request.Image.FileName}");
 
         HandleImageSaving(id, request.Image);
 
@@ -132,10 +125,7 @@ public class EventService(
 
         if (request.Image != null)
         {
-            var cdnUrl = configuration.GetValue<string>("CDN_URL");
-            var completePath = $"{cdnUrl}/{evnt.Id}/{request.Image?.FileName}";
-            uri = new Uri(completePath);
-
+            uri = fileShareService.FileGetDownloadUri($"{evnt.Id}/{request.Image?.FileName}");
             HandleImageSaving(eventId, request.Image);
         }
 
@@ -159,11 +149,11 @@ public class EventService(
     {
         var tags = new List<Tag>();
 
-        if (tagIds != null && tagIds.Any())
+        if (tagIds != null && tagIds.Count != 0)
         {
             tags = tagIds
                 .Select(tagRepo.Get)
-                .ToList();
+                .ToList()!;
         }
 
         return tags;

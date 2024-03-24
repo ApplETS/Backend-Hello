@@ -12,8 +12,8 @@ using api.core.data;
 namespace api.core.Migrations
 {
     [DbContext(typeof(EventManagementContext))]
-    [Migration("20240324043218_Test")]
-    partial class Test
+    [Migration("20240324051519_FixColumnNameOrganization")]
+    partial class FixColumnNameOrganization
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

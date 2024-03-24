@@ -10,6 +10,8 @@ public class UserResponseDTO
 
     public string Email { get; set; } = null!;
 
+    public string AvatarUrl { get; set; } = null!;
+
     public string Type { get; set; } = null!;
 
     public string? Organisation { get; set; }

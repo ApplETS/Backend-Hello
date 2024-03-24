@@ -29,12 +29,12 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
         Guid.TryParse(supabaseUser, out Guid userId);
         var created = userService.AddOrganizer(userId, organizer);
         var frontBaseUrl = Environment.GetEnvironmentVariable("FRONTEND_BASE_URL") ?? throw new Exception("FRONTEND_BASE_URL is not set");
-        await emailService.SendEmailAsync(
+        await emailService.SendEmailAsync<UserCreationModel>(
             organizer.Email,
             "Votre compte Hello!",
             new UserCreationModel
             {
-                Salutation = $"Bonjour {organizer.Organisation},",
+                Salutation = $"Bonjour {organizer.Organization},",
                 AccountCreatedText = "Votre compte Hello a été créé!",
                 TemporaryPasswordHeader = "Votre mot de passe temporaire est: ",
                 TemporaryPassword = strongPassword,

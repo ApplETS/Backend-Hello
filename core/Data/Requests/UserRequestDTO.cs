@@ -4,7 +4,7 @@ public class UserCreateDTO
 {
     public required string Email { get; set; }
 
-    public string? Organisation { get; set; } = null!;
+    public string? Organization { get; set; } = null!;
 
     public string? ActivityArea { get; set; } = null!;
 }
@@ -30,4 +30,9 @@ public class UserUpdateDTO : UserCreateDTO
     public string? RedditLink { get; set; }
 
     public string? WebSiteLink { get; set; }
+}
+
+public class UserAvatarUpdateDTO
+{
+    public IFormFile avatarFile { get; set; }
 }

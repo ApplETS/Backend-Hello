@@ -29,14 +29,14 @@ public class UserServiceTests
         var organizerDto = new UserUpdateDTO
         {
             Email = "john.doe@example.com",
-            Organisation = "ExampleOrg",
+            Organization = "ExampleOrg",
             ActivityArea = "Tech"
         };
 
         var organizer = new Organizer
         {
             Email = organizerDto.Email,
-            Organization = organizerDto.Organisation,
+            Organization = organizerDto.Organization,
             ActivityArea = organizerDto.ActivityArea,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -50,7 +50,7 @@ public class UserServiceTests
         // Assert
         result.Should().NotBeNull();
         result.Email.Should().Be(organizerDto.Email);
-        result.Organisation.Should().Be(organizerDto.Organisation);
+        result.Organisation.Should().Be(organizerDto.Organization);
         result.ActivityArea.Should().Be(organizerDto.ActivityArea);
 
         _organizerRepositoryMock.Verify(repo => repo.Add(It.IsAny<Organizer>()), Times.Once);
@@ -140,7 +140,7 @@ public class UserServiceTests
         var updateDto = new UserUpdateDTO
         {
             Email = "jane.doe@example.com",
-            Organisation = "NewOrg",
+            Organization = "NewOrg",
             ActivityArea = "Health"
         };
 
