@@ -7,19 +7,24 @@ using api.core.Data.requests;
 using api.core.repositories.abstractions;
 using api.core.Services;
 using api.core.Data.Responses;
+using api.files.Services.Abstractions;
 
 namespace api.tests.Tests.Services;
 public class UserServiceTests
 {
     private readonly Mock<IOrganizerRepository> _organizerRepositoryMock;
     private readonly Mock<IModeratorRepository> _moderatorRepositoryMock;
+    private readonly Mock<IFileShareService> _fileShareServiceMock;
     private readonly UserService _userService;
 
     public UserServiceTests()
     {
         _organizerRepositoryMock = new Mock<IOrganizerRepository>();
         _moderatorRepositoryMock = new Mock<IModeratorRepository>();
-        _userService = new UserService(_organizerRepositoryMock.Object, _moderatorRepositoryMock.Object);
+        _fileShareServiceMock = new Mock<IFileShareService>();
+        _fileShareServiceMock.Setup(service => service.FileGetDownloadUri(It.IsAny<string>())).Returns(new Uri("http://example.com/avatar.webp"));
+        
+        _userService = new UserService(_organizerRepositoryMock.Object, _fileShareServiceMock.Object, _moderatorRepositoryMock.Object);
     }
 
     [Fact]

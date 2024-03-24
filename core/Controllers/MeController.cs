@@ -1,5 +1,4 @@
-﻿using api.core.data.entities;
-using api.core.Data;
+﻿using api.core.Data;
 using api.core.Data.requests;
 using api.core.Data.Responses;
 using api.core.Misc;
@@ -37,9 +36,9 @@ public class MeController(IUserService userService, IAuthService authService) : 
     }
 
     /// <summary>
-    /// 
+    /// Update the user connected avatar
     /// </summary>
-    /// <param name="avatarFile"></param>
+    /// <param name="avatarReq"></param>
     /// <returns>The url of the downloadable avatar file</returns>
     [HttpPatch("avatar")]
     public IActionResult UpdateUserAvatar([FromForm] UserAvatarUpdateDTO avatarReq)
