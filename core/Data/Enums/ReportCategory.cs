@@ -9,7 +9,6 @@ namespace api.core.Data.Enums;
 /// 4 - ObsoleteInformation
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-[Flags]
 public enum ReportCategory
 {
     InappropriateContent = 1,

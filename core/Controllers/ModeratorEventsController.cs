@@ -12,19 +12,17 @@ using Microsoft.AspNetCore.Mvc;
 namespace api.core.Controllers;
 
 [ApiController]
+[Authorize(Policy = AuthPolicies.IsModerator)]
 [Route("api/moderator/events")]
 public class ModeratorEventsController(ILogger<ModeratorEventsController> logger, IEventService eventService, IUserService userService, IReportService reportService) : ControllerBase
 {
-    [Authorize]
     [HttpPatch("{id}/state")]
     public IActionResult UpdateEventState(Guid id, [FromQuery] State newState, [FromQuery] string? reason)
     {
-        EnsureIsModerator();
         var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         return eventService.UpdateEventState(userId, id, newState, reason) ? Ok() : BadRequest();
     }
 
-    [Authorize]
     [HttpGet]
     public ActionResult<IEnumerable<EventResponseDTO>> GetEventsModerator(
         [FromQuery] DateTime? startDate,
@@ -35,8 +33,6 @@ public class ModeratorEventsController(ILogger<ModeratorEventsController> logger
         [FromQuery] State state = State.All
         )
     {
-        EnsureIsModerator();
-
         logger.LogInformation("Getting events");
 
         var validFilter = new PaginationRequest(pagination.PageNumber, pagination.PageSize);
@@ -53,27 +49,14 @@ public class ModeratorEventsController(ILogger<ModeratorEventsController> logger
         return Ok(response);
     }
 
-    [Authorize]
     [HttpGet("reports")]
     public ActionResult<IEnumerable<ReportResponseDTO>> GetEventsReports()
     {
-        EnsureIsModerator();
-
         var reports = reportService.GetReports();
 
         return Ok(new Response<IEnumerable<ReportResponseDTO>>
         {
             Data = reports,
         });
-    }
-
-    private void EnsureIsModerator()
-    {
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
-
-        if (userService.GetUser(userId).Type != "Moderator")
-        {
-            throw new UnauthorizedException();
-        }
     }
 }
