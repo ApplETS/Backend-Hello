@@ -1,6 +1,5 @@
 using api.core.Data;
 using api.core.Data.Enums;
-using api.core.Data.Exceptions;
 using api.core.Data.Requests;
 using api.core.Data.Responses;
 using api.core.Misc;
@@ -33,6 +32,9 @@ public class ModeratorEventsController(ILogger<ModeratorEventsController> logger
         [FromQuery] State state = State.All
         )
     {
+        if (state.HasFlag(State.Draft))
+            state &= ~State.Draft; // Exclude Draft data by default
+        
         logger.LogInformation("Getting events");
 
         var validFilter = new PaginationRequest(pagination.PageNumber, pagination.PageSize);
