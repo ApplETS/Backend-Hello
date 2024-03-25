@@ -8,6 +8,7 @@ namespace api.core.Data.Enums;
 /// 4 - Denied
 /// 8 - Approved
 /// 16 - Published
+/// 32 - Draft
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 [Flags]
@@ -18,5 +19,6 @@ public enum State
     Denied = 4,
     Approved = 8,
     Published = 16,
-    All = OnHold | Deleted | Denied | Approved | Published
+    Draft = 32,
+    All = OnHold | Deleted | Denied | Approved | Published | Draft
 }

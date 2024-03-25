@@ -15,6 +15,8 @@ public class EventRequestDTO
     public virtual ICollection<Guid> Tags { get; set; } = new List<Guid>();
 
     public string ImageAltText { get; set; } = null!;
+
+    public bool IsDraft { get; set; } = false;
 }
 
 

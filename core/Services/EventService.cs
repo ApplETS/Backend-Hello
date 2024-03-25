@@ -88,7 +88,7 @@ public class EventService(
                 Content = request.Content,
                 ImageUrl = uri.ToString(),
                 ImageAltText = request.ImageAltText,
-                State = State.OnHold,
+                State = request.IsDraft ? State.Draft : State.OnHold,
                 PublicationDate = request.PublicationDate,
                 Tags = tags.ToList(),
                 Organizer = organizer,
