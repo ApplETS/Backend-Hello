@@ -7,24 +7,19 @@ using api.core.Data.requests;
 using api.core.repositories.abstractions;
 using api.core.Services;
 using api.core.Data.Responses;
-using api.files.Services.Abstractions;
 
 namespace api.tests.Tests.Services;
 public class UserServiceTests
 {
     private readonly Mock<IOrganizerRepository> _organizerRepositoryMock;
     private readonly Mock<IModeratorRepository> _moderatorRepositoryMock;
-    private readonly Mock<IFileShareService> _fileShareServiceMock;
     private readonly UserService _userService;
 
     public UserServiceTests()
     {
         _organizerRepositoryMock = new Mock<IOrganizerRepository>();
         _moderatorRepositoryMock = new Mock<IModeratorRepository>();
-        _fileShareServiceMock = new Mock<IFileShareService>();
-        _fileShareServiceMock.Setup(service => service.FileGetDownloadUri(It.IsAny<string>())).Returns(new Uri("http://example.com/avatar.webp"));
-        
-        _userService = new UserService(_organizerRepositoryMock.Object, _fileShareServiceMock.Object, _moderatorRepositoryMock.Object);
+        _userService = new UserService(_organizerRepositoryMock.Object, _moderatorRepositoryMock.Object);
     }
 
     [Fact]
@@ -34,14 +29,14 @@ public class UserServiceTests
         var organizerDto = new UserUpdateDTO
         {
             Email = "john.doe@example.com",
-            Organization = "ExampleOrg",
+            Organisation = "ExampleOrg",
             ActivityArea = "Tech"
         };
 
         var organizer = new Organizer
         {
             Email = organizerDto.Email,
-            Organization = organizerDto.Organization,
+            Organisation = organizerDto.Organisation,
             ActivityArea = organizerDto.ActivityArea,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -55,7 +50,7 @@ public class UserServiceTests
         // Assert
         result.Should().NotBeNull();
         result.Email.Should().Be(organizerDto.Email);
-        result.Organisation.Should().Be(organizerDto.Organization);
+        result.Organization.Should().Be(organizerDto.Organisation);
         result.ActivityArea.Should().Be(organizerDto.ActivityArea);
 
         _organizerRepositoryMock.Verify(repo => repo.Add(It.IsAny<Organizer>()), Times.Once);
@@ -70,7 +65,7 @@ public class UserServiceTests
         {
             Id = organizerId,
             Email = "john.doe@example.com",
-            Organization = "ExampleOrg",
+            Organisation = "ExampleOrg",
             ActivityArea = "Tech",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -102,7 +97,7 @@ public class UserServiceTests
             UpdatedAt = DateTime.UtcNow
         };
 
-        _organizerRepositoryMock.Setup(repo => repo.Get(moderatorId)).Returns((Organizer?)null); // Simulate no organizer found
+        _organizerRepositoryMock.Setup(repo => repo.Get(moderatorId)).Returns((Organizer)null); // Simulate no organizer found
         _moderatorRepositoryMock.Setup(repo => repo.Get(moderatorId)).Returns(moderator); // Simulate moderator found
 
         // Act
@@ -145,7 +140,7 @@ public class UserServiceTests
         var updateDto = new UserUpdateDTO
         {
             Email = "jane.doe@example.com",
-            Organization = "NewOrg",
+            Organisation = "NewOrg",
             ActivityArea = "Health"
         };
 
@@ -153,7 +148,7 @@ public class UserServiceTests
         {
             Id = organizerId,
             Email = "john.doe@example.com",
-            Organization = "ExampleOrg",
+            Organisation = "ExampleOrg",
             ActivityArea = "Tech",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow

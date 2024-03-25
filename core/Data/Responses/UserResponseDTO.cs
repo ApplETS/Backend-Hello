@@ -14,7 +14,7 @@ public class UserResponseDTO
 
     public string Type { get; set; } = null!;
 
-    public string? Organisation { get; set; }
+    public string? Organization { get; set; }
 
     public string? ActivityArea { get; set; }
 
@@ -49,7 +49,7 @@ public class UserResponseDTO
             Id = organizer.Id,
             Email = organizer.Email,
             Type = "Organizer",
-            Organisation = organizer.Organization,
+            Organization = organizer.Organization,
             ActivityArea = organizer.ActivityArea,
             IsActive = organizer.IsActive,
             ProfileDescription = organizer.ProfileDescription,

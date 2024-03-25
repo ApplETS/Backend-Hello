@@ -24,15 +24,14 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
         Guid.TryParse(supabaseUser, out Guid userId);
         var created = userService.AddOrganizer(userId, organizer);
         var frontBaseUrl = Environment.GetEnvironmentVariable("FRONTEND_BASE_URL") ?? throw new Exception("FRONTEND_BASE_URL is not set");
-        await emailService.SendEmailAsync<UserCreationModel>(
+        await emailService.SendEmailAsync(
             organizer.Email,
             "Votre compte Hello!",
             new UserCreationModel
             {
-                Title = "Création de compte Hello!",
-                Salutation = $"Bonjour {organizer.Organization},",
+                Salutation = $"Bonjour {organizer.Organisation},",
                 AccountCreatedText = "Votre compte Hello a été créé!",
-                TemporaryPasswordHeader = "Voici votre mot de passe temporaire, assurez-vous de suivre les indications pour le modifier lors de votre première connexion. ",
+                TemporaryPasswordHeader = "Votre mot de passe temporaire est: ",
                 TemporaryPassword = strongPassword,
                 LoginButtonText = "Se connecter",
                 ButtonLink = new Uri($"{frontBaseUrl}/fr/login")
@@ -63,8 +62,7 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
                 "Votre compte Hello a été désactivé",
                 new UserDeactivationModel
                 {
-                    Title = "Désactivation de votre compte Hello",
-                    Salutation = $"Bonjour {organizer.Organisation},",
+                    Salutation = $"Bonjour {organizer.Organization},",
                     UserDeactivationHeader = "Votre compte Hello a été désactivé pour la raison suivate: ",
                     UserDeactivationReason = reason ?? "",
                 },
