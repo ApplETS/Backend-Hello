@@ -29,7 +29,8 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
             "Votre compte Hello!",
             new UserCreationModel
             {
-                Salutation = $"Bonjour {organizer.Organisation},",
+                Title = "Création de votre compte Hello",
+                Salutation = $"Bonjour {organizer.Organization},",
                 AccountCreatedText = "Votre compte Hello a été créé!",
                 TemporaryPasswordHeader = "Votre mot de passe temporaire est: ",
                 TemporaryPassword = strongPassword,
@@ -62,6 +63,7 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
                 "Votre compte Hello a été désactivé",
                 new UserDeactivationModel
                 {
+                    Title = "Désactivation de votre compte Hello",
                     Salutation = $"Bonjour {organizer.Organization},",
                     UserDeactivationHeader = "Votre compte Hello a été désactivé pour la raison suivate: ",
                     UserDeactivationReason = reason ?? "",
