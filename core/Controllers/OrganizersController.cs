@@ -1,4 +1,6 @@
-﻿using api.core.Data;
+﻿using api.core.data.entities;
+using api.core.Data;
+using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.Data.Responses;
 using api.core.Misc;
@@ -16,6 +18,19 @@ namespace api.core.controllers;
 [Route("api/moderator/organizer")]
 public class ModeratorUserController(IUserService userService, IAuthService authService, IEmailService emailService) : ControllerBase
 {
+    [AllowAnonymous]
+    [HttpGet("{organizerId}")]
+    public IActionResult GetOrganizer(Guid organizerId)
+    {
+        var user = userService.GetUser(organizerId);
+        return user.Type == "Organizer" ?
+            Ok(new Response<UserResponseDTO>
+            {
+                Data = user
+            })
+            : throw new NotFoundException<Organizer>();
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateOrganizer([FromBody] UserCreateDTO organizer)
     {
@@ -29,7 +44,7 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
             "Votre compte Hello!",
             new UserCreationModel
             {
-                Title = "Création de votre compte Hello",
+                Title = "Création de votre compte Hello!",
                 Salutation = $"Bonjour {organizer.Organization},",
                 AccountCreatedText = "Votre compte Hello a été créé!",
                 TemporaryPasswordHeader = "Votre mot de passe temporaire est: ",
