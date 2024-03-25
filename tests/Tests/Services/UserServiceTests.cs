@@ -22,6 +22,7 @@ public class UserServiceTests
         _organizerRepositoryMock = new Mock<IOrganizerRepository>();
         _moderatorRepositoryMock = new Mock<IModeratorRepository>();
         _fileShareServiceMock = new Mock<IFileShareService>();
+        _fileShareServiceMock.Setup(service => service.FileGetDownloadUri(It.IsAny<string>())).Returns(new Uri("http://example.com/avatar.webp"));
         _userService = new UserService(_organizerRepositoryMock.Object, _fileShareServiceMock.Object, _moderatorRepositoryMock.Object);
     }
 
