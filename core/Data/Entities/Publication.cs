@@ -18,19 +18,19 @@ public partial class Publication
     [Key]
     public Guid Id { get; set; }
 
-    public string Title { get; set; } = null!;
+    public string? Title { get; set; } = null!;
 
-    public string Content { get; set; } = null!;
+    public string? Content { get; set; } = null!;
 
     public string? ImageUrl { get; set; }
 
     public string? Reason { get; set; }
   
-    public string ImageAltText { get; set; } = null!;
+    public string? ImageAltText { get; set; }
 
     public State State { get; set; }
 
-    public DateTime PublicationDate { get; set; }
+    public DateTime? PublicationDate { get; set; }
 
     public Guid? ModeratorId { get; set; }
 

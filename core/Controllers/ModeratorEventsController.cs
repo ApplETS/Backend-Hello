@@ -33,7 +33,7 @@ public class ModeratorEventsController(ILogger<ModeratorEventsController> logger
         )
     {
         if (state.HasFlag(State.Draft))
-            state &= ~State.Draft; // Exclude Draft data by default
+            state &= ~State.Draft; // Exclude Draft data for moderators view
         
         logger.LogInformation("Getting events");
 

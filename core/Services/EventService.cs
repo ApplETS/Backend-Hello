@@ -67,9 +67,13 @@ public class EventService(
     {
         var organizer = orgRepo.Get(userId) ?? throw new UnauthorizedException();
 
+        if (request.Tags.Count > 5)
+            throw new BadParameterException<Event>(nameof(request.Tags), "Too many tags");
+
         var tags = tagRepo.GetAll()
             .Where(t => request.Tags.Contains(t.Id))
             ?? Enumerable.Empty<Tag>();
+        
 
         var id = Guid.NewGuid();
         var uri = fileShareService.FileGetDownloadUri($"{id}/{request.Image.FileName}");
@@ -88,7 +92,51 @@ public class EventService(
                 Content = request.Content,
                 ImageUrl = uri.ToString(),
                 ImageAltText = request.ImageAltText,
-                State = request.IsDraft ? State.Draft : State.OnHold,
+                State = State.OnHold,
+                PublicationDate = request.PublicationDate,
+                Tags = tags.ToList(),
+                Organizer = organizer,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+            },
+        });
+
+        return EventResponseDTO.Map(inserted);
+    }
+
+    public EventResponseDTO AddDraftEvent(Guid userId, DraftEventCreationRequestDTO request)
+    {
+        var organizer = orgRepo.Get(userId) ?? throw new UnauthorizedException();
+
+        if (request.Tags.Count > 5)
+            throw new BadParameterException<Event>(nameof(request.Tags), "Too many tags");
+
+        var tags = tagRepo.GetAll()
+            .Where(t => request.Tags.Contains(t.Id))
+            ?? Enumerable.Empty<Tag>();
+
+        var id = Guid.NewGuid();
+        Uri? uri = null;
+
+        if (request.Image != null)
+        {
+            uri = fileShareService.FileGetDownloadUri($"{id}/{request.Image.FileName}");
+            HandleImageSaving(id, request.Image);
+        }
+
+        var inserted = evntRepo.Add(new Event
+        {
+            Id = id,
+            EventStartDate = request.EventStartDate,
+            EventEndDate = request.EventEndDate,
+            Publication = new Publication
+            {
+                Id = id,
+                Title = request.Title,
+                Content = request.Content,
+                ImageUrl = uri?.ToString(),
+                ImageAltText = request.ImageAltText,
+                State = State.Draft,
                 PublicationDate = request.PublicationDate,
                 Tags = tags.ToList(),
                 Organizer = organizer,
@@ -116,6 +164,9 @@ public class EventService(
     {
         _ = orgRepo.Get(userId) 
             ?? throw new UnauthorizedException();
+
+        if (request.Tags.Count > 5)
+            throw new BadParameterException<Event>(nameof(request.Tags), "Too many tags");
 
         var evnt = evntRepo.Get(eventId);
         NotFoundException<Event>.ThrowIfNull(evnt);
@@ -171,6 +222,8 @@ public class EventService(
         {
             evnt.Publication.ModeratorId = moderator.Id;
         }
+        if (state == State.Draft)
+            return false;
 
         // If the event is approved and the publication date is in the past, we publish it straight away
         if (state == State.Approved && evnt.Publication.PublicationDate < DateTime.UtcNow)
@@ -188,7 +241,7 @@ public class EventService(
 
     private void SendEmailStatusChange(Event evnt, string? reason)
     {
-        var evntName = evnt.Publication.Title;
+        var evntName = evnt.Publication.Title!;
         if (evntName.Length > MAX_TITLE_LENGTH)
             evntName = evntName.Substring(0, MAX_TITLE_LENGTH) + "...";
 

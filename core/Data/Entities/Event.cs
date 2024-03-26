@@ -9,8 +9,8 @@ public partial class Event
     [Key]
     public Guid Id { get; set; }
 
-    public DateTime EventStartDate { get; set; }
-    public DateTime EventEndDate { get; set; }
+    public DateTime? EventStartDate { get; set; }
+    public DateTime? EventEndDate { get; set; }
 
     [ForeignKey("Id")]
     [InverseProperty("Event")]
