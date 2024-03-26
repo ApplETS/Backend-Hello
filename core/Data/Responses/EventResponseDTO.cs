@@ -9,9 +9,9 @@ public class EventResponseDTO
 {
     public Guid Id { get; set; }
 
-    public string Title { get; set; } = null!;
+    public string? Title { get; set; } = null!;
 
-    public string Content { get; set; } = null!;
+    public string? Content { get; set; } = null!;
 
     public string? ImageUrl { get; set; }
 
@@ -21,11 +21,11 @@ public class EventResponseDTO
 
     public string? Reason{ get; set; }
 
-    public DateTime PublicationDate { get; set; }
+    public DateTime? PublicationDate { get; set; }
 
-    public DateTime EventStartDate { get; set; }
+    public DateTime? EventStartDate { get; set; }
 
-    public DateTime EventEndDate { get; set; }
+    public DateTime? EventEndDate { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

@@ -57,6 +57,21 @@ public class OrganizerEventsController(ILogger<OrganizerEventsController> logger
             });
     }
 
+    [HttpPost("draft")]
+    public IActionResult AddDraft([FromForm] DraftEventCreationRequestDTO dto)
+    {
+        logger.LogInformation($"Adding new draft");
+
+        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
+        var evnt = eventService.AddDraftEvent(userId, dto);
+
+        return new OkObjectResult(
+            new Response<EventResponseDTO>
+            {
+                Data = evnt,
+            });
+    }
+
     [HttpDelete("{id}")]
     public IActionResult DeleteEvent(Guid id)
     {
