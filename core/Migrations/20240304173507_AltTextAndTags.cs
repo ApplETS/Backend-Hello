@@ -23,7 +23,7 @@ namespace api.core.Migrations
                 nullable: false,
                 defaultValue: "");
 
-            migrationBuilder.InsertData("Tag", TagSeed.Columns, TagSeed.TagValues);
+            migrationBuilder.InsertData("Tag", TagSeed0Initial.Columns, TagSeed0Initial.TagValues);
         }
 
         /// <inheritdoc />
@@ -40,9 +40,9 @@ namespace api.core.Migrations
                 nullable: false,
                 defaultValue: new byte[0]);
 
-            for(int i = 0; i < TagSeed.TagValues.Length; i++)
+            for(int i = 0; i < TagSeed0Initial.TagValues.Length; i++)
             {
-                Guid id = (Guid)TagSeed.TagValues[i, 0];
+                Guid id = (Guid)TagSeed0Initial.TagValues[i, 0];
                 migrationBuilder.DeleteData("Tag", "Id", id);
             }
         }
