@@ -8,6 +8,8 @@ public class TagService(ITagRepository repository) : ITagService
 {
     public IEnumerable<TagResponseDTO> GetTags()
     {
-        return repository.GetAll().Select(TagResponseDTO.Map);
+        return repository.GetAll()
+            .OrderBy(x => x.Name)
+            .Select(TagResponseDTO.Map);
     }
 }
