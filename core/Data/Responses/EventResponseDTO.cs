@@ -27,6 +27,8 @@ public class EventResponseDTO
 
     public DateTime? EventEndDate { get; set; }
 
+    public int ReportCount { get; set; } = 0;
+
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
@@ -52,6 +54,7 @@ public class EventResponseDTO
             PublicationDate = oneEvent.Publication.PublicationDate,
             EventStartDate = oneEvent.EventStartDate,
             EventEndDate = oneEvent.EventEndDate,
+            ReportCount = oneEvent.ReportCount,
             CreatedAt = oneEvent.Publication.CreatedAt,
             UpdatedAt = oneEvent.Publication.UpdatedAt,
             Moderator = oneEvent.Publication.Moderator != null ? UserResponseDTO.Map(oneEvent.Publication.Moderator!) : null,
