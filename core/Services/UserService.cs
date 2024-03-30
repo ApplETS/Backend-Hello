@@ -32,6 +32,7 @@ public class UserService(
             ActivityArea = organizerDto.ActivityArea ?? "",
             ProfileDescription = "",
             IsActive = true,
+            HasLoggedIn = false,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         });
