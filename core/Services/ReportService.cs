@@ -37,7 +37,12 @@ public class ReportService(IEventRepository eventRepository, IEventService event
         reportRepository.Add(report);
 
         eventService.UpdateEventReportCount(eventId);
+        await SendReportEmail(emailService, evnt);
 
+    }
+
+    private static async Task SendReportEmail(IEmailService emailService, Event? evnt)
+    {
         var frontBaseUrl = Environment.GetEnvironmentVariable("FRONTEND_BASE_URL") ?? throw new Exception("FRONTEND_BASE_URL is not set");
         var reportCountUntilEmail = Environment.GetEnvironmentVariable("REPORT_COUNT_UNTIL_EMAIL") ?? throw new Exception("FRONTEND_BASE_URL is not set");
         if (evnt?.ReportCount == int.Parse(reportCountUntilEmail))
@@ -62,7 +67,6 @@ public class ReportService(IEventRepository eventRepository, IEventService event
             emails.EmailsUtils.ReportTemplate
         );
         }
-
     }
 
     private bool AvoidDuplicates(Guid publicationId, CreateReportRequestDTO request)
