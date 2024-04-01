@@ -37,14 +37,14 @@ public class ReportService(IEventRepository eventRepository, IEventService event
         reportRepository.Add(report);
 
         eventService.UpdateEventReportCount(eventId);
-        await SendReportEmail(emailService, evnt);
+        await CheckAndSendReportEmailAsync(evnt);
 
     }
 
-    private async Task SendReportEmail(IEmailService emailService, Event? evnt)
+    private async Task CheckAndSendReportEmailAsync(Event? evnt)
     {
         var frontBaseUrl = Environment.GetEnvironmentVariable("FRONTEND_BASE_URL") ?? throw new Exception("FRONTEND_BASE_URL is not set");
-        var reportCountUntilEmail = Environment.GetEnvironmentVariable("REPORT_COUNT_UNTIL_EMAIL") ?? throw new Exception("FRONTEND_BASE_URL is not set");
+        var reportCountUntilEmail = Environment.GetEnvironmentVariable("REPORT_COUNT_UNTIL_EMAIL") ?? "5";
         if (evnt?.ReportCount >= int.Parse(reportCountUntilEmail) && !evnt.Publication.HasBeenReported)
         {
             var res = await emailService.SendEmailAsync(
