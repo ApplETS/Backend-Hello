@@ -47,7 +47,7 @@ public class ReportService(IEventRepository eventRepository, IEventService event
         var reportCountUntilEmail = Environment.GetEnvironmentVariable("REPORT_COUNT_UNTIL_EMAIL") ?? throw new Exception("FRONTEND_BASE_URL is not set");
         if (evnt?.ReportCount >= int.Parse(reportCountUntilEmail) && !evnt.Publication.HasBeenReported)
         {
-            await emailService.SendEmailAsync(
+            var res = await emailService.SendEmailAsync(
                 "hugo.migner.1@ens.etsmtl.ca", // TODO: Moderator email
                 $"Alerte de signalements: {evnt.Publication.Title}",
                 new ReportModel
@@ -66,7 +66,10 @@ public class ReportService(IEventRepository eventRepository, IEventService event
                 },
                 emails.EmailsUtils.ReportTemplate
             );
-            eventService.UpdateEventHasBeenReported(evnt.Id);
+            if ((res != null) && res.Successful)
+            {
+                eventService.UpdateEventHasBeenReported(evnt.Id);
+            }
         }
     }
 
