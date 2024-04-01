@@ -111,7 +111,7 @@ public class UserService(
                     ActivityArea = dto.ActivityArea ?? "",
                     ProfileDescription = dto.ProfileDescription ?? "",
                     IsActive = user.IsActive,
-                    HasLoggedIn = user.HasLoggedIn,
+                    HasLoggedIn = dto.HasLoggedIn ?? true,
                     FacebookLink = dto.FacebookLink,
                     InstagramLink = dto.InstagramLink,
                     TikTokLink = dto.TikTokLink,
