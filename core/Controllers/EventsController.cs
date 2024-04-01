@@ -30,7 +30,7 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
     /// <param name="pagination">Sort and take only the necessary page</param>
     /// <returns>events filtered and sorted</returns>
     [HttpGet]
-    [OutputCache(VaryByQueryKeys = [ "startDate", "endDate", "activityAreas", "tags", "pageNumber", "title", "organizerId", "pageSize" ])]
+    [OutputCache(VaryByQueryKeys = [ "startDate", "endDate", "organizerId", "title", "activityAreas", "tags", "pageNumber", "pageSize" ])]
     public ActionResult<IEnumerable<EventResponseDTO>> GetEvents(
         [FromQuery] DateTime? startDate,
         [FromQuery] DateTime? endDate,
