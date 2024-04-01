@@ -48,12 +48,12 @@ public class ReportService(IEventRepository eventRepository, IEventService event
         if (evnt?.ReportCount >= int.Parse(reportCountUntilEmail) && !evnt.Publication.HasBeenReported)
         {
             var res = await emailService.SendEmailAsync(
-                "hugo.migner.1@ens.etsmtl.ca", // TODO: Moderator email
+                evnt.Publication.Moderator.Email, // TODO: Moderator email
                 $"Alerte de signalements: {evnt.Publication.Title}",
                 new ReportModel
                 {
                     Title = "Alerte de signalement",
-                    Salutation = $"Bonjour Moderateur,", // TODO: Moderateur name
+                    Salutation = $"Bonjour {evnt.Publication.Moderator.Email},", // TODO: Moderateur name
                     AlertSubject = "Alerte de rapports d'événement",
                     AlertMessage = "L'événement suivant a reçu plusieurs rapports:",
                     EventTitleHeader = "Titre de l'événement: ",
@@ -68,7 +68,7 @@ public class ReportService(IEventRepository eventRepository, IEventService event
             );
             if ((res != null) && res.Successful)
             {
-                eventService.UpdateEventHasBeenReported(evnt.Id);
+                eventService.UpdatePublicationHasBeenReported(evnt.Id);
             }
         }
     }
