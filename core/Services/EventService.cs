@@ -10,13 +10,10 @@ using api.emails.Models;
 using api.emails.Services.Abstractions;
 using api.files.Services.Abstractions;
 
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
-
-using static System.Net.WebRequestMethods;
 
 namespace api.core.Services;
 

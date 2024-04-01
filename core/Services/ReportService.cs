@@ -5,7 +5,6 @@ using api.core.Data.Responses;
 using api.core.repositories.abstractions;
 using api.core.services.abstractions;
 using api.emails.Models;
-using api.emails.Services;
 using api.emails.Services.Abstractions;
 
 

@@ -1,13 +1,9 @@
-using api.core.data.entities;
 using api.core.Data;
 using api.core.Data.Enums;
 using api.core.Data.Requests;
 using api.core.Data.Responses;
 using api.core.Misc;
 using api.core.services.abstractions;
-using api.emails.Models;
-using api.emails.Services;
-using api.emails.Services.Abstractions;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
