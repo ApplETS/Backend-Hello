@@ -185,7 +185,7 @@ public class EventService(
 
         evnt.EventStartDate = request.EventStartDate;
         evnt.EventEndDate = request.EventEndDate;
-        evnt.ReportCount = request.ReportCount;
+        evnt.Publication.ReportCount = request.ReportCount;
         evnt.Publication.Title = request.Title;
         evnt.Publication.Content = request.Content;
         evnt.Publication.State = State.OnHold;
@@ -312,7 +312,7 @@ public class EventService(
 
         if (evnt == null) return false;
 
-        evnt.ReportCount++;
+        evnt.Publication.ReportCount++;
 
         return evntRepo.Update(eventId, evnt);
     }

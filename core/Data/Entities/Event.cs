@@ -12,8 +12,6 @@ public partial class Event
     public DateTime? EventStartDate { get; set; }
     public DateTime? EventEndDate { get; set; }
 
-    public int ReportCount { get; set; } = 0;
-
     [ForeignKey("Id")]
     [InverseProperty("Event")]
     public virtual Publication Publication { get; set; } = null!;

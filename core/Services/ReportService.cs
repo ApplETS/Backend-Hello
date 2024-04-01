@@ -44,7 +44,7 @@ public class ReportService(IEventRepository eventRepository, IEventService event
     {
         var frontBaseUrl = Environment.GetEnvironmentVariable("FRONTEND_BASE_URL") ?? throw new Exception("FRONTEND_BASE_URL is not set");
         var reportCountUntilEmail = Environment.GetEnvironmentVariable("REPORT_COUNT_UNTIL_EMAIL") ?? "5";
-        if (evnt?.ReportCount >= int.Parse(reportCountUntilEmail) && !evnt.Publication.HasBeenReported)
+        if (evnt?.Publication.ReportCount >= int.Parse(reportCountUntilEmail) && !evnt.Publication.HasBeenReported)
         {
             var res = await emailService.SendEmailAsync(
                 evnt.Publication.Moderator.Email, // TODO: Moderator email
@@ -58,7 +58,7 @@ public class ReportService(IEventRepository eventRepository, IEventService event
                     EventTitleHeader = "Titre de l'événement: ",
                     EventTitle = $"{evnt.Publication.Title}",
                     NumberOfReportsHeader = "Nombre de rapports: ",
-                    NumberOfReports = evnt.ReportCount,
+                    NumberOfReports = evnt.Publication.ReportCount,
                     ActionRequiredMessage = "Veuillez prendre les mesures nécessaires.",
                     ViewEventButtonText = "Voir l'événement",
                     EventLink = new Uri($"{frontBaseUrl}/fr/login") // Replace with actual event URL

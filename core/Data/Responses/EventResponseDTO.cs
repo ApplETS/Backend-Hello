@@ -79,7 +79,7 @@ public class EventModeratorResponseDTO : EventResponseDTO
             PublicationDate = oneEvent.Publication.PublicationDate,
             EventStartDate = oneEvent.EventStartDate,
             EventEndDate = oneEvent.EventEndDate,
-            ReportCount = oneEvent.ReportCount,
+            ReportCount = oneEvent.Publication.ReportCount,
             CreatedAt = oneEvent.Publication.CreatedAt,
             UpdatedAt = oneEvent.Publication.UpdatedAt,
             Moderator = oneEvent.Publication.Moderator != null ? UserResponseDTO.Map(oneEvent.Publication.Moderator!) : null,
