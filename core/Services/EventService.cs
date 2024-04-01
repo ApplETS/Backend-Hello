@@ -320,6 +320,17 @@ public class EventService(
         return evntRepo.Update(eventId, evnt);
     }
 
+    public bool UpdatePublicationHasBeenReported(Guid eventId)
+    {
+        var evnt = evntRepo.Get(eventId);
+
+        if (evnt == null) return false;
+
+        evnt.Publication.HasBeenReported = true;
+
+        return evntRepo.Update(eventId, evnt);
+    }
+
     private void HandleImageSaving(Guid eventId, IFormFile imageFile)
     {
         byte[] imageBytes = [];

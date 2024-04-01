@@ -32,6 +32,8 @@ public partial class Publication
 
     public DateTime? PublicationDate { get; set; }
 
+    public bool HasBeenReported { get; set; } = false;
+
     public Guid? ModeratorId { get; set; }
 
     public Guid OrganizerId { get; set; }
