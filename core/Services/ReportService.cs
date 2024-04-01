@@ -61,7 +61,7 @@ public class ReportService(IEventRepository eventRepository, IEventService event
                     NumberOfReports = evnt.Publication.ReportCount,
                     ActionRequiredMessage = "Veuillez prendre les mesures nécessaires.",
                     ViewEventButtonText = "Voir l'événement",
-                    EventLink = new Uri($"{frontBaseUrl}/fr/login") // Replace with actual event URL
+                    EventLink = new Uri($"{frontBaseUrl}/fr/dashboard/publications?id={evnt.Id}") // Replace with actual event URL
                 },
                 emails.EmailsUtils.ReportTemplate
             );
