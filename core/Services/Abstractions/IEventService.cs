@@ -22,7 +22,7 @@ public interface IEventService
 
     public bool UpdateEventReportCount(Guid eventId);
 
-    public bool UpdateEventHasBeenReported(Guid eventId);
+    public bool UpdatePublicationHasBeenReported(Guid eventId);
 
     public int PublishedIfApprovedPassedDue();
 }
