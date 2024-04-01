@@ -248,6 +248,23 @@ public class EventServiceTests
         events.Should().HaveCount(2);
     }
 
+    [Fact]
+    public void GetEvents_ShouldReturnOnlyEventsWithMatchingTitle()
+    {
+        // Arrange
+        var titleToMatch = "EVENT IN 5 DAYS";
+        _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
+
+        // Act
+        var events = _eventService.GetEvents(null, null, null, null, null, titleToMatch, State.All);
+
+        // Assert
+        _mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
+        events.Should().NotBeEmpty();
+        events.Should().HaveCount(1);
+        events.Should().OnlyContain(e => e.Title.Contains(titleToMatch));
+    }
+
 
     [Fact]
     public void GetEvent_ShouldThrowAnException()
