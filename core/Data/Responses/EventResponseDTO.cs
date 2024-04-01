@@ -27,8 +27,6 @@ public class EventResponseDTO
 
     public DateTime? EventEndDate { get; set; }
 
-    public int ReportCount { get; set; } = 0;
-
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
@@ -42,6 +40,33 @@ public class EventResponseDTO
     public static EventResponseDTO Map(Event oneEvent)
     {
         return new EventResponseDTO
+        {
+            Id = oneEvent.Id,
+            Title = oneEvent.Publication.Title,
+            Content = oneEvent.Publication.Content,
+            ImageUrl = oneEvent.Publication.ImageUrl,
+            ImageAltText = oneEvent.Publication.ImageAltText,
+            Tags = oneEvent.Publication.Tags.Select(TagResponseDTO.Map),
+            State = oneEvent.Publication.State,
+            Reason = oneEvent.Publication.Reason,
+            PublicationDate = oneEvent.Publication.PublicationDate,
+            EventStartDate = oneEvent.EventStartDate,
+            EventEndDate = oneEvent.EventEndDate,
+            CreatedAt = oneEvent.Publication.CreatedAt,
+            UpdatedAt = oneEvent.Publication.UpdatedAt,
+            Moderator = oneEvent.Publication.Moderator != null ? UserResponseDTO.Map(oneEvent.Publication.Moderator!) : null,
+            Organizer = UserResponseDTO.Map(oneEvent.Publication.Organizer),
+        };
+    }
+}
+
+public class EventModeratorResponseDTO : EventResponseDTO
+{
+    public int ReportCount { get; set; } = 0;
+
+    public static new EventModeratorResponseDTO Map(Event oneEvent)
+    {
+        return new EventModeratorResponseDTO
         {
             Id = oneEvent.Id,
             Title = oneEvent.Publication.Title,

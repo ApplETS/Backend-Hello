@@ -4,11 +4,14 @@ using api.core.Data.Requests;
 using api.core.Data.Responses;
 using api.core.repositories.abstractions;
 using api.core.services.abstractions;
+using api.emails.Models;
+using api.emails.Services;
+using api.emails.Services.Abstractions;
 
 
 namespace api.core.Services;
 
-public class ReportService(IEventRepository eventRepository, IEventService eventService, IReportRepository reportRepository) : IReportService
+public class ReportService(IEventRepository eventRepository, IEventService eventService, IEmailService emailService, IReportRepository reportRepository) : IReportService
 {
     public IEnumerable<ReportResponseDTO> GetReports()
     {
@@ -16,14 +19,12 @@ public class ReportService(IEventRepository eventRepository, IEventService event
         return reports.Select(ReportResponseDTO.Map).ToList();
     }
 
-    public void ReportEvent(Guid eventId, CreateReportRequestDTO request)
+    public async void ReportEvent(Guid eventId, CreateReportRequestDTO request)
     {
         if (AvoidDuplicates(eventId, request)) return;
 
         var evnt = eventRepository.Get(eventId);
         NotFoundException<Event>.ThrowIfNull(evnt);
-
-        eventService.UpdateEventReportCount(eventId);
 
         var report = new Report
         {
@@ -34,6 +35,33 @@ public class ReportService(IEventRepository eventRepository, IEventService event
             UpdatedAt = DateTime.UtcNow
         };
         reportRepository.Add(report);
+
+        eventService.UpdateEventReportCount(eventId);
+
+        var frontBaseUrl = Environment.GetEnvironmentVariable("FRONTEND_BASE_URL") ?? throw new Exception("FRONTEND_BASE_URL is not set");
+        var reportCountUntilEmail = Environment.GetEnvironmentVariable("REPORT_COUNT_UNTIL_EMAIL") ?? throw new Exception("FRONTEND_BASE_URL is not set");
+        if (evnt?.ReportCount == int.Parse(reportCountUntilEmail))
+        {
+            await emailService.SendEmailAsync(
+            "hugo.migner.1@ens.etsmtl.ca", // TODO: Moderator email
+            $"Alerte de signalements: {evnt.Publication.Title}",
+            new ReportModel
+            {
+                Title = "Alerte de signalement",
+                Salutation = $"Bonjour Moderateur,", // TODO: Moderateur name
+                AlertSubject = "Alerte de rapports d'événement",
+                AlertMessage = "L'événement suivant a reçu plusieurs rapports:",
+                EventTitleHeader = "Titre de l'événement: ",
+                EventTitle = $"{evnt.Publication.Title}",
+                NumberOfReportsHeader = "Nombre de rapports: ",
+                NumberOfReports = evnt.ReportCount,
+                ActionRequiredMessage = "Veuillez prendre les mesures nécessaires.",
+                ViewEventButtonText = "Voir l'événement",
+                EventLink = new Uri($"{frontBaseUrl}/fr/login") // Replace with actual event URL
+            },
+            emails.EmailsUtils.ReportTemplate
+        );
+        }
 
     }
 

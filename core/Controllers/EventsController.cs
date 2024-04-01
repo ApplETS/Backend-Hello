@@ -17,7 +17,7 @@ namespace api.core.controllers;
 
 [ApiController]
 [Route("api/events")]
-public class EventsController(ILogger<EventsController> logger, IEventService eventService, ITagService tagService, IReportService reportService, IEmailService emailService) : ControllerBase
+public class EventsController(ILogger<EventsController> logger, IEventService eventService, ITagService tagService, IReportService reportService) : ControllerBase
 {
 
     public const string RATE_LIMITING_POLICY_NAME = "EventsControllerRateLimitPolicy";
@@ -73,36 +73,11 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
 
     [HttpPost("{id}/reports")]
     [EnableRateLimiting(RATE_LIMITING_POLICY_NAME)]
-    public async Task<IActionResult> ReportEvent(Guid id, [FromBody] CreateReportRequestDTO request)
+    public IActionResult ReportEvent(Guid id, [FromBody] CreateReportRequestDTO request)
     {
         logger.LogInformation($"Reporting event {id}");
 
         reportService.ReportEvent(id, request);
-
-        var evnt = eventService.GetEvent(id);
-
-        if(evnt.ReportCount == 5) // TODO: Add constant
-        {
-            await emailService.SendEmailAsync(
-            "hugo.migner.1@ens.etsmtl.ca", // TODO: Moderator email
-            $"Alerte de signalements: {evnt.Title}",
-            new ReportModel
-            {
-                Title = "Alerte de signalement",
-                Salutation = $"Bonjour Moderateur,", // TODO: Moderateur name
-                AlertSubject = "Alerte de rapports d'événement",
-                AlertMessage = "L'événement suivant a reçu plusieurs rapports:",
-                EventTitleHeader = "Titre de l'événement: ",
-                EventTitle = "Titre de l'événement ici", // Replace with actual event title
-                NumberOfReportsHeader = "Nombre de rapports: ",
-                NumberOfReports = 5, // Replace with actual number of reports
-                ActionRequiredMessage = "Veuillez prendre les mesures nécessaires.",
-                ViewEventButtonText = "Voir l'événement",
-                EventLink = new Uri($"http://localhost:3000/fr/login") // Replace with actual event URL
-            },
-            emails.EmailsUtils.ReportTemplate
-        );
-        }
 
         return Ok();
     }
