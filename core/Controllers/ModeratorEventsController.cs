@@ -39,7 +39,7 @@ public class ModeratorEventsController(ILogger<ModeratorEventsController> logger
 
         var validFilter = new PaginationRequest(pagination.PageNumber, pagination.PageSize);
 
-        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags, null, state, ignorePublicationDate: true);
+        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags, null, null, state, ignorePublicationDate: true);
         var totalRecords = events.Count();
         var paginatedRes = events
             .Skip((pagination.PageNumber - 1) * pagination.PageSize)
