@@ -8,7 +8,7 @@ using api.core.services.abstractions;
 
 namespace api.core.Services;
 
-public class ReportService(IEventRepository eventRepository, IReportRepository reportRepository) : IReportService
+public class ReportService(IEventRepository eventRepository, IEventService eventService, IReportRepository reportRepository) : IReportService
 {
     public IEnumerable<ReportResponseDTO> GetReports()
     {
@@ -23,6 +23,8 @@ public class ReportService(IEventRepository eventRepository, IReportRepository r
         var evnt = eventRepository.Get(eventId);
         NotFoundException<Event>.ThrowIfNull(evnt);
 
+        eventService.UpdateEventReportCount(eventId);
+
         var report = new Report
         {
             PublicationId = eventId,
@@ -32,6 +34,7 @@ public class ReportService(IEventRepository eventRepository, IReportRepository r
             UpdatedAt = DateTime.UtcNow
         };
         reportRepository.Add(report);
+
     }
 
     private bool AvoidDuplicates(Guid publicationId, CreateReportRequestDTO request)

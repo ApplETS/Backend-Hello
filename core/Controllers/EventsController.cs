@@ -81,10 +81,10 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
 
         var evnt = eventService.GetEvent(id);
 
-        if(evnt.ReportCount > 5) // TODO: Add constant
+        if(evnt.ReportCount == 5) // TODO: Add constant
         {
             await emailService.SendEmailAsync(
-            "moderator@email", // TODO: Moderator email
+            "hugo.migner.1@ens.etsmtl.ca", // TODO: Moderator email
             $"Alerte de signalements: {evnt.Title}",
             new ReportModel
             {
@@ -98,7 +98,7 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
                 NumberOfReports = 5, // Replace with actual number of reports
                 ActionRequiredMessage = "Veuillez prendre les mesures nécessaires.",
                 ViewEventButtonText = "Voir l'événement",
-                EventLink = new Uri("URL_de_votre_evenement") // Replace with actual event URL
+                EventLink = new Uri($"http://localhost:3000/fr/login") // Replace with actual event URL
             },
             emails.EmailsUtils.ReportTemplate
         );

@@ -10,6 +10,7 @@ using api.emails.Models;
 using api.emails.Services.Abstractions;
 using api.files.Services.Abstractions;
 
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 using SixLabors.ImageSharp;
@@ -187,6 +188,7 @@ public class EventService(
 
         evnt.EventStartDate = request.EventStartDate;
         evnt.EventEndDate = request.EventEndDate;
+        evnt.ReportCount = request.ReportCount;
         evnt.Publication.Title = request.Title;
         evnt.Publication.Content = request.Content;
         evnt.Publication.State = State.OnHold;
@@ -305,6 +307,17 @@ public class EventService(
         }
 
         return eventsToUpdate.Count;
+    }
+
+    public bool UpdateEventReportCount(Guid eventId)
+    {
+        var evnt = evntRepo.Get(eventId);
+
+        if (evnt == null) return false;
+
+        evnt.ReportCount++;
+
+        return evntRepo.Update(eventId, evnt);
     }
 
     private void HandleImageSaving(Guid eventId, IFormFile imageFile)
