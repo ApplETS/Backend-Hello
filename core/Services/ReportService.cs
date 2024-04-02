@@ -54,7 +54,7 @@ public class ReportService(IEventRepository eventRepository, IEventService event
                     Title = "Alerte de signalement",
                     Salutation = $"Bonjour {evnt.Publication.Moderator.Email},",
                     AlertSubject = "Alerte de rapports d'événement",
-                    AlertMessage = "L'événement suivant a reçu plusieurs rapports:",
+                    AlertMessage = "L'événement suivant a reçu plusieurs signalement:",
                     EventTitleHeader = "Titre de l'événement: ",
                     EventTitle = $"{evnt.Publication.Title}",
                     NumberOfReportsHeader = "Nombre de rapports: ",
