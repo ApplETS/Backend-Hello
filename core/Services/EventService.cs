@@ -37,6 +37,7 @@ public class EventService(
         IEnumerable<string>? activityAreas,
         IEnumerable<Guid>? tags,
         Guid? organizerId,
+        string? title,
         State state,
         bool ignorePublicationDate = false)
     {
@@ -49,6 +50,7 @@ public class EventService(
          (endDate == null || e.EventStartDate <= endDate) &&
          (state.HasFlag(e.Publication.State)) &&
          (organizerId == null || e.Publication.OrganizerId == organizerId) &&
+         (title == null || (e.Publication.Title != null && e.Publication.Title.Contains(title))) &&
          (tags.IsNullOrEmpty() || e.Publication.Tags.Any(t => tags!.Any(tt => t.Id == tt))) &&
          (activityAreas.IsNullOrEmpty() || activityAreas!.Any(aa => aa == e.Publication.Organizer.ActivityArea)))
             .OrderBy(e => e.EventStartDate)

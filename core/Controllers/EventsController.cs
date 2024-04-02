@@ -24,16 +24,18 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
     /// <param name="startDate">if null, will get every event until the first element</param>
     /// <param name="endDate">if null, will get every element unitl infinity</param>
     /// <param name="organizerId">Filter by organizerId</param>
+    /// <param name="title">Filter by title</param>
     /// <param name="activityAreas">Filter by a list of OR applicable activityAreas</param>
     /// <param name="tags">Filter by a list of OR applicable tags</param>
     /// <param name="pagination">Sort and take only the necessary page</param>
     /// <returns>events filtered and sorted</returns>
     [HttpGet]
-    [OutputCache(VaryByQueryKeys = [ "startDate", "endDate", "activityAreas", "tags", "pageNumber", "pageSize" ])]
+    [OutputCache(VaryByQueryKeys = [ "startDate", "endDate", "organizerId", "title", "activityAreas", "tags", "pageNumber", "pageSize" ])]
     public ActionResult<IEnumerable<EventResponseDTO>> GetEvents(
         [FromQuery] DateTime? startDate,
         [FromQuery] DateTime? endDate,
         [FromQuery] Guid? organizerId,
+        [FromQuery] string? title,
         [FromQuery] IEnumerable<string>? activityAreas,
         [FromQuery] IEnumerable<Guid>? tags,
         [FromQuery] PaginationRequest pagination)
@@ -41,7 +43,7 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
         logger.LogInformation("Getting events");
         var validFilter = new PaginationRequest(pagination.PageNumber, pagination.PageSize);
 
-        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags, organizerId, State.Published);
+        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags, organizerId, title, State.Published);
         var totalRecords = events.Count();
         var paginatedRes = events
             .Skip((pagination.PageNumber - 1) * pagination.PageSize)

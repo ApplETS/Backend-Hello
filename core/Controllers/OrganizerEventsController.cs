@@ -31,7 +31,7 @@ public class OrganizerEventsController(ILogger<OrganizerEventsController> logger
         logger.LogInformation("Getting events");
         var validFilter = new PaginationRequest(pagination.PageNumber, pagination.PageSize);
 
-        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags, userId, state, ignorePublicationDate: true);
+        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags, userId, null, state, ignorePublicationDate: true);
         var totalRecords = events.Count();
         var paginatedRes = events
             .Skip((pagination.PageNumber - 1) * pagination.PageSize)
