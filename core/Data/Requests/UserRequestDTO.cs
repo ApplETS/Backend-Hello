@@ -13,6 +13,8 @@ public class UserUpdateDTO : UserCreateDTO
 {
     public Guid Id { get; set; }
 
+    public bool? HasLoggedIn { get; set; }
+
     public string? ProfileDescription { get; set; } = null!;
 
     public string? FacebookLink { get; set; }

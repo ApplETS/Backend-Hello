@@ -32,6 +32,7 @@ public class UserService(
             ActivityArea = organizerDto.ActivityArea ?? "",
             ProfileDescription = "",
             IsActive = true,
+            HasLoggedIn = false,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         });
@@ -110,6 +111,7 @@ public class UserService(
                     ActivityArea = dto.ActivityArea ?? "",
                     ProfileDescription = dto.ProfileDescription ?? "",
                     IsActive = user.IsActive,
+                    HasLoggedIn = dto.HasLoggedIn ?? true,
                     FacebookLink = dto.FacebookLink,
                     InstagramLink = dto.InstagramLink,
                     TikTokLink = dto.TikTokLink,
