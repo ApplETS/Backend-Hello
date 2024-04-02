@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 using api.core.Data.Entities;
 
@@ -9,8 +8,6 @@ namespace api.core.data.entities;
 public partial class Organizer : User
 {
     public string Organization { get; set; } = null!;
-
-    public string ActivityArea { get; set; } = null!;
 
     public string ProfileDescription { get; set; } = null!;
 
@@ -34,4 +31,8 @@ public partial class Organizer : User
 
     [InverseProperty("Organizer")]
     public virtual ICollection<Publication> Publications { get; set; } = new List<Publication>();
+
+    [ForeignKey("ActivityAreaId")]
+    [InverseProperty("Organizer")]
+    public virtual ActivityArea ActivityArea { get; set; }
 }

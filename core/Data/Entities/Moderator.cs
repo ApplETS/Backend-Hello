@@ -9,4 +9,8 @@ public partial class Moderator : User
 {
     [InverseProperty("Moderator")]
     public virtual ICollection<Publication> Publications { get; set; } = new List<Publication>();
+
+    [ForeignKey("ActivityAreaId")]
+    [InverseProperty("Organizer")]
+    public virtual ActivityArea? ActivityArea { get; set; }
 }

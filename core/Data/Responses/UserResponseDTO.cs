@@ -16,7 +16,7 @@ public class UserResponseDTO
 
     public string? Organization { get; set; }
 
-    public string? ActivityArea { get; set; }
+    public ActivityAreaResponseDTO? ActivityArea { get; set; }
 
     public bool IsActive { get; set; }
 
@@ -50,7 +50,9 @@ public class UserResponseDTO
             Email = organizer.Email,
             Type = "Organizer",
             Organization = organizer.Organization,
-            ActivityArea = organizer.ActivityArea,
+            ActivityArea = organizer.ActivityArea != null ?
+                ActivityAreaResponseDTO.Map(organizer.ActivityArea) :
+                null,
             IsActive = organizer.IsActive,
             ProfileDescription = organizer.ProfileDescription,
             FacebookLink = organizer.FacebookLink,

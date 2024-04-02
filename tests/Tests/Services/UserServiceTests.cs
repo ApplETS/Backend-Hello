@@ -36,12 +36,13 @@ public class UserServiceTests
             Organization = "ExampleOrg",
             ActivityArea = "Tech"
         };
+        var actArea = Guid.NewGuid();
 
         var organizer = new Organizer
         {
             Email = organizerDto.Email,
             Organization = organizerDto.Organization,
-            ActivityArea = organizerDto.ActivityArea,
+            ActivityAreaId = actArea,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -55,7 +56,7 @@ public class UserServiceTests
         result.Should().NotBeNull();
         result.Email.Should().Be(organizerDto.Email);
         result.Organization.Should().Be(organizerDto.Organization);
-        result.ActivityArea.Should().Be(organizerDto.ActivityArea);
+        result.ActivityArea.Id.ToString().Should().Be(actArea.ToString());
 
         _organizerRepositoryMock.Verify(repo => repo.Add(It.IsAny<Organizer>()), Times.Once);
     }
@@ -70,7 +71,14 @@ public class UserServiceTests
             Id = organizerId,
             Email = "john.doe@example.com",
             Organization = "ExampleOrg",
-            ActivityArea = "Tech",
+            ActivityArea = new ActivityArea
+            {
+                Id = Guid.NewGuid(),
+                NameFr = "Tech",
+                NameEn = "Tech",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            },
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
