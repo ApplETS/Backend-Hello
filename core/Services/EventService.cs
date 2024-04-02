@@ -15,8 +15,6 @@ using Microsoft.IdentityModel.Tokens;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 
-using static System.Net.WebRequestMethods;
-
 namespace api.core.Services;
 
 public class EventService(
@@ -189,6 +187,7 @@ public class EventService(
 
         evnt.EventStartDate = request.EventStartDate;
         evnt.EventEndDate = request.EventEndDate;
+        evnt.Publication.ReportCount = request.ReportCount;
         evnt.Publication.Title = request.Title;
         evnt.Publication.Content = request.Content;
         evnt.Publication.State = State.OnHold;
@@ -307,6 +306,28 @@ public class EventService(
         }
 
         return eventsToUpdate.Count;
+    }
+
+    public bool UpdateEventReportCount(Guid eventId)
+    {
+        var evnt = evntRepo.Get(eventId);
+
+        if (evnt == null) return false;
+
+        evnt.Publication.ReportCount++;
+
+        return evntRepo.Update(eventId, evnt);
+    }
+
+    public bool UpdatePublicationHasBeenReported(Guid eventId)
+    {
+        var evnt = evntRepo.Get(eventId);
+
+        if (evnt == null) return false;
+
+        evnt.Publication.HasBeenReported = true;
+
+        return evntRepo.Update(eventId, evnt);
     }
 
     private void HandleImageSaving(Guid eventId, IFormFile imageFile)

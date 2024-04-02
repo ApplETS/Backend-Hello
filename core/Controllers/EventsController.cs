@@ -75,7 +75,7 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
     {
         logger.LogInformation($"Reporting event {id}");
 
-        reportService.ReportEvent(id, request);
+        reportService.ReportEventAsync(id, request);
 
         return Ok();
     }

@@ -45,13 +45,41 @@ public class EventResponseDTO
             Title = oneEvent.Publication.Title,
             Content = oneEvent.Publication.Content,
             ImageUrl = oneEvent.Publication.ImageUrl,
-            ImageAltText = oneEvent.Publication.ImageAltText,
+            ImageAltText = oneEvent.Publication.ImageAltText!,
             Tags = oneEvent.Publication.Tags.Select(TagResponseDTO.Map),
             State = oneEvent.Publication.State,
             Reason = oneEvent.Publication.Reason,
             PublicationDate = oneEvent.Publication.PublicationDate,
             EventStartDate = oneEvent.EventStartDate,
             EventEndDate = oneEvent.EventEndDate,
+            CreatedAt = oneEvent.Publication.CreatedAt,
+            UpdatedAt = oneEvent.Publication.UpdatedAt,
+            Moderator = oneEvent.Publication.Moderator != null ? UserResponseDTO.Map(oneEvent.Publication.Moderator!) : null,
+            Organizer = UserResponseDTO.Map(oneEvent.Publication.Organizer),
+        };
+    }
+}
+
+public class EventModeratorResponseDTO : EventResponseDTO
+{
+    public int ReportCount { get; set; } = 0;
+
+    public static new EventModeratorResponseDTO Map(Event oneEvent)
+    {
+        return new EventModeratorResponseDTO
+        {
+            Id = oneEvent.Id,
+            Title = oneEvent.Publication.Title,
+            Content = oneEvent.Publication.Content,
+            ImageUrl = oneEvent.Publication.ImageUrl,
+            ImageAltText = oneEvent.Publication.ImageAltText!,
+            Tags = oneEvent.Publication.Tags.Select(TagResponseDTO.Map),
+            State = oneEvent.Publication.State,
+            Reason = oneEvent.Publication.Reason,
+            PublicationDate = oneEvent.Publication.PublicationDate,
+            EventStartDate = oneEvent.EventStartDate,
+            EventEndDate = oneEvent.EventEndDate,
+            ReportCount = oneEvent.Publication.ReportCount,
             CreatedAt = oneEvent.Publication.CreatedAt,
             UpdatedAt = oneEvent.Publication.UpdatedAt,
             Moderator = oneEvent.Publication.Moderator != null ? UserResponseDTO.Map(oneEvent.Publication.Moderator!) : null,

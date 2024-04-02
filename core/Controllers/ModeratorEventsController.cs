@@ -23,7 +23,7 @@ public class ModeratorEventsController(ILogger<ModeratorEventsController> logger
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<EventResponseDTO>> GetEventsModerator(
+    public ActionResult<IEnumerable<EventModeratorResponseDTO>> GetEventsModerator(
         [FromQuery] DateTime? startDate,
         [FromQuery] DateTime? endDate,
         [FromQuery] IEnumerable<string>? activityAreas,

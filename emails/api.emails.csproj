@@ -10,12 +10,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Views\Report.cshtml" />
     <None Remove="Views\StatusChange.cshtml" />
     <None Remove="Views\UserDeactivation.cshtml" />
     <None Remove="Views\UserSignUp.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Views\Report.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\UserDeactivation.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

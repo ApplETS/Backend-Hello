@@ -20,5 +20,9 @@ public interface IEventService
 
     public bool UpdateEventState(Guid userId, Guid eventId, State state, string? reason);
 
+    public bool UpdateEventReportCount(Guid eventId);
+
+    public bool UpdatePublicationHasBeenReported(Guid eventId);
+
     public int PublishedIfApprovedPassedDue();
 }
