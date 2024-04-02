@@ -3,6 +3,7 @@ using api.core.Data.Enums;
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.repositories.abstractions;
+using api.core.services.abstractions;
 using api.core.Services;
 using api.emails.Models;
 using api.emails.Services.Abstractions;
@@ -144,6 +145,7 @@ public class EventServiceTests
     private readonly Mock<IModeratorRepository> _mockModeratorRepository;
     private readonly Mock<IFileShareService> _mockFileShareService;
     private readonly Mock<IEmailService> _mockEmailService;
+    private readonly Mock<IUserService> _mockUserService;
     private readonly Mock<IConfiguration> _mockConfig;
 
     public EventServiceTests()
@@ -154,6 +156,7 @@ public class EventServiceTests
         _mockModeratorRepository = new Mock<IModeratorRepository>();
         _mockFileShareService = new Mock<IFileShareService>();
         _mockEmailService = new Mock<IEmailService>();
+        _mockUserService = new Mock<IUserService>();
         _mockConfig = new Mock<IConfiguration>();
 
         _eventService = new EventService(
@@ -162,7 +165,8 @@ public class EventServiceTests
             _mockOrganizerRepository.Object,
             _mockModeratorRepository.Object,
             _mockFileShareService.Object,
-            _mockEmailService.Object
+            _mockEmailService.Object,
+            _mockUserService.Object
             );
     }
 
@@ -262,7 +266,7 @@ public class EventServiceTests
         _mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
         events.Should().NotBeEmpty();
         events.Should().HaveCount(1);
-        events.Should().OnlyContain(e => e.Title.Contains(titleToMatch));
+        events.Should().OnlyContain(e => e.Title!.Contains(titleToMatch));
     }
 
 
@@ -391,7 +395,8 @@ public class EventServiceTests
             _mockOrganizerRepository.Object,
             _mockModeratorRepository.Object,
             _mockFileShareService.Object,
-            _mockEmailService.Object);
+            _mockEmailService.Object,
+            _mockUserService.Object);
 
         // Act
         var result = _eventService.UpdateEvent(userId, eventId, request);
