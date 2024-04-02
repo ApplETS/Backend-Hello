@@ -18,7 +18,7 @@ public class ReportService(IEventRepository eventRepository, IEventService event
         return reports.Select(ReportResponseDTO.Map).ToList();
     }
 
-    public async void ReportEvent(Guid eventId, CreateReportRequestDTO request)
+    public async Task ReportEventAsync(Guid eventId, CreateReportRequestDTO request)
     {
         if (AvoidDuplicates(eventId, request)) return;
 
@@ -47,12 +47,12 @@ public class ReportService(IEventRepository eventRepository, IEventService event
         if (evnt?.Publication.ReportCount >= int.Parse(reportCountUntilEmail) && !evnt.Publication.HasBeenReported)
         {
             var res = await emailService.SendEmailAsync(
-                evnt.Publication.Moderator.Email, // TODO: Moderator email
+                evnt.Publication.Moderator!.Email,
                 $"Alerte de signalements: {evnt.Publication.Title}",
                 new ReportModel
                 {
                     Title = "Alerte de signalement",
-                    Salutation = $"Bonjour {evnt.Publication.Moderator.Email},", // TODO: Moderateur name
+                    Salutation = $"Bonjour {evnt.Publication.Moderator.Email},",
                     AlertSubject = "Alerte de rapports d'événement",
                     AlertMessage = "L'événement suivant a reçu plusieurs rapports:",
                     EventTitleHeader = "Titre de l'événement: ",
@@ -61,7 +61,7 @@ public class ReportService(IEventRepository eventRepository, IEventService event
                     NumberOfReports = evnt.Publication.ReportCount,
                     ActionRequiredMessage = "Veuillez prendre les mesures nécessaires.",
                     ViewEventButtonText = "Voir l'événement",
-                    EventLink = new Uri($"{frontBaseUrl}/fr/dashboard/publications?id={evnt.Id}") // Replace with actual event URL
+                    EventLink = new Uri($"{frontBaseUrl}/fr/dashboard/approbations?id={evnt.Id}")
                 },
                 emails.EmailsUtils.ReportTemplate
             );
