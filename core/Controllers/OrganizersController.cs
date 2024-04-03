@@ -2,6 +2,7 @@
 using api.core.Data;
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
+using api.core.Data.Requests;
 using api.core.Data.Responses;
 using api.core.Misc;
 using api.core.services.abstractions;
@@ -10,6 +11,7 @@ using api.emails.Services.Abstractions;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace api.core.controllers;
 
@@ -59,10 +61,19 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
     }
 
     [HttpGet]
-    public IActionResult GetUsers()
+    public IActionResult GetUsers(string? search, [FromQuery] PaginationRequest pagination)
     {
-        var users = userService.GetUsers();
-        return Ok(new Response<IEnumerable<UserResponseDTO>> { Data = users });
+        var validFilter = new PaginationRequest(pagination.PageNumber, pagination.PageSize);
+        var users = userService.GetUsers(search);
+
+        var totalRecords = users.Count();
+        var paginatedRes = users
+            .Skip((pagination.PageNumber - 1) * pagination.PageSize)
+            .Take(pagination.PageSize)
+            .ToList();
+
+        var response = PaginationHelper.CreatePaginatedReponse(paginatedRes, validFilter, totalRecords);
+        return Ok(response);
     }
 
     [HttpPatch("{organizerId}/toggle")]

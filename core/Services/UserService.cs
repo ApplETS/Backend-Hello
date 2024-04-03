@@ -6,8 +6,6 @@ using api.core.repositories.abstractions;
 using api.core.services.abstractions;
 using api.files.Services.Abstractions;
 
-using Microsoft.OpenApi.Validations;
-
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 
@@ -65,9 +63,14 @@ public class UserService(
         throw new Exception("No users associated with this ID");
     }
 
-    public IEnumerable<UserResponseDTO> GetUsers()
+    public IEnumerable<UserResponseDTO> GetUsers(string? search)
     {
-        var organizers = organizerRepository.GetAll();
+        var organizers = organizerRepository.GetAll()
+            .Where(x => 
+                x.ActivityArea.ToLower().Contains(search?.ToLower() ?? "") ||
+                x.Organization.ToLower().Contains(search?.ToLower() ?? "") ||
+                x.Email.ToLower().Contains(search?.ToLower() ?? "")
+            );
         return organizers.Select(UserResponseDTO.Map);
     }
 

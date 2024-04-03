@@ -9,7 +9,7 @@ public interface IUserService
 
     public UserResponseDTO GetUser(Guid id);
 
-    public IEnumerable<UserResponseDTO> GetUsers();
+    public IEnumerable<UserResponseDTO> GetUsers(string? search);
 
     public bool UpdateUser(Guid id, UserUpdateDTO dto);
 

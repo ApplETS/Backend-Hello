@@ -4,6 +4,7 @@ using api.core.Data.Requests;
 using api.core.Data.Responses;
 using api.core.Misc;
 using api.core.services.abstractions;
+using api.core.Services;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,7 @@ namespace api.core.Controllers;
 [ApiController]
 [Authorize(Policy = AuthPolicies.IsModerator)]
 [Route("api/moderator/events")]
-public class ModeratorEventsController(ILogger<ModeratorEventsController> logger, IEventService eventService, IReportService reportService) : ControllerBase
+public class ModeratorEventsController(ILogger<ModeratorEventsController> logger, IEventService eventService, IReportService reportService, IUserService userService) : ControllerBase
 {
     [HttpPatch("{id}/state")]
     public IActionResult UpdateEventState(Guid id, [FromQuery] State newState, [FromQuery] string? reason)
@@ -52,6 +53,12 @@ public class ModeratorEventsController(ILogger<ModeratorEventsController> logger
         var paginatedRes = events
             .Skip((pagination.PageNumber - 1) * pagination.PageSize)
             .Take(pagination.PageSize)
+            .Select((e) =>
+            {
+                var organizer = userService.GetUser(e.Organizer.Id);
+                e.Organizer = organizer;
+                return e;
+            })
             .ToList();
 
         var response = PaginationHelper.CreatePaginatedReponse(paginatedRes, validFilter, totalRecords);
