@@ -12,6 +12,8 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  AZURE_RES_GROUP: Hello
+  AZURE_CONTAINER_APP: backend-hello
 
 jobs:
   build:
@@ -51,6 +53,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+          
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
@@ -58,3 +61,17 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+      
+      - name: Login to Azure
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: Set new image tag for Azure Container App
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.0.72
+          inlineScript: |
+            az containerapp update --name ${{ env.AZURE_CONTAINER_APP }} --resource-group ${{ env.AZURE_RES_GROUP }} --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name[1:] }}
