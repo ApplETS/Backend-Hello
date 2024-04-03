@@ -68,10 +68,15 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       
+      - name: Remove 'v' from tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        id: remove_v
+        run: echo "::set-output name=tag::${GITHUB_REF/refs\/tags\/v/}"
+
       - name: Set new image tag for Azure Container App
         if: startsWith(github.ref, 'refs/tags/v')
         uses: azure/CLI@v1
         with:
           azcliversion: 2.0.72
           inlineScript: |
-            az containerapp update --name ${{ env.AZURE_CONTAINER_APP }} --resource-group ${{ env.AZURE_RES_GROUP }} --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name[1:] }}
+            az containerapp update --name ${{ env.AZURE_CONTAINER_APP }} --resource-group ${{ env.AZURE_RES_GROUP }} --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.remove_v.outputs.tag }} }}
