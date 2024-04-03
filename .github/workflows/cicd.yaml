@@ -63,11 +63,25 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
       
       - name: Login to Azure
-        if: startsWith(github.ref, 'refs/tags/v')
         uses: azure/login@v1
+        if: startsWith(github.ref, 'refs/tags/v')
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
+          auth-type: IDENTITY
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}          
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+
+      # Azure CLI Action only supports linux self-hosted runners for now. 
+      # If you want to execute the Azure CLI script on a windows self-hosted runner, you can execute it directly in `run`. 
+      - name: Azure CLI script
+        uses: azure/CLI@v1
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account show
+            
       - name: Remove 'v' from tag
         if: startsWith(github.ref, 'refs/tags/v')
         id: remove_v
