@@ -24,8 +24,7 @@ public class EventService(
     IOrganizerRepository orgRepo,
     IModeratorRepository moderatorRepo,
     IFileShareService fileShareService,
-    IEmailService emailService,
-    IUserService userService) : IEventService
+    IEmailService emailService) : IEventService
 {
     private const double IMAGE_RATIO_SIZE_ACCEPTANCE = 2.0; // width/height ratio
     private const double TOLERANCE_ACCEPTABILITY = 0.001;
@@ -57,13 +56,7 @@ public class EventService(
          (activityAreas.IsNullOrEmpty() || activityAreas!.Any(aa => aa == e.Publication.Organizer.ActivityArea)))
             .AsQueryable()
             .OrderBy(orderBy, desc)
-            .Select(e =>
-            {
-                var organizer = userService.GetUser(e.Publication.OrganizerId);
-                var res = EventResponseDTO.Map(e);
-                res.Organizer = organizer;
-                return res;
-            });
+            .Select(EventResponseDTO.Map);
     }
 
     public EventResponseDTO GetEvent(Guid id)

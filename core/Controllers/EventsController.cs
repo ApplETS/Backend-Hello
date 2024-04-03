@@ -4,6 +4,7 @@ using api.core.Data.Requests;
 using api.core.Data.Responses;
 using api.core.Misc;
 using api.core.services.abstractions;
+using api.core.Services;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
@@ -13,7 +14,7 @@ namespace api.core.controllers;
 
 [ApiController]
 [Route("api/events")]
-public class EventsController(ILogger<EventsController> logger, IEventService eventService, ITagService tagService, IReportService reportService) : ControllerBase
+public class EventsController(ILogger<EventsController> logger, IEventService eventService,  ITagService tagService, IReportService reportService, IUserService userService) : ControllerBase
 {
 
     public const string RATE_LIMITING_POLICY_NAME = "EventsControllerRateLimitPolicy";
@@ -48,7 +49,12 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
         var paginatedRes = events
             .Skip((pagination.PageNumber - 1) * pagination.PageSize)
             .Take(pagination.PageSize)
-            .ToList();
+            .Select((e) =>
+            {
+                var organizer = userService.GetUser(e.Organizer.Id);
+                e.Organizer = organizer;
+                return e;
+            }).ToList();
 
         var response = PaginationHelper.CreatePaginatedReponse(paginatedRes, validFilter, totalRecords);
 
