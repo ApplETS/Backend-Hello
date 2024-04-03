@@ -28,6 +28,8 @@ public class ModeratorEventsController(ILogger<ModeratorEventsController> logger
         [FromQuery] DateTime? endDate,
         [FromQuery] IEnumerable<string>? activityAreas,
         [FromQuery] IEnumerable<Guid>? tags,
+        [FromQuery] string? title,
+        [FromQuery] OrderingRequest ordering,
         [FromQuery] PaginationRequest pagination,
         [FromQuery] State state = State.All
         )
@@ -39,7 +41,13 @@ public class ModeratorEventsController(ILogger<ModeratorEventsController> logger
 
         var validFilter = new PaginationRequest(pagination.PageNumber, pagination.PageSize);
 
-        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags, null, null, state, ignorePublicationDate: true);
+        var events = eventService.GetEvents(
+            startDate, endDate,
+            activityAreas, tags,
+            null, title, state,
+            ordering.OrderBy ?? "EventStartDate", ordering.Descending,
+            ignorePublicationDate: true);
+
         var totalRecords = events.Count();
         var paginatedRes = events
             .Skip((pagination.PageNumber - 1) * pagination.PageSize)
