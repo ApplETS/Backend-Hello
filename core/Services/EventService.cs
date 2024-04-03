@@ -9,6 +9,7 @@ using api.emails;
 using api.emails.Models;
 using api.emails.Services.Abstractions;
 using api.files.Services.Abstractions;
+using api.core.Extensions;
 
 using Microsoft.IdentityModel.Tokens;
 
@@ -23,8 +24,7 @@ public class EventService(
     IOrganizerRepository orgRepo,
     IModeratorRepository moderatorRepo,
     IFileShareService fileShareService,
-    IEmailService emailService,
-    IUserService userService) : IEventService
+    IEmailService emailService) : IEventService
 {
     private const double IMAGE_RATIO_SIZE_ACCEPTANCE = 2.0; // width/height ratio
     private const double TOLERANCE_ACCEPTABILITY = 0.001;
@@ -38,6 +38,8 @@ public class EventService(
         Guid? organizerId,
         string? title,
         State state,
+        string orderBy = "EventStartDate",
+        bool desc = false,
         bool ignorePublicationDate = false)
     {
         var events = evntRepo.GetAll();
@@ -52,14 +54,9 @@ public class EventService(
          (title == null || (e.Publication.Title != null && e.Publication.Title.ToLower().Contains(title.ToLower()))) &&
          (tags.IsNullOrEmpty() || e.Publication.Tags.Any(t => tags!.Any(tt => t.Id == tt))) &&
          (activityAreas.IsNullOrEmpty() || activityAreas!.Any(aa => aa == e.Publication.Organizer.ActivityArea)))
-            .OrderBy(e => e.EventStartDate)
-            .Select(e =>
-            {
-                var organizer = userService.GetUser(e.Publication.OrganizerId);
-                var res = EventResponseDTO.Map(e);
-                res.Organizer = organizer;
-                return res;
-            });
+            .AsQueryable()
+            .OrderBy(orderBy, desc)
+            .Select(EventResponseDTO.Map);
     }
 
     public EventResponseDTO GetEvent(Guid id)
