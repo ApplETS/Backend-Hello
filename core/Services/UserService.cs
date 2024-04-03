@@ -67,9 +67,9 @@ public class UserService(
     {
         var organizers = organizerRepository.GetAll()
             .Where(x => 
-                x.ActivityArea.ToLower().Contains(search?.ToLower() ?? "") ||
-                x.Organization.ToLower().Contains(search?.ToLower() ?? "") ||
-                x.Email.ToLower().Contains(search?.ToLower() ?? "")
+                x.ActivityArea.Contains(search ?? "", StringComparison.CurrentCultureIgnoreCase) ||
+                x.Organization.Contains(search ?? "", StringComparison.CurrentCultureIgnoreCase) ||
+                x.Email.Contains(search ?? "", StringComparison.CurrentCultureIgnoreCase)
             );
         return organizers.Select(UserResponseDTO.Map);
     }
