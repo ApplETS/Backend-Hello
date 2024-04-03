@@ -165,8 +165,7 @@ public class EventServiceTests
             _mockOrganizerRepository.Object,
             _mockModeratorRepository.Object,
             _mockFileShareService.Object,
-            _mockEmailService.Object,
-            _mockUserService.Object
+            _mockEmailService.Object
             );
     }
 
@@ -395,8 +394,7 @@ public class EventServiceTests
             _mockOrganizerRepository.Object,
             _mockModeratorRepository.Object,
             _mockFileShareService.Object,
-            _mockEmailService.Object,
-            _mockUserService.Object);
+            _mockEmailService.Object);
 
         // Act
         var result = _eventService.UpdateEvent(userId, eventId, request);
