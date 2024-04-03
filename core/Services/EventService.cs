@@ -9,6 +9,7 @@ using api.emails;
 using api.emails.Models;
 using api.emails.Services.Abstractions;
 using api.files.Services.Abstractions;
+using api.core.Extensions;
 
 using Microsoft.IdentityModel.Tokens;
 
@@ -37,6 +38,8 @@ public class EventService(
         Guid? organizerId,
         string? title,
         State state,
+        string orderBy = "EventStartDate",
+        bool desc = false,
         bool ignorePublicationDate = false)
     {
         var events = evntRepo.GetAll();
@@ -51,7 +54,8 @@ public class EventService(
          (title == null || (e.Publication.Title != null && e.Publication.Title.ToLower().Contains(title.ToLower()))) &&
          (tags.IsNullOrEmpty() || e.Publication.Tags.Any(t => tags!.Any(tt => t.Id == tt))) &&
          (activityAreas.IsNullOrEmpty() || activityAreas!.Any(aa => aa == e.Publication.Organizer.ActivityArea)))
-            .OrderBy(e => e.EventStartDate)
+            .AsQueryable()
+            .OrderBy(orderBy, desc)
             .Select(EventResponseDTO.Map);
     }
 
