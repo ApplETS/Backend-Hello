@@ -27,7 +27,7 @@ public class EventService(
     IEmailService emailService) : IEventService
 {
     private const double IMAGE_RATIO_SIZE_ACCEPTANCE = 2.0; // width/height ratio
-    private const double TOLERANCE_ACCEPTABILITY = 0.001;
+    private const double TOLERANCE_ACCEPTABILITY = 0.01;
     private const int MAX_TITLE_LENGTH = 15;
 
     public IEnumerable<EventResponseDTO> GetEvents(
