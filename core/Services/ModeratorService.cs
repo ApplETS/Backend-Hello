@@ -6,7 +6,7 @@ using api.core.services.abstractions;
 
 namespace api.core.Services;
 
-public class ModeratorService(IConfiguration configuration, IModeratorRepository moderatorRepository) : IModeratorService
+public class ModeratorService(IModeratorRepository moderatorRepository) : IModeratorService
 {
     public ModeratorResponseDTO CreateModerator(string apiKey, ModeratorCreateRequestDTO req)
     {
