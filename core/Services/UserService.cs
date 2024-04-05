@@ -81,12 +81,6 @@ public class UserService(
         return avatarUri.ToString();
     }
 
-    public string GetUserAvatarUrl(Guid id)
-    {
-        var avatarUri = fileShareService.FileGetDownloadUri($"{id}/{AVATAR_FILE_NAME}");
-        return avatarUri.ToString();
-    }
-
     public IEnumerable<UserResponseDTO> GetUsers(string? search, out int count)
     {
         var organizers = organizerRepository.GetAll()
