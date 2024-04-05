@@ -34,5 +34,5 @@ public partial class Organizer : User
 
     [ForeignKey("ActivityAreaId")]
     [InverseProperty("Organizer")]
-    public virtual ActivityArea ActivityArea { get; set; }
+    public virtual ActivityArea? ActivityArea { get; set; }
 }
