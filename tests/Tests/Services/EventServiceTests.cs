@@ -48,6 +48,7 @@ public class EventServiceTests
                 Organizer = new Organizer
                 {
                     Id = Guid.NewGuid(),
+                    ActivityAreaId = _activityAreaClubId,
                     ActivityArea = new ActivityArea
                     {
                         Id = _activityAreaClubId,
@@ -86,6 +87,7 @@ public class EventServiceTests
                 Organizer = new Organizer
                 {
                     Id = Guid.NewGuid(),
+                    ActivityAreaId = _activityAreaSchoolId,
                     ActivityArea = new ActivityArea
                     {
                         Id = _activityAreaSchoolId,
@@ -113,6 +115,7 @@ public class EventServiceTests
                 Organizer = new Organizer
                 {
                     Id = Guid.NewGuid(),
+                    ActivityAreaId = _activityAreaSchoolId,
                     ActivityArea = new ActivityArea
                     {
                         Id = _activityAreaSchoolId,
@@ -147,6 +150,7 @@ public class EventServiceTests
                 Organizer = new Organizer
                 {
                     Id = Guid.NewGuid(),
+                    ActivityAreaId = _activityAreaSchoolId,
                     ActivityArea = new ActivityArea
                     {
                         Id = _activityAreaSchoolId,
@@ -168,8 +172,6 @@ public class EventServiceTests
     private readonly Mock<IModeratorRepository> _mockModeratorRepository;
     private readonly Mock<IFileShareService> _mockFileShareService;
     private readonly Mock<IEmailService> _mockEmailService;
-    private readonly Mock<IUserService> _mockUserService;
-    private readonly Mock<IConfiguration> _mockConfig;
 
     public EventServiceTests()
     {
@@ -248,7 +250,7 @@ public class EventServiceTests
         var events = _eventService.GetEvents(null, null, new List<Guid>
         {
             _activityAreaClubId
-        }, null, null, null, State.All);
+        }, null, null, null, State.All, ignorePublicationDate: true);
 
         // Assert
         _mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
