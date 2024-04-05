@@ -41,6 +41,7 @@ public class EventRepository(EventManagementContext context) : IEventRepository
         var evnt = context.Events
             .Include(x => x.Publication)
                 .ThenInclude(x => x.Organizer)
+                    .ThenInclude(x => x.ActivityArea)
             .Include(x => x.Publication)
                 .ThenInclude(x => x.Moderator)
              .Include(x => x.Publication)
@@ -50,13 +51,14 @@ public class EventRepository(EventManagementContext context) : IEventRepository
         return evnt != null ? evnt : throw new Exception($"Unable to fetch an event {id}");
     }
 
-    public IEnumerable<Event> GetAll()
+    public IQueryable<Event> GetAll()
     {
         return context.Events
             .Include(x => x.Publication)
                 .ThenInclude(x => x.Tags)
             .Include(x => x.Publication)
-                .ThenInclude(x => x.Organizer);
+                .ThenInclude(x => x.Organizer)
+                    .ThenInclude(x => x.ActivityArea);
     }
 
     public void ResetTags(Guid eventId)

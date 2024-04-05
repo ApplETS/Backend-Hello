@@ -15,7 +15,7 @@ public class EventResponseDTO
 
     public string? ImageUrl { get; set; }
 
-    public string ImageAltText { get; set; } = null!;
+    public string? ImageAltText { get; set; } = null!;
 
     public State State { get; set; }
 

@@ -6,7 +6,7 @@ public class UserCreateDTO
 
     public string? Organization { get; set; } = null!;
 
-    public string? ActivityArea { get; set; } = null!;
+    public Guid? ActivityAreaId { get; set; } = null!;
 }
 
 public class UserUpdateDTO : UserCreateDTO

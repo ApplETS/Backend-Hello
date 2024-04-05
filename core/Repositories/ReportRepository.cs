@@ -44,7 +44,7 @@ public class ReportRepository(EventManagementContext context) : IReportRepositor
         return report != null ? report : throw new Exception($"Unable to fetch report with id: {id}");
     }
 
-    public IEnumerable<Report> GetAll()
+    public IQueryable<Report> GetAll()
     {
         return context.Reports
             .Include(r => r.Publication);

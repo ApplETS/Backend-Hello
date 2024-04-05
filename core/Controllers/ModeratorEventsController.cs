@@ -27,7 +27,7 @@ public class ModeratorEventsController(ILogger<ModeratorEventsController> logger
     public ActionResult<IEnumerable<EventModeratorResponseDTO>> GetEventsModerator(
         [FromQuery] DateTime? startDate,
         [FromQuery] DateTime? endDate,
-        [FromQuery] IEnumerable<string>? activityAreas,
+        [FromQuery] IEnumerable<Guid>? activityAreas,
         [FromQuery] IEnumerable<Guid>? tags,
         [FromQuery] string? title,
         [FromQuery] OrderingRequest ordering,
@@ -53,10 +53,11 @@ public class ModeratorEventsController(ILogger<ModeratorEventsController> logger
         var paginatedRes = events
             .Skip((pagination.PageNumber - 1) * pagination.PageSize)
             .Take(pagination.PageSize)
+            .ToList()
             .Select((e) =>
             {
-                var organizer = userService.GetUser(e.Organizer.Id);
-                e.Organizer = organizer;
+                var url = userService.GetUserAvatarUrl(e.Organizer.Id);
+                e.Organizer.AvatarUrl = url;
                 return e;
             })
             .ToList();

@@ -2,6 +2,8 @@
 using api.core.data.entities;
 using api.core.repositories.abstractions;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace api.core.repositories;
 
 public class OrganizerRepository(EventManagementContext context) : IOrganizerRepository
@@ -25,7 +27,9 @@ public class OrganizerRepository(EventManagementContext context) : IOrganizerRep
 
     public Organizer? Get(Guid id)
     {
-        var entity = context.Organizers.Find(id);
+        var entity = context.Organizers
+            .Include(x => x.ActivityArea)
+            .FirstOrDefault(x => x.Id == id);
         if (entity != null && entity.DeletedAt == null)
         {
             return entity;
@@ -33,9 +37,10 @@ public class OrganizerRepository(EventManagementContext context) : IOrganizerRep
         return null;
     }
 
-    public IEnumerable<Organizer> GetAll()
+    public IQueryable<Organizer> GetAll()
     {
-        return context.Organizers.ToList();
+        return context.Organizers
+            .Include(x => x.ActivityArea);
     }
 
     public bool Update(Guid id, Organizer entity)

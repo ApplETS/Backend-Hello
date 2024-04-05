@@ -33,7 +33,7 @@ public class ModeratorRepository(EventManagementContext context) : IModeratorRep
         return null;
     }
 
-    public IEnumerable<Moderator> GetAll()
+    public IQueryable<Moderator> GetAll()
     {
         throw new NotImplementedException();
     }

@@ -1,12 +1,14 @@
 ﻿using api.core.Data.Enums;
 using api.core.Data.requests;
 using api.core.Data.Responses;
+using System.Collections.Generic;
+using System;
 
 namespace api.core.services.abstractions;
 
 public interface IEventService
 {
-    public IEnumerable<EventResponseDTO> GetEvents(DateTime? startDate, DateTime? endDate, IEnumerable<string>? activityAreas, IEnumerable<Guid>? tags, Guid? organizerId, string? title, State state, string orderBy = "EventStartDate", bool desc = false, bool ignorePublicationDate = false);
+    public IEnumerable<EventResponseDTO> GetEvents(DateTime? startDate, DateTime? endDate, IEnumerable<Guid>? activityAreas, IEnumerable<Guid>? tags, Guid? organizerId, string? title, State state, string orderBy = "EventStartDate", bool desc = false, bool ignorePublicationDate = false);
 
     public EventResponseDTO GetEvent(Guid id);
 

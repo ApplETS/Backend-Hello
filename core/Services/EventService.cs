@@ -11,6 +11,7 @@ using api.emails.Services.Abstractions;
 using api.files.Services.Abstractions;
 using api.core.Extensions;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 using SixLabors.ImageSharp;
@@ -33,7 +34,7 @@ public class EventService(
     public IEnumerable<EventResponseDTO> GetEvents(
         DateTime? startDate,
         DateTime? endDate,
-        IEnumerable<string>? activityAreas,
+        IEnumerable<Guid>? activityAreas,
         IEnumerable<Guid>? tags,
         Guid? organizerId,
         string? title,
@@ -53,7 +54,7 @@ public class EventService(
          (organizerId == null || e.Publication.OrganizerId == organizerId) &&
          (title == null || (e.Publication.Title != null && e.Publication.Title.ToLower().Contains(title.ToLower()))) &&
          (tags.IsNullOrEmpty() || e.Publication.Tags.Any(t => tags!.Any(tt => t.Id == tt))) &&
-         (activityAreas.IsNullOrEmpty() || activityAreas!.Any(aa => aa == e.Publication.Organizer.ActivityArea)))
+         (activityAreas.IsNullOrEmpty() || activityAreas!.Any(aa => aa == e.Publication.Organizer.ActivityAreaId)))
             .AsQueryable()
             .OrderBy(orderBy, desc)
             .Select(EventResponseDTO.Map);
@@ -344,7 +345,7 @@ public class EventService(
             int height = image.Size.Height;
 
             if (Math.Abs((width / height) - IMAGE_RATIO_SIZE_ACCEPTANCE) > TOLERANCE_ACCEPTABILITY)
-                throw new BadParameterException<Event>(nameof(image), "Invalid image aspect ratio");
+                throw new BadParameterException<Event>(nameof(image), $"Invalid image aspect ratio {width}/{height}");
             
             image.Mutate(c => c.Resize(400, 200));
             using var outputStream = new MemoryStream();

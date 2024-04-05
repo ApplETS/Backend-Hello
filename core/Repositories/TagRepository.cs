@@ -41,9 +41,9 @@ public class TagRepository(EventManagementContext context) : ITagRepository
         return tag != null ? tag : throw new Exception($"Unable to fetch a tag {id}");
     }
 
-    public IEnumerable<Tag> GetAll()
+    public IQueryable<Tag> GetAll()
     {
-        return context.Tags.ToList();
+        return context.Tags;
     }
 
     public bool Update(Guid id, Tag entity)

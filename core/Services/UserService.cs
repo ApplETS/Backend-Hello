@@ -6,6 +6,8 @@ using api.core.repositories.abstractions;
 using api.core.services.abstractions;
 using api.files.Services.Abstractions;
 
+using Microsoft.IdentityModel.Tokens;
+
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 
@@ -14,7 +16,8 @@ namespace api.core.Services;
 public class UserService(
     IOrganizerRepository organizerRepository,
     IFileShareService fileShareService,
-    IModeratorRepository moderatorRepository) : IUserService
+    IModeratorRepository moderatorRepository,
+    IActivityAreaRepository activityAreaRepository) : IUserService
 {
     private const double IMAGE_RATIO_SIZE_ACCEPTANCE = 1.0; // width/height ratio avatar
     private const double TOLERANCE_ACCEPTABILITY = 0.001;
@@ -22,12 +25,18 @@ public class UserService(
 
     public UserResponseDTO AddOrganizer(Guid id, UserCreateDTO organizerDto)
     {
+        if (organizerDto.ActivityAreaId != null)
+        {
+            var activityArea = activityAreaRepository.Get(organizerDto.ActivityAreaId.Value);
+            NotFoundException<ActivityArea>.ThrowIfNull(activityArea);
+        }
+
         var inserted = organizerRepository.Add(new Organizer
         {
             Id = id,
             Email = organizerDto.Email,
             Organization = organizerDto.Organization ?? "",
-            ActivityArea = organizerDto.ActivityArea ?? "",
+            ActivityAreaId = organizerDto.ActivityAreaId,
             ProfileDescription = "",
             IsActive = true,
             HasLoggedIn = false,
@@ -63,14 +72,21 @@ public class UserService(
         throw new Exception("No users associated with this ID");
     }
 
-    public IEnumerable<UserResponseDTO> GetUsers(string? search)
+    public string GetUserAvatarUrl(Guid id)
+    {
+        var avatarUri = fileShareService.FileGetDownloadUri($"{id}/{AVATAR_FILE_NAME}");
+        return avatarUri.ToString();
+    }
+
+    public IEnumerable<UserResponseDTO> GetUsers(string? search, out int count)
     {
         var organizers = organizerRepository.GetAll()
-            .Where(x => 
-                x.ActivityArea.Contains(search ?? "", StringComparison.CurrentCultureIgnoreCase) ||
-                x.Organization.Contains(search ?? "", StringComparison.CurrentCultureIgnoreCase) ||
-                x.Email.Contains(search ?? "", StringComparison.CurrentCultureIgnoreCase)
+            .Where(x => search.IsNullOrEmpty() ||
+                x.Organization.ToLower().Contains(search.ToLower() ?? "") ||
+                x.Email.ToLower().Contains(search.ToLower() ?? "")
             );
+        count = organizers.Count();
+
         return organizers.Select(UserResponseDTO.Map);
     }
 
@@ -95,40 +111,43 @@ public class UserService(
     {
         var user = GetUser(id);
 
-        switch (user.Type)
+        if (dto.ActivityAreaId != null)
         {
-            case "Moderator":
-                return moderatorRepository.Update(id, new Moderator
-                {
-                    Id = id,
-                    Email = dto.Email,
-                    CreatedAt = user.CreatedAt,
-                    UpdatedAt = DateTime.UtcNow
-                });
-            case "Organizer":
-                return organizerRepository.Update(id, new Organizer
-                {
-                    Id = id,
-                    Email = dto.Email,
-                    Organization = dto.Organization ?? "",
-                    ActivityArea = dto.ActivityArea ?? "",
-                    ProfileDescription = dto.ProfileDescription ?? "",
-                    IsActive = user.IsActive,
-                    HasLoggedIn = dto.HasLoggedIn ?? true,
-                    FacebookLink = dto.FacebookLink,
-                    InstagramLink = dto.InstagramLink,
-                    TikTokLink = dto.TikTokLink,
-                    XLink = dto.XLink,
-                    DiscordLink = dto.DiscordLink,
-                    LinkedInLink = dto.LinkedInLink,
-                    RedditLink = dto.RedditLink,
-                    WebSiteLink = dto.WebSiteLink,
-                    CreatedAt = user.CreatedAt,
-                    UpdatedAt = DateTime.UtcNow
-                });
-            default:
-                throw new Exception("No users associated witht thid ID can be updated");
+            var activityArea = activityAreaRepository.Get(dto.ActivityAreaId.Value);
+            NotFoundException<ActivityArea>.ThrowIfNull(activityArea);
         }
+
+        return user.Type switch
+        {
+            "Moderator" => moderatorRepository.Update(id, new Moderator
+            {
+                Id = id,
+                Email = dto.Email,
+                CreatedAt = user.CreatedAt,
+                UpdatedAt = DateTime.UtcNow
+            }),
+            "Organizer" => organizerRepository.Update(id, new Organizer
+            {
+                Id = id,
+                Email = dto.Email,
+                Organization = dto.Organization ?? "",
+                ActivityAreaId = dto.ActivityAreaId,
+                ProfileDescription = dto.ProfileDescription ?? "",
+                IsActive = user.IsActive,
+                HasLoggedIn = dto.HasLoggedIn ?? true,
+                FacebookLink = dto.FacebookLink,
+                InstagramLink = dto.InstagramLink,
+                TikTokLink = dto.TikTokLink,
+                XLink = dto.XLink,
+                DiscordLink = dto.DiscordLink,
+                LinkedInLink = dto.LinkedInLink,
+                RedditLink = dto.RedditLink,
+                WebSiteLink = dto.WebSiteLink,
+                CreatedAt = user.CreatedAt,
+                UpdatedAt = DateTime.UtcNow
+            }),
+            _ => throw new Exception("No users associated witht thid ID can be updated"),
+        };
     }
 
     public string UpdateUserAvatar(Guid id, IFormFile avatarFile)
