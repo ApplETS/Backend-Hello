@@ -2,6 +2,8 @@
 using api.core.data.entities;
 using api.core.repositories.abstractions;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace api.core.repositories;
 
 public class OrganizerRepository(EventManagementContext context) : IOrganizerRepository
@@ -33,9 +35,10 @@ public class OrganizerRepository(EventManagementContext context) : IOrganizerRep
         return null;
     }
 
-    public IEnumerable<Organizer> GetAll()
+    public IQueryable<Organizer> GetAll()
     {
-        return context.Organizers.ToList();
+        return context.Organizers
+            .Include(x => x.ActivityArea);
     }
 
     public bool Update(Guid id, Organizer entity)

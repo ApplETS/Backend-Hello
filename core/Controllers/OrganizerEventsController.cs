@@ -20,7 +20,7 @@ public class OrganizerEventsController(ILogger<OrganizerEventsController> logger
     public IActionResult MyEvents(
         [FromQuery] DateTime? startDate,
         [FromQuery] DateTime? endDate,
-        [FromQuery] IEnumerable<string>? activityAreas,
+        [FromQuery] IEnumerable<Guid>? activityAreas,
         [FromQuery] IEnumerable<Guid>? tags,
         [FromQuery] PaginationRequest pagination,
         [FromQuery] State state = State.All

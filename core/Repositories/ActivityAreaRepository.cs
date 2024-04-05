@@ -41,7 +41,7 @@ public class ActivityAreaRepository(EventManagementContext context) : IActivityA
         return act ?? throw new Exception($"Unable to fetch an ActivityArea {id}");
     }
 
-    public IEnumerable<ActivityArea> GetAll()
+    public IQueryable<ActivityArea> GetAll()
     {
         return context.ActivityAreas;
     }

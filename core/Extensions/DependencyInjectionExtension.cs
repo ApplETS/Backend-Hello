@@ -3,6 +3,7 @@ using api.core.repositories;
 using api.core.repositories.abstractions;
 using api.core.services.abstractions;
 using api.core.Services;
+using api.core.Services.Abstractions;
 using api.emails.Services;
 using api.emails.Services.Abstractions;
 using api.files.Services;
@@ -27,6 +28,7 @@ public static class DependencyInjectionExtension
         services.AddTransient<IEventRepository, EventRepository>();
         services.AddTransient<IModeratorRepository, ModeratorRepository>();
         services.AddTransient<IReportRepository, ReportRepository>();
+        services.AddTransient<IActivityAreaRepository, ActivityAreaRepository>();
 
         // Services
         services.AddTransient<IUserService, UserService>();
@@ -36,6 +38,7 @@ public static class DependencyInjectionExtension
         services.AddTransient<ITagService, TagService>();
         services.AddTransient<IAuthService, AuthService>();
         services.AddTransient<IReportService, ReportService>();
+        services.AddTransient<IActivityAreaService, ActivityAreaService>();
 
         return services;
     }

@@ -2,6 +2,7 @@
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.Data.Responses;
+using api.core.repositories;
 using api.core.repositories.abstractions;
 using api.core.services.abstractions;
 using api.files.Services.Abstractions;
@@ -16,7 +17,8 @@ namespace api.core.Services;
 public class UserService(
     IOrganizerRepository organizerRepository,
     IFileShareService fileShareService,
-    IModeratorRepository moderatorRepository) : IUserService
+    IModeratorRepository moderatorRepository,
+    IActivityAreaRepository activityAreaRepository) : IUserService
 {
     private const double IMAGE_RATIO_SIZE_ACCEPTANCE = 1.0; // width/height ratio avatar
     private const double TOLERANCE_ACCEPTABILITY = 0.001;
@@ -24,12 +26,18 @@ public class UserService(
 
     public UserResponseDTO AddOrganizer(Guid id, UserCreateDTO organizerDto)
     {
+        if (organizerDto.ActivityArea != null)
+        {
+            var activityArea = activityAreaRepository.Get(organizerDto.ActivityArea.Value);
+            NotFoundException<ActivityArea>.ThrowIfNull(activityArea);
+        }
+
         var inserted = organizerRepository.Add(new Organizer
         {
             Id = id,
             Email = organizerDto.Email,
             Organization = organizerDto.Organization ?? "",
-            ActivityArea = organizerDto.ActivityArea ?? "",
+            ActivityAreaId = organizerDto.ActivityArea,
             ProfileDescription = "",
             IsActive = true,
             CreatedAt = DateTime.UtcNow,
@@ -91,6 +99,12 @@ public class UserService(
     {
         var user = GetUser(id);
 
+        if (dto.ActivityArea != null)
+        {
+            var activityArea = activityAreaRepository.Get(dto.ActivityArea.Value);
+            NotFoundException<ActivityArea>.ThrowIfNull(activityArea);
+        }
+
         switch (user.Type)
         {
             case "Moderator":
@@ -107,7 +121,7 @@ public class UserService(
                     Id = id,
                     Email = dto.Email,
                     Organization = dto.Organization ?? "",
-                    ActivityArea = dto.ActivityArea ?? "",
+                    ActivityAreaId = dto.ActivityArea,
                     ProfileDescription = dto.ProfileDescription ?? "",
                     IsActive = user.IsActive,
                     FacebookLink = dto.FacebookLink,

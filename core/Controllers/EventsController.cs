@@ -34,7 +34,7 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
         [FromQuery] DateTime? startDate,
         [FromQuery] DateTime? endDate,
         [FromQuery] Guid? organizerId,
-        [FromQuery] IEnumerable<string>? activityAreas,
+        [FromQuery] IEnumerable<Guid>? activityAreas,
         [FromQuery] IEnumerable<Guid>? tags,
         [FromQuery] PaginationRequest pagination)
     {

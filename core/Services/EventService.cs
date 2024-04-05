@@ -10,6 +10,7 @@ using api.emails.Models;
 using api.emails.Services.Abstractions;
 using api.files.Services.Abstractions;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 using SixLabors.ImageSharp;
@@ -34,7 +35,7 @@ public class EventService(
     public IEnumerable<EventResponseDTO> GetEvents(
         DateTime? startDate,
         DateTime? endDate,
-        IEnumerable<string>? activityAreas,
+        IEnumerable<Guid>? activityAreas,
         IEnumerable<Guid>? tags,
         Guid? organizerId,
         State state,
@@ -42,15 +43,16 @@ public class EventService(
     {
         var events = evntRepo.GetAll();
 
-        return events.Where(e =>
-         e.Publication.DeletedAt == null &&
-         (ignorePublicationDate || e.Publication.PublicationDate <= DateTime.UtcNow) &&
-         (startDate == null || e.EventEndDate >= startDate) &&
-         (endDate == null || e.EventStartDate <= endDate) &&
-         (state.HasFlag(e.Publication.State)) &&
-         (organizerId == null || e.Publication.OrganizerId == organizerId) &&
-         (tags.IsNullOrEmpty() || e.Publication.Tags.Any(t => tags!.Any(tt => t.Id == tt))) &&
-         (activityAreas.IsNullOrEmpty() || activityAreas!.Any(aa => aa == e.Publication.Organizer.ActivityArea)))
+        return events
+         .Where(e =>
+                e.Publication.DeletedAt == null &&
+                (ignorePublicationDate || e.Publication.PublicationDate <= DateTime.UtcNow) &&
+                (startDate == null || e.EventEndDate >= startDate) &&
+                (endDate == null || e.EventStartDate <= endDate) &&
+                (state.HasFlag(e.Publication.State)) &&
+                (organizerId == null || e.Publication.OrganizerId == organizerId) &&
+                (tags.IsNullOrEmpty() || e.Publication.Tags.Any(t => tags!.Any(tt => t.Id == tt))) &&
+                (activityAreas.IsNullOrEmpty() || activityAreas!.Any(aa => aa == e.Publication.Organizer.ActivityAreaId)))
             .OrderBy(e => e.EventStartDate)
             .Select(EventResponseDTO.Map);
     }

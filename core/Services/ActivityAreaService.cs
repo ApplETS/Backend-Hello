@@ -2,7 +2,6 @@
 using api.core.Data.Exceptions;
 using api.core.Data.Responses;
 using api.core.repositories.abstractions;
-using api.core.services.abstractions;
 using api.core.Services.Abstractions;
 
 using Supabase;

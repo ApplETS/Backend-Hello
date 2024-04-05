@@ -26,7 +26,7 @@ public class ModeratorEventsController(ILogger<ModeratorEventsController> logger
     public ActionResult<IEnumerable<EventResponseDTO>> GetEventsModerator(
         [FromQuery] DateTime? startDate,
         [FromQuery] DateTime? endDate,
-        [FromQuery] IEnumerable<string>? activityAreas,
+        [FromQuery] IEnumerable<Guid>? activityAreas,
         [FromQuery] IEnumerable<Guid>? tags,
         [FromQuery] PaginationRequest pagination,
         [FromQuery] State state = State.All

@@ -33,6 +33,6 @@ public partial class Organizer : User
     public virtual ICollection<Publication> Publications { get; set; } = new List<Publication>();
 
     [ForeignKey("ActivityAreaId")]
-    [InverseProperty("Organizer")]
+    [InverseProperty("Organizers")]
     public virtual ActivityArea? ActivityArea { get; set; }
 }
