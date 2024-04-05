@@ -51,9 +51,10 @@ public class TagRepository(EventManagementContext context) : ITagRepository
 
     public IEnumerable<FieldOfInterestTagResponseDTO> GetInterestFieldsForOrganizer(Guid organizerId, int take = 3)
     {
-        return context.Tags
-            .Include(x => x.Publications)
-            .Where(x => x.Publications.Any(p => p.OrganizerId == organizerId))
+        return context.Publications
+            .Include(x => x.Tags)
+            .Where(x => x.OrganizerId == organizerId)
+            .SelectMany(x => x.Tags)
             .GroupBy(x => x.Id)
             .Select(grp => new FieldOfInterestTagResponseDTO
             {
