@@ -32,7 +32,7 @@ public class ReportResponseDTO
                 Title = report.Publication.Title,
                 Content = report.Publication.Content,
                 ImageUrl = report.Publication.ImageUrl,
-                ImageAltText = report.Publication.ImageAltText,
+                ImageAltText = report.Publication.ImageAltText!,
                 Tags = report.Publication.Tags.Select(TagResponseDTO.Map),
                 State = report.Publication.State,
                 PublicationDate = report.Publication.PublicationDate,

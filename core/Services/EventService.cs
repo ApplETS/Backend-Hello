@@ -9,14 +9,13 @@ using api.emails;
 using api.emails.Models;
 using api.emails.Services.Abstractions;
 using api.files.Services.Abstractions;
+using api.core.Extensions;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
-
-using static System.Net.WebRequestMethods;
 
 namespace api.core.Services;
 
@@ -38,22 +37,26 @@ public class EventService(
         IEnumerable<Guid>? activityAreas,
         IEnumerable<Guid>? tags,
         Guid? organizerId,
+        string? title,
         State state,
+        string orderBy = "EventStartDate",
+        bool desc = false,
         bool ignorePublicationDate = false)
     {
         var events = evntRepo.GetAll();
 
-        return events
-         .Where(e =>
-                e.Publication.DeletedAt == null &&
-                (ignorePublicationDate || e.Publication.PublicationDate <= DateTime.UtcNow) &&
-                (startDate == null || e.EventEndDate >= startDate) &&
-                (endDate == null || e.EventStartDate <= endDate) &&
-                (state.HasFlag(e.Publication.State)) &&
-                (organizerId == null || e.Publication.OrganizerId == organizerId) &&
-                (tags.IsNullOrEmpty() || e.Publication.Tags.Any(t => tags!.Any(tt => t.Id == tt))) &&
-                (activityAreas.IsNullOrEmpty() || activityAreas!.Any(aa => aa == e.Publication.Organizer.ActivityAreaId)))
-            .OrderBy(e => e.EventStartDate)
+        return events.Where(e =>
+         e.Publication.DeletedAt == null &&
+         (ignorePublicationDate || e.Publication.PublicationDate <= DateTime.UtcNow) &&
+         (startDate == null || e.EventEndDate >= startDate) &&
+         (endDate == null || e.EventStartDate <= endDate) &&
+         (state.HasFlag(e.Publication.State)) &&
+         (organizerId == null || e.Publication.OrganizerId == organizerId) &&
+         (title == null || (e.Publication.Title != null && e.Publication.Title.ToLower().Contains(title.ToLower()))) &&
+         (tags.IsNullOrEmpty() || e.Publication.Tags.Any(t => tags!.Any(tt => t.Id == tt))) &&
+         (activityAreas.IsNullOrEmpty() || activityAreas!.Any(aa => aa == e.Publication.Organizer.ActivityAreaId)))
+            .AsQueryable()
+            .OrderBy(orderBy, desc)
             .Select(EventResponseDTO.Map);
     }
 
@@ -189,6 +192,7 @@ public class EventService(
 
         evnt.EventStartDate = request.EventStartDate;
         evnt.EventEndDate = request.EventEndDate;
+        evnt.Publication.ReportCount = request.ReportCount;
         evnt.Publication.Title = request.Title;
         evnt.Publication.Content = request.Content;
         evnt.Publication.State = State.OnHold;
@@ -307,6 +311,28 @@ public class EventService(
         }
 
         return eventsToUpdate.Count;
+    }
+
+    public bool UpdateEventReportCount(Guid eventId)
+    {
+        var evnt = evntRepo.Get(eventId);
+
+        if (evnt == null) return false;
+
+        evnt.Publication.ReportCount++;
+
+        return evntRepo.Update(eventId, evnt);
+    }
+
+    public bool UpdatePublicationHasBeenReported(Guid eventId)
+    {
+        var evnt = evntRepo.Get(eventId);
+
+        if (evnt == null) return false;
+
+        evnt.Publication.HasBeenReported = true;
+
+        return evntRepo.Update(eventId, evnt);
     }
 
     private void HandleImageSaving(Guid eventId, IFormFile imageFile)

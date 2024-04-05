@@ -6,6 +6,8 @@ public class EventRequestDTO
 
     public string Content { get; set; } = null!;
 
+    public int ReportCount { get; set; }
+
     public DateTime PublicationDate { get; set; }
 
     public DateTime EventStartDate { get; set; }

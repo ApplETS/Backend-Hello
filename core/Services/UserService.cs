@@ -7,8 +7,6 @@ using api.core.repositories.abstractions;
 using api.core.services.abstractions;
 using api.files.Services.Abstractions;
 
-using Microsoft.OpenApi.Validations;
-
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 
@@ -40,6 +38,7 @@ public class UserService(
             ActivityAreaId = organizerDto.ActivityArea,
             ProfileDescription = "",
             IsActive = true,
+            HasLoggedIn = false,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         });
@@ -72,9 +71,13 @@ public class UserService(
         throw new Exception("No users associated with this ID");
     }
 
-    public IEnumerable<UserResponseDTO> GetUsers()
+    public IEnumerable<UserResponseDTO> GetUsers(string? search)
     {
-        var organizers = organizerRepository.GetAll();
+        var organizers = organizerRepository.GetAll()
+            .Where(x =>
+                x.Organization.ToLower().Contains(search.ToLower() ?? "") ||
+                x.Email.ToLower().Contains(search.ToLower() ?? "")
+            );
         return organizers.Select(UserResponseDTO.Map);
     }
 
@@ -124,6 +127,7 @@ public class UserService(
                     ActivityAreaId = dto.ActivityArea,
                     ProfileDescription = dto.ProfileDescription ?? "",
                     IsActive = user.IsActive,
+                    HasLoggedIn = dto.HasLoggedIn ?? true,
                     FacebookLink = dto.FacebookLink,
                     InstagramLink = dto.InstagramLink,
                     TikTokLink = dto.TikTokLink,

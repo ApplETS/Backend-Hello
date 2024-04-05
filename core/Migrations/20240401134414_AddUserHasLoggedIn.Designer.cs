@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using api.core.data;
@@ -11,9 +12,11 @@ using api.core.data;
 namespace api.core.Migrations
 {
     [DbContext(typeof(EventManagementContext))]
-    partial class EventManagementContextModelSnapshot : ModelSnapshot
+    [Migration("20240401134414_AddUserHasLoggedIn")]
+    partial class AddUserHasLoggedIn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,34 +68,6 @@ namespace api.core.Migrations
                     b.ToTable("TagsHierarchy", (string)null);
                 });
 
-            modelBuilder.Entity("api.core.data.entities.ActivityArea", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("NameEn")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("NameFr")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ActivityArea");
-                });
-
             modelBuilder.Entity("api.core.data.entities.Event", b =>
                 {
                     b.Property<Guid>("Id")
@@ -116,9 +91,6 @@ namespace api.core.Migrations
                         .HasColumnType("uuid")
                         .HasDefaultValueSql("gen_random_uuid()");
 
-                    b.Property<Guid?>("ActivityAreaId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -138,8 +110,6 @@ namespace api.core.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActivityAreaId");
-
                     b.ToTable("Moderator");
                 });
 
@@ -150,8 +120,9 @@ namespace api.core.Migrations
                         .HasColumnType("uuid")
                         .HasDefaultValueSql("gen_random_uuid()");
 
-                    b.Property<Guid?>("ActivityAreaId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("ActivityArea")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -210,8 +181,6 @@ namespace api.core.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActivityAreaId");
-
                     b.ToTable("Organizer");
                 });
 
@@ -233,9 +202,6 @@ namespace api.core.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("HasBeenReported")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("ImageAltText")
                         .HasColumnType("text");
 
@@ -253,9 +219,6 @@ namespace api.core.Migrations
 
                     b.Property<string>("Reason")
                         .HasColumnType("text");
-
-                    b.Property<int>("ReportCount")
-                        .HasColumnType("integer");
 
                     b.Property<int>("State")
                         .HasColumnType("integer");
@@ -387,24 +350,6 @@ namespace api.core.Migrations
                     b.Navigation("Publication");
                 });
 
-            modelBuilder.Entity("api.core.data.entities.Moderator", b =>
-                {
-                    b.HasOne("api.core.data.entities.ActivityArea", "ActivityArea")
-                        .WithMany("Moderators")
-                        .HasForeignKey("ActivityAreaId");
-
-                    b.Navigation("ActivityArea");
-                });
-
-            modelBuilder.Entity("api.core.data.entities.Organizer", b =>
-                {
-                    b.HasOne("api.core.data.entities.ActivityArea", "ActivityArea")
-                        .WithMany("Organizers")
-                        .HasForeignKey("ActivityAreaId");
-
-                    b.Navigation("ActivityArea");
-                });
-
             modelBuilder.Entity("api.core.data.entities.Publication", b =>
                 {
                     b.HasOne("api.core.data.entities.Moderator", "Moderator")
@@ -434,13 +379,6 @@ namespace api.core.Migrations
                         .HasConstraintName("Report_PublicationId_fkey");
 
                     b.Navigation("Publication");
-                });
-
-            modelBuilder.Entity("api.core.data.entities.ActivityArea", b =>
-                {
-                    b.Navigation("Moderators");
-
-                    b.Navigation("Organizers");
                 });
 
             modelBuilder.Entity("api.core.data.entities.Moderator", b =>

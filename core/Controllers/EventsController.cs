@@ -4,6 +4,7 @@ using api.core.Data.Requests;
 using api.core.Data.Responses;
 using api.core.Misc;
 using api.core.services.abstractions;
+using api.core.Services;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
@@ -13,7 +14,7 @@ namespace api.core.controllers;
 
 [ApiController]
 [Route("api/events")]
-public class EventsController(ILogger<EventsController> logger, IEventService eventService, ITagService tagService, IReportService reportService) : ControllerBase
+public class EventsController(ILogger<EventsController> logger, IEventService eventService,  ITagService tagService, IReportService reportService, IUserService userService) : ControllerBase
 {
 
     public const string RATE_LIMITING_POLICY_NAME = "EventsControllerRateLimitPolicy";
@@ -24,16 +25,18 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
     /// <param name="startDate">if null, will get every event until the first element</param>
     /// <param name="endDate">if null, will get every element unitl infinity</param>
     /// <param name="organizerId">Filter by organizerId</param>
+    /// <param name="title">Filter by title</param>
     /// <param name="activityAreas">Filter by a list of OR applicable activityAreas</param>
     /// <param name="tags">Filter by a list of OR applicable tags</param>
     /// <param name="pagination">Sort and take only the necessary page</param>
     /// <returns>events filtered and sorted</returns>
     [HttpGet]
-    [OutputCache(VaryByQueryKeys = [ "startDate", "endDate", "activityAreas", "tags", "pageNumber", "pageSize" ])]
+    [OutputCache(VaryByQueryKeys = [ "startDate", "endDate", "organizerId", "title", "activityAreas", "tags", "pageNumber", "pageSize" ])]
     public ActionResult<IEnumerable<EventResponseDTO>> GetEvents(
         [FromQuery] DateTime? startDate,
         [FromQuery] DateTime? endDate,
         [FromQuery] Guid? organizerId,
+        [FromQuery] string? title,
         [FromQuery] IEnumerable<Guid>? activityAreas,
         [FromQuery] IEnumerable<Guid>? tags,
         [FromQuery] PaginationRequest pagination)
@@ -41,12 +44,17 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
         logger.LogInformation("Getting events");
         var validFilter = new PaginationRequest(pagination.PageNumber, pagination.PageSize);
 
-        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags, organizerId, State.Published);
+        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags, organizerId, title, State.Published);
         var totalRecords = events.Count();
         var paginatedRes = events
             .Skip((pagination.PageNumber - 1) * pagination.PageSize)
             .Take(pagination.PageSize)
-            .ToList();
+            .Select((e) =>
+            {
+                var organizer = userService.GetUser(e.Organizer.Id);
+                e.Organizer = organizer;
+                return e;
+            }).ToList();
 
         var response = PaginationHelper.CreatePaginatedReponse(paginatedRes, validFilter, totalRecords);
 
@@ -73,7 +81,7 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
     {
         logger.LogInformation($"Reporting event {id}");
 
-        reportService.ReportEvent(id, request);
+        reportService.ReportEventAsync(id, request);
 
         return Ok();
     }

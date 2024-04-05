@@ -12,6 +12,8 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  AZURE_RES_GROUP: Hello
+  AZURE_CONTAINER_APP: backend-hello
 
 jobs:
   build:
@@ -51,6 +53,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+          
       - name: Build and push
         uses: docker/build-push-action@v5
         with:

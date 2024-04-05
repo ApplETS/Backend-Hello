@@ -2,9 +2,9 @@
 
 namespace api.core.Migrations.SeededData;
 
-public class TagSeed
+public class TagSeed20240327180010
 {
-    public static string[] Columns = new[] { "Id", "Name", "PriorityValue", "CreatedAt", "UpdatedAt" };
+    public static string[] Columns = ["Id", "Name", "PriorityValue", "CreatedAt", "UpdatedAt"];
 
     public static object[,] TagValues = new object[,]
     {
@@ -28,7 +28,6 @@ public class TagSeed
         { Guid.Parse("ba7e2fe8-a768-47f5-b7eb-37d6c5154f59"), "Projets internationaux", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("2efc2265-63ce-47d1-9e61-1f5785cd91c8"), "Génie de la production automatisée", 3, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("599410b6-950a-4c10-b7a4-0391eddd678a"), "Robotique", 1, DateTime.UtcNow, DateTime.UtcNow },
-        { Guid.Parse("de9763a9-587d-446c-ae43-b630d6414673"), "Intelligence artificielle", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("f7827a2a-7b8e-4621-9b31-5afb737f2336"), "Apprentissage machine", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("23b0634b-c5f3-4194-8cf3-a8f03512e677"), "Infonuagique", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("5013718a-e3a8-4334-a5db-627fee72f708"), "Internet des objets", 1, DateTime.UtcNow, DateTime.UtcNow },
@@ -53,9 +52,7 @@ public class TagSeed
         { Guid.Parse("71729eca-17bb-4c3e-8dc4-ff40ddb02856"), "Mécanique du bâtiment", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("19a31a09-7064-4bf9-8537-2d938e628093"), "Conception de systèmes mécaniques", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("1d308d51-d8af-482d-9d4a-bf48364f9947"), "Fabrication et matériaux", 1, DateTime.UtcNow, DateTime.UtcNow },
-        { Guid.Parse("e636e735-ab78-46ee-86df-7af5b8b23da6"), "Aérospatial", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("d17e6350-7dc4-4959-8c8a-ffab18feedbf"), "Génie des opérations et logistique", 3, DateTime.UtcNow, DateTime.UtcNow },
-        { Guid.Parse("b12e6bb2-54c8-4a18-830c-50b5f5c18f63"), "Aérospatial", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("bf907607-7c93-47e2-87d4-fd578ee0c65e"), "Ingénierie des entreprises numériques", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("a05fe887-1dca-4a3a-8490-7c23bf4c1342"), "Science des données", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("41cc751a-e60c-4383-a812-376a4ee61d06"), "Ingénierie du risque", 1, DateTime.UtcNow, DateTime.UtcNow },
@@ -74,7 +71,6 @@ public class TagSeed
         { Guid.Parse("0b33931e-4b77-414a-a8fb-d0ce9fe9f6e9"), "Évènements", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("f584fd73-7097-48e0-b7db-ebb910b6c87b"), "Festifs", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("b8b303fa-4301-4fd9-8f76-4ff9d7572f8c"), "Formations", 1, DateTime.UtcNow, DateTime.UtcNow },
-        { Guid.Parse("d5c006ed-aec5-4a3b-a137-83255f2b50f2"), "Génie", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("ce24275e-0cca-43f0-9e00-63af3e2fdd6a"), "Lancements", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("034c61f4-af78-465e-86aa-1baf2963fa8c"), "Partenariats", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("1d6d5945-723b-4c93-8d67-c77bafed4b95"), "PFE", 1, DateTime.UtcNow, DateTime.UtcNow },
@@ -86,17 +82,12 @@ public class TagSeed
         { Guid.Parse("ad9bd244-23a3-4b02-b7e0-c12d6739a710"), "Tutorat", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("97a5645f-1743-48fe-805b-60185677581b"), "Vie étudiante", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("81e35d01-7a2c-4e88-90c4-171e3f1a1a59"), "Génies", 3, DateTime.UtcNow, DateTime.UtcNow },
-        { Guid.Parse("f1233115-edf3-4a66-b238-3fae2b5e604b"), "Développement durable", 1, DateTime.UtcNow, DateTime.UtcNow },
-        { Guid.Parse("448e0b22-68f1-476d-862d-469992e4273a"), "Intelligence artificielle", 1, DateTime.UtcNow, DateTime.UtcNow },
-        { Guid.Parse("9377bee6-e73e-41dc-8d0f-7efcb4ebce86"), "Robotique", 1, DateTime.UtcNow, DateTime.UtcNow },
-        { Guid.Parse("47d8a014-4dfb-4931-bc27-493f75ff12c6"), "SST", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("cfea79dc-1ad6-4b19-a6c4-cf00ad24cf2a"), "Formule", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("e398a1be-eaad-4c58-82db-8a15abb53508"), "Thèmes", 3, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("df38ee68-52d3-4c24-8ba7-7d566a80f780"), "Big data", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("dfb2f32a-c156-42e6-8969-38fffb71ee66"), "Danse", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("2c3f6023-7f03-42ab-b1ab-a3301878c963"), "Jeux de société", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("5e743466-4cd7-4299-9f56-302e77256996"), "Innovations", 1, DateTime.UtcNow, DateTime.UtcNow },
-        { Guid.Parse("0adf9644-6c46-466d-abf0-49e05c1704a5"), "Environnement", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("652f590f-c1fe-4157-8dc6-988bc87902fe"), "Éthique", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("21e091c8-0a4c-401a-bb78-66f7036704ac"), "Collaboration", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("06444ae6-24e9-43eb-a6b0-39402cb9a44e"), "Santé", 1, DateTime.UtcNow, DateTime.UtcNow },
@@ -104,7 +95,4 @@ public class TagSeed
         { Guid.Parse("7501d748-aea1-4fba-9cd2-0e7ac241a646"), "Éducation", 1, DateTime.UtcNow, DateTime.UtcNow },
         { Guid.Parse("47054ed7-ec13-4880-ace6-8165f85ce831"), "STEM", 1, DateTime.UtcNow, DateTime.UtcNow }
     };
-
-
-
 }

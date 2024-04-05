@@ -3,6 +3,7 @@ using api.core.Data.Enums;
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.repositories.abstractions;
+using api.core.services.abstractions;
 using api.core.Services;
 using api.emails.Models;
 using api.emails.Services.Abstractions;
@@ -144,6 +145,7 @@ public class EventServiceTests
     private readonly Mock<IModeratorRepository> _mockModeratorRepository;
     private readonly Mock<IFileShareService> _mockFileShareService;
     private readonly Mock<IEmailService> _mockEmailService;
+    private readonly Mock<IUserService> _mockUserService;
     private readonly Mock<IConfiguration> _mockConfig;
 
     public EventServiceTests()
@@ -154,6 +156,7 @@ public class EventServiceTests
         _mockModeratorRepository = new Mock<IModeratorRepository>();
         _mockFileShareService = new Mock<IFileShareService>();
         _mockEmailService = new Mock<IEmailService>();
+        _mockUserService = new Mock<IUserService>();
         _mockConfig = new Mock<IConfiguration>();
 
         _eventService = new EventService(
@@ -173,7 +176,7 @@ public class EventServiceTests
         _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
         // Act
-        var events = _eventService.GetEvents(null, null, null, null, null, State.Published);
+        var events = _eventService.GetEvents(null, null, null, null, null, null, State.Published);
 
         // Assert
         _mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
@@ -188,7 +191,7 @@ public class EventServiceTests
         _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
         // Act
-        var events = _eventService.GetEvents(DateTime.Now.AddDays(2), null, null, null, null, State.All);
+        var events = _eventService.GetEvents(DateTime.Now.AddDays(2), null, null, null, null, null, State.All);
 
         // Assert
         _mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
@@ -204,7 +207,7 @@ public class EventServiceTests
         _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
 
         // Act
-        var events = _eventService.GetEvents(null, DateTime.Now.AddDays(3), null, null, null, State.All);
+        var events = _eventService.GetEvents(null, DateTime.Now.AddDays(3), null, null, null, null, State.All);
 
         // Assert
         _mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
@@ -222,7 +225,7 @@ public class EventServiceTests
         var events = _eventService.GetEvents(null, null, new List<string>
         {
             "Club"
-        }, null, null, State.All);
+        }, null, null, null, State.All);
 
         // Assert
         _mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
@@ -240,12 +243,29 @@ public class EventServiceTests
         var events = _eventService.GetEvents(null, null, null, new List<Guid>
         {
             _tagId
-        }, null, State.All);
+        }, null, null, State.All);
 
         // Assert
         _mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
         events.Should().NotBeEmpty();
         events.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public void GetEvents_ShouldReturnOnlyEventsWithMatchingTitle()
+    {
+        // Arrange
+        var titleToMatch = "EVENT IN 5 DAYS";
+        _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
+
+        // Act
+        var events = _eventService.GetEvents(null, null, null, null, null, titleToMatch, State.All);
+
+        // Assert
+        _mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
+        events.Should().NotBeEmpty();
+        events.Should().HaveCount(1);
+        events.Should().OnlyContain(e => e.Title!.Contains(titleToMatch));
     }
 
 

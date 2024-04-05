@@ -13,6 +13,8 @@ public partial class Organizer : User
 
     public bool IsActive { get; set; }
 
+    public bool HasLoggedIn { get; set; }
+
     public string? FacebookLink { get; set; }
     
     public string? InstagramLink { get; set; }
