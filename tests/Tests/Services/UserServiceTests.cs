@@ -8,12 +8,15 @@ using api.core.repositories.abstractions;
 using api.core.Services;
 using api.core.Data.Responses;
 using api.files.Services.Abstractions;
+using System.Diagnostics;
+using api.core.Data.Exceptions;
 
 namespace api.tests.Tests.Services;
 public class UserServiceTests
 {
     private readonly Mock<IOrganizerRepository> _organizerRepositoryMock;
     private readonly Mock<IModeratorRepository> _moderatorRepositoryMock;
+    private readonly Mock<IActivityAreaRepository> _activityAreaRepositoryMock;
     private readonly Mock<IFileShareService> _fileShareServiceMock;
     private readonly UserService _userService;
 
@@ -21,31 +24,41 @@ public class UserServiceTests
     {
         _organizerRepositoryMock = new Mock<IOrganizerRepository>();
         _moderatorRepositoryMock = new Mock<IModeratorRepository>();
+        _activityAreaRepositoryMock = new Mock<IActivityAreaRepository>();
         _fileShareServiceMock = new Mock<IFileShareService>();
+
         _fileShareServiceMock.Setup(service => service.FileGetDownloadUri(It.IsAny<string>())).Returns(new Uri("http://example.com/avatar.webp"));
-        _userService = new UserService(_organizerRepositoryMock.Object, _fileShareServiceMock.Object, _moderatorRepositoryMock.Object);
+        _userService = new UserService(_organizerRepositoryMock.Object, _fileShareServiceMock.Object, _moderatorRepositoryMock.Object, _activityAreaRepositoryMock.Object);
     }
 
     [Fact]
     public void AddOrganizer_ShouldReturnUserResponseDTO_WhenOrganizerIsAddedSuccessfully()
     {
         // Arrange
+        var actAreaModified = Guid.NewGuid();
         var organizerDto = new UserUpdateDTO
         {
             Email = "john.doe@example.com",
             Organization = "ExampleOrg",
-            ActivityArea = "Tech"
+            ActivityAreaId = actAreaModified
         };
-        var actArea = Guid.NewGuid();
 
+        var activity = new ActivityArea
+        {
+            Id = actAreaModified,
+            NameFr = "Tech",
+        };
         var organizer = new Organizer
         {
             Email = organizerDto.Email,
             Organization = organizerDto.Organization,
-            ActivityAreaId = actArea,
+            ActivityAreaId = actAreaModified,
+            ActivityArea = activity,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
+
+        _activityAreaRepositoryMock.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns(activity);
 
         _organizerRepositoryMock.Setup(repo => repo.Add(It.IsAny<Organizer>())).Returns(organizer);
 
@@ -56,7 +69,7 @@ public class UserServiceTests
         result.Should().NotBeNull();
         result.Email.Should().Be(organizerDto.Email);
         result.Organization.Should().Be(organizerDto.Organization);
-        result.ActivityArea.Id.ToString().Should().Be(actArea.ToString());
+        result.ActivityArea.Id.ToString().Should().Be(actAreaModified.ToString());
 
         _organizerRepositoryMock.Verify(repo => repo.Add(It.IsAny<Organizer>()), Times.Once);
     }
@@ -149,11 +162,18 @@ public class UserServiceTests
     {
         // Arrange
         var organizerId = Guid.NewGuid();
+        var actAreaIdModified = Guid.NewGuid();
         var updateDto = new UserUpdateDTO
         {
             Email = "jane.doe@example.com",
             Organization = "NewOrg",
-            ActivityArea = "Health"
+            ActivityAreaId = actAreaIdModified
+        };
+
+        var activity = new ActivityArea
+        {
+            Id = actAreaIdModified,
+            NameFr = "Tech",
         };
 
         var existingOrganizer = new Organizer
@@ -161,11 +181,12 @@ public class UserServiceTests
             Id = organizerId,
             Email = "john.doe@example.com",
             Organization = "ExampleOrg",
-            ActivityArea = "Tech",
+            ActivityArea = activity,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
 
+        _activityAreaRepositoryMock.Setup(repo => repo.Get(actAreaIdModified)).Returns(activity); // Simulate activity area found
         _organizerRepositoryMock.Setup(repo => repo.Get(organizerId)).Returns(existingOrganizer);
         _organizerRepositoryMock.Setup(repo => repo.Update(organizerId, It.IsAny<Organizer>())).Returns(true);
 
@@ -177,6 +198,41 @@ public class UserServiceTests
 
         _organizerRepositoryMock.Verify(repo => repo.Update(organizerId, It.IsAny<Organizer>()), Times.Once);
     }
+
+    [Fact]
+    public void UpdateUser_ShouldThrow_WhenActivityAreaIsNotFoundInTheList()
+    {
+        // Arrange
+        var organizerId = Guid.NewGuid();
+        var badActAreaIdModified = Guid.NewGuid();
+        var updateDto = new UserUpdateDTO
+        {
+            Email = "jane.doe@example.com",
+            Organization = "NewOrg",
+            ActivityAreaId = badActAreaIdModified
+        };
+
+        var existingOrganizer = new Organizer
+        {
+            Id = organizerId,
+            Email = "john.doe@example.com",
+            Organization = "ExampleOrg",
+            ActivityArea = new ActivityArea
+            {
+                Id = Guid.NewGuid(),
+                NameFr = "Tech",
+            },
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        _activityAreaRepositoryMock.Setup(repo => repo.Get(badActAreaIdModified)).Returns(null as ActivityArea); // Simulate activity area not found
+        _organizerRepositoryMock.Setup(repo => repo.Get(organizerId)).Returns(existingOrganizer);
+        _organizerRepositoryMock.Setup(repo => repo.Update(organizerId, It.IsAny<Organizer>())).Returns(true);
+
+        // Act & Assert
+        Assert.Throws<NotFoundException<ActivityArea>>(() => _userService.UpdateUser(organizerId, updateDto));
+    }
+
 
     [Fact]
     public void UpdateUser_ShouldReturnTrue_WhenModeratorIsUpdatedSuccessfully()

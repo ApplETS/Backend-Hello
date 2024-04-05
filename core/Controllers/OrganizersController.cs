@@ -64,12 +64,18 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
     public IActionResult GetUsers(string? search, [FromQuery] PaginationRequest pagination)
     {
         var validFilter = new PaginationRequest(pagination.PageNumber, pagination.PageSize);
-        var users = userService.GetUsers(search);
+        var users = userService.GetUsers(search, out int totalRecords);
 
-        var totalRecords = users.Count();
         var paginatedRes = users
             .Skip((pagination.PageNumber - 1) * pagination.PageSize)
             .Take(pagination.PageSize)
+            .ToList()
+            .Select((e) =>
+            {
+                var url = userService.GetUserAvatarUrl(e.Id);
+                e.AvatarUrl = url;
+                return e;
+            })
             .ToList();
 
         var response = PaginationHelper.CreatePaginatedReponse(paginatedRes, validFilter, totalRecords);

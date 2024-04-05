@@ -20,6 +20,9 @@ public class EventServiceTests
 
     private static readonly Guid _tagId = Guid.NewGuid();
 
+    private static readonly Guid _activityAreaClubId = Guid.NewGuid();
+    private static readonly Guid _activityAreaSchoolId = Guid.NewGuid();
+
     private readonly List<Event> _events = new List<Event>
     {
         new Event
@@ -45,7 +48,12 @@ public class EventServiceTests
                 Organizer = new Organizer
                 {
                     Id = Guid.NewGuid(),
-                    ActivityArea = "Club"
+                    ActivityArea = new ActivityArea
+                    {
+                        Id = _activityAreaClubId,
+                        NameEn = "Club",
+                        NameFr = "Club"
+                    }
                 },
                 Moderator = new Moderator
                 {
@@ -78,7 +86,12 @@ public class EventServiceTests
                 Organizer = new Organizer
                 {
                     Id = Guid.NewGuid(),
-                    ActivityArea = "School"
+                    ActivityArea = new ActivityArea
+                    {
+                        Id = _activityAreaSchoolId,
+                        NameEn = "School",
+                        NameFr = "School"
+                    }
                 },
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
@@ -100,7 +113,12 @@ public class EventServiceTests
                 Organizer = new Organizer
                 {
                     Id = Guid.NewGuid(),
-                    ActivityArea = "School"
+                    ActivityArea = new ActivityArea
+                    {
+                        Id = _activityAreaSchoolId,
+                        NameEn = "School",
+                        NameFr = "School"
+                    }
                 },
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
@@ -129,7 +147,12 @@ public class EventServiceTests
                 Organizer = new Organizer
                 {
                     Id = Guid.NewGuid(),
-                    ActivityArea = "School"
+                    ActivityArea = new ActivityArea
+                    {
+                        Id = _activityAreaSchoolId,
+                        NameEn = "School",
+                        NameFr = "School"
+                    }
                 },
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
@@ -173,7 +196,7 @@ public class EventServiceTests
     public void GetEvents_ShouldReturnAllEventsExceptDeletedOnes()
     {
         // Arrange
-        _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
+        _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events.AsQueryable());
 
         // Act
         var events = _eventService.GetEvents(null, null, null, null, null, null, State.Published);
@@ -188,7 +211,7 @@ public class EventServiceTests
     public void GetEvents_ShouldReturnOnlyEventsAfterStartDate()
     {
         // Arrange
-        _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
+        _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events.AsQueryable());
 
         // Act
         var events = _eventService.GetEvents(DateTime.Now.AddDays(2), null, null, null, null, null, State.All);
@@ -204,7 +227,7 @@ public class EventServiceTests
     {
         // Arrange
 
-        _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
+        _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events.AsQueryable());
 
         // Act
         var events = _eventService.GetEvents(null, DateTime.Now.AddDays(3), null, null, null, null, State.All);
@@ -219,12 +242,12 @@ public class EventServiceTests
     public void GetEvents_ShouldReturnOnlyEventsOnlyActivityAreaClub()
     {
         // Arrange
-        _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
+        _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events.AsQueryable());
 
         // Act
-        var events = _eventService.GetEvents(null, null, new List<string>
+        var events = _eventService.GetEvents(null, null, new List<Guid>
         {
-            "Club"
+            _activityAreaClubId
         }, null, null, null, State.All);
 
         // Assert
@@ -237,7 +260,7 @@ public class EventServiceTests
     public void GetEvents_ShouldReturnOnlyEventsOnlyTagTest()
     {
         // Arrange
-        _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
+        _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events.AsQueryable());
 
         // Act
         var events = _eventService.GetEvents(null, null, null, new List<Guid>
@@ -256,7 +279,7 @@ public class EventServiceTests
     {
         // Arrange
         var titleToMatch = "EVENT IN 5 DAYS";
-        _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events);
+        _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events.AsQueryable());
 
         // Act
         var events = _eventService.GetEvents(null, null, null, null, null, titleToMatch, State.All);

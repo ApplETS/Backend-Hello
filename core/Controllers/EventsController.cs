@@ -49,12 +49,14 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
         var paginatedRes = events
             .Skip((pagination.PageNumber - 1) * pagination.PageSize)
             .Take(pagination.PageSize)
+            .ToList()
             .Select((e) =>
             {
-                var organizer = userService.GetUser(e.Organizer.Id);
-                e.Organizer = organizer;
+                var url = userService.GetUserAvatarUrl(e.Organizer.Id);
+                e.Organizer.AvatarUrl = url;
                 return e;
-            }).ToList();
+            })
+            .ToList();
 
         var response = PaginationHelper.CreatePaginatedReponse(paginatedRes, validFilter, totalRecords);
 
