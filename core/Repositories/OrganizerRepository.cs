@@ -27,7 +27,9 @@ public class OrganizerRepository(EventManagementContext context) : IOrganizerRep
 
     public Organizer? Get(Guid id)
     {
-        var entity = context.Organizers.Find(id);
+        var entity = context.Organizers
+            .Include(x => x.ActivityArea)
+            .FirstOrDefault(x => x.Id == id);
         if (entity != null && entity.DeletedAt == null)
         {
             return entity;
