@@ -2,7 +2,6 @@
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.Data.Responses;
-using api.core.repositories;
 using api.core.repositories.abstractions;
 using api.core.services.abstractions;
 using api.files.Services.Abstractions;
