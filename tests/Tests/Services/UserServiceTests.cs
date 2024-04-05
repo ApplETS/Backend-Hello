@@ -17,6 +17,7 @@ public class UserServiceTests
     private readonly Mock<IOrganizerRepository> _organizerRepositoryMock;
     private readonly Mock<IModeratorRepository> _moderatorRepositoryMock;
     private readonly Mock<IActivityAreaRepository> _activityAreaRepositoryMock;
+    private readonly Mock<ITagRepository> _tagRepositoryMock;
     private readonly Mock<IFileShareService> _fileShareServiceMock;
     private readonly UserService _userService;
 
@@ -24,11 +25,12 @@ public class UserServiceTests
     {
         _organizerRepositoryMock = new Mock<IOrganizerRepository>();
         _moderatorRepositoryMock = new Mock<IModeratorRepository>();
+        _tagRepositoryMock = new Mock<ITagRepository>();
         _activityAreaRepositoryMock = new Mock<IActivityAreaRepository>();
         _fileShareServiceMock = new Mock<IFileShareService>();
 
         _fileShareServiceMock.Setup(service => service.FileGetDownloadUri(It.IsAny<string>())).Returns(new Uri("http://example.com/avatar.webp"));
-        _userService = new UserService(_organizerRepositoryMock.Object, _fileShareServiceMock.Object, _moderatorRepositoryMock.Object, _activityAreaRepositoryMock.Object);
+        _userService = new UserService(_organizerRepositoryMock.Object, _fileShareServiceMock.Object, _moderatorRepositoryMock.Object, _tagRepositoryMock.Object, _activityAreaRepositoryMock.Object);
     }
 
     [Fact]

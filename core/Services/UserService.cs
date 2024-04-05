@@ -2,6 +2,7 @@
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.Data.Responses;
+using api.core.repositories;
 using api.core.repositories.abstractions;
 using api.core.services.abstractions;
 using api.files.Services.Abstractions;
@@ -17,6 +18,7 @@ public class UserService(
     IOrganizerRepository organizerRepository,
     IFileShareService fileShareService,
     IModeratorRepository moderatorRepository,
+    ITagRepository tagRepository,
     IActivityAreaRepository activityAreaRepository) : IUserService
 {
     private const double IMAGE_RATIO_SIZE_ACCEPTANCE = 1.0; // width/height ratio avatar
@@ -62,14 +64,15 @@ public class UserService(
         if (moderator != null)
             userRes = UserResponseDTO.Map(moderator!);
 
-        if (userRes != null)
-        {
-            var avatarUri = fileShareService.FileGetDownloadUri($"{id}/{AVATAR_FILE_NAME}");
-            userRes.AvatarUrl = avatarUri.ToString();
-            return userRes;
-        }
+        if (userRes == null) throw new Exception("No users associated with this ID");
 
-        throw new Exception("No users associated with this ID");
+        var fields = tagRepository.GetInterestFieldsForOrganizer(id);
+        userRes.FieldsOfInterests = fields;
+
+        var avatarUri = fileShareService.FileGetDownloadUri($"{id}/{AVATAR_FILE_NAME}");
+        userRes.AvatarUrl = avatarUri.ToString();
+
+        return userRes;
     }
 
     public string GetUserAvatarUrl(Guid id)
