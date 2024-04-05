@@ -1,5 +1,6 @@
 ﻿using api.core.data.entities;
 using api.core.Data.Exceptions;
+using api.core.Data.Enums;
 using api.core.Data.requests;
 using api.core.Data.Responses;
 using api.core.repositories.abstractions;
@@ -78,12 +79,15 @@ public class UserService(
         return avatarUri.ToString();
     }
 
-    public IEnumerable<UserResponseDTO> GetUsers(string? search, out int count)
+    public IEnumerable<UserResponseDTO> GetUsers(string? search, OrganizerAccountActiveFilter activeFilter, out int count)
     {
         var organizers = organizerRepository.GetAll()
-            .Where(x => search.IsNullOrEmpty() ||
-                x.Organization.ToLower().Contains(search.ToLower() ?? "") ||
-                x.Email.ToLower().Contains(search.ToLower() ?? "")
+            .Where(x => (search.IsNullOrEmpty() ||
+                x.Organization.ToLower().Contains(search!.ToLower() ?? "") ||
+                x.Email.ToLower().Contains(search!.ToLower() ?? "")) &&
+                ((activeFilter.HasFlag(OrganizerAccountActiveFilter.Active) && x.IsActive) ||
+                 (activeFilter.HasFlag(OrganizerAccountActiveFilter.Inactive) && !x.IsActive) ||
+                 activeFilter.HasFlag(OrganizerAccountActiveFilter.All))
             );
         count = organizers.Count();
 
