@@ -1,5 +1,6 @@
 ﻿using api.core.data.entities;
 using api.core.Data;
+using api.core.Data.Enums;
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.Data.Requests;
@@ -61,10 +62,10 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
     }
 
     [HttpGet]
-    public IActionResult GetUsers(string? search, [FromQuery] PaginationRequest pagination)
+    public IActionResult GetUsers(string? search, OrganizerAccountActiveFilter filter, [FromQuery] PaginationRequest pagination)
     {
         var validFilter = new PaginationRequest(pagination.PageNumber, pagination.PageSize);
-        var users = userService.GetUsers(search, out int totalRecords);
+        var users = userService.GetUsers(search, filter, out int totalRecords);
 
         var paginatedRes = users
             .Skip((pagination.PageNumber - 1) * pagination.PageSize)

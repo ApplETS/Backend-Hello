@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Tracing;
 
+using api.core.Data.Enums;
 using api.core.Data.requests;
 using api.core.Data.Responses;
 
@@ -13,7 +14,7 @@ public interface IUserService
 
     public string GetUserAvatarUrl(Guid id);
 
-    public IEnumerable<UserResponseDTO> GetUsers(string? search, out int count);
+    public IEnumerable<UserResponseDTO> GetUsers(string? search, OrganizerAccountActiveFilter activeFilter, out int count);
 
     public bool UpdateUser(Guid id, UserUpdateDTO dto);
 
