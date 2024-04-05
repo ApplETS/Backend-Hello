@@ -181,8 +181,6 @@ public class EventServiceTests
         _mockModeratorRepository = new Mock<IModeratorRepository>();
         _mockFileShareService = new Mock<IFileShareService>();
         _mockEmailService = new Mock<IEmailService>();
-        _mockUserService = new Mock<IUserService>();
-        _mockConfig = new Mock<IConfiguration>();
 
         _eventService = new EventService(
             _mockEventRepository.Object,
