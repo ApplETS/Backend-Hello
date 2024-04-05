@@ -4,6 +4,8 @@ using api.core.Data.Responses;
 using api.core.repositories.abstractions;
 using api.core.Services.Abstractions;
 
+using Microsoft.IdentityModel.Tokens;
+
 using Supabase;
 
 namespace api.core.Services;
@@ -14,9 +16,11 @@ public class ActivityAreaService(IActivityAreaRepository activityAreaRepository)
     {
         return activityAreaRepository.GetAll()
             .Where(aa =>
-            (aa.NameFr.Contains(search ?? "", StringComparison.InvariantCultureIgnoreCase) ||
-            aa.NameEn.Contains(search ?? "", StringComparison.InvariantCultureIgnoreCase)) &&
+            (search.IsNullOrEmpty() || 
+                aa.NameFr.ToLower().Contains(search!.ToLower() ?? "") ||
+                aa.NameEn.ToLower().Contains(search!.ToLower() ?? "")) &&
             aa.DeletedAt == null)
+            .ToList()
             .Select(ActivityAreaResponseDTO.Map);
     }
 
