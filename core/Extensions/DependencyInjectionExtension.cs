@@ -36,6 +36,7 @@ public static class DependencyInjectionExtension
         services.AddTransient<ITagService, TagService>();
         services.AddTransient<IAuthService, AuthService>();
         services.AddTransient<IReportService, ReportService>();
+        services.AddTransient<IModeratorService, ModeratorService>();
 
         return services;
     }
