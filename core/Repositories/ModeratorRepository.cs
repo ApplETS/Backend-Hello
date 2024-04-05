@@ -8,7 +8,14 @@ public class ModeratorRepository(EventManagementContext context) : IModeratorRep
 {
     public Moderator Add(Moderator entity)
     {
-        throw new NotImplementedException();
+        var inserted = context.Moderators.Add(entity);
+
+        if (inserted.Entity != null)
+        {
+            context.SaveChanges();
+            return inserted.Entity;
+        }
+        throw new Exception($"Unable to create a Moderator {entity.Id}");
     }
 
     public bool Delete(Moderator entity)
