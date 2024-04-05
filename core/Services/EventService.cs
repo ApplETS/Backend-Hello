@@ -28,7 +28,7 @@ public class EventService(
     IEmailService emailService) : IEventService
 {
     private const double IMAGE_RATIO_SIZE_ACCEPTANCE = 2.0; // width/height ratio
-    private const double TOLERANCE_ACCEPTABILITY = 0.001;
+    private const double TOLERANCE_ACCEPTABILITY = 0.01;
     private const int MAX_TITLE_LENGTH = 15;
 
     public IEnumerable<EventResponseDTO> GetEvents(
@@ -345,7 +345,7 @@ public class EventService(
             int height = image.Size.Height;
 
             if (Math.Abs((width / height) - IMAGE_RATIO_SIZE_ACCEPTANCE) > TOLERANCE_ACCEPTABILITY)
-                throw new BadParameterException<Event>(nameof(image), "Invalid image aspect ratio");
+                throw new BadParameterException<Event>(nameof(image), $"Invalid image aspect ratio {width}/{height}");
             
             image.Mutate(c => c.Resize(400, 200));
             using var outputStream = new MemoryStream();
