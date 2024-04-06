@@ -173,6 +173,7 @@ public class EventServiceTests
     private readonly Mock<IFileShareService> _mockFileShareService;
     private readonly Mock<IEmailService> _mockEmailService;
 
+    private readonly Mock<IConfiguration> _mockConfig;
     public EventServiceTests()
     {
         _mockEventRepository = new Mock<IEventRepository>();
@@ -182,7 +183,10 @@ public class EventServiceTests
         _mockFileShareService = new Mock<IFileShareService>();
         _mockEmailService = new Mock<IEmailService>();
 
+        _mockConfig = new Mock<IConfiguration>();
+
         _eventService = new EventService(
+            _mockConfig.Object,
             _mockEventRepository.Object,
             _mockTagRepository.Object,
             _mockOrganizerRepository.Object,
@@ -412,6 +416,7 @@ public class EventServiceTests
         _mockOrganizerRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns(new Organizer { Id = userId });
 
         _eventService = new EventService(
+            _mockConfig.Object,
             _mockEventRepository.Object,
             _mockTagRepository.Object,
             _mockOrganizerRepository.Object,
