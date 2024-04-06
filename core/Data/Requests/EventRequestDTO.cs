@@ -20,14 +20,18 @@ public class EventRequestDTO
 }
 
 
-/// <summary>
-/// Either one of the image or imageUrl should be provided
-/// if none is, the creation will fail
-/// </summary>
 public class EventCreationRequestDTO : EventRequestDTO
 {
+    /// <summary>
+    /// Either this field should be set (not null) or the ImageUrl string field should be set
+    /// If none of them are set, the creation will fail
+    /// </summary>
     public IFormFile? Image { get; set; }
 
+    /// <summary>
+    /// Either this field should be set (not null) or the Image FormFile field should be set
+    /// If none of them are set, the creation will fail
+    /// </summary>
     public string? ImageUrl { get; set; }
 }
 
@@ -50,7 +54,17 @@ public class DraftEventCreationRequestDTO
 
     public string? ImageAltText { get; set; }
 
+    /// <summary>
+    /// Either this field should be set (not null) or the ImageUrl string field should be set
+    /// If none of them are set, the creation will fail
+    /// </summary>
     public IFormFile? Image { get; set; }
+
+    /// <summary>
+    /// Either this field should be set (not null) or the Image FormFile field should be set
+    /// If none of them are set, the creation will fail
+    /// </summary>
+    public string? ImageUrl { get; set; }
 
     public virtual ICollection<Guid> Tags { get; set; } = new List<Guid>();
 }

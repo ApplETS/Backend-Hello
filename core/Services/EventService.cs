@@ -129,13 +129,18 @@ public class EventService(
             ?? Enumerable.Empty<Tag>();
 
         var id = Guid.NewGuid();
-        Uri? uri = null;
+        string uri = "";
 
         if (request.Image != null)
         {
-            uri = fileShareService.FileGetDownloadUri($"{id}/{request.Image.FileName}");
+            uri = fileShareService.FileGetDownloadUri($"{id}/{request.Image.FileName}").ToString();
             HandleImageSaving(id, request.Image);
         }
+        else if (request.ImageUrl != null && request.ImageUrl.StartsWith(config.GetValue<string>("CDN_URL")!))
+            uri = request.ImageUrl;
+        else
+            throw new BadParameterException<DraftEventCreationRequestDTO>("image", "Nor image nor imageUrl was provided.");
+
 
         var inserted = evntRepo.Add(new Event
         {
