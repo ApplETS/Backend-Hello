@@ -20,6 +20,7 @@ using SixLabors.ImageSharp.Processing;
 namespace api.core.Services;
 
 public class EventService(
+    IConfiguration config,
     IEventRepository evntRepo,
     ITagRepository tagRepo,
     IOrganizerRepository orgRepo,
@@ -81,9 +82,16 @@ public class EventService(
         
 
         var id = Guid.NewGuid();
-        var uri = fileShareService.FileGetDownloadUri($"{id}/{request.Image.FileName}");
-
-        HandleImageSaving(id, request.Image);
+        string uri = "";
+        if (request.Image != null)
+        {
+            uri = fileShareService.FileGetDownloadUri($"{id}/{request.Image.FileName}").ToString();
+            HandleImageSaving(id, request.Image);
+        }
+        else if (request.ImageUrl != null && request.ImageUrl.StartsWith(config.GetValue<string>("CDN_URL")!))
+            uri = request.ImageUrl;
+        else
+            throw new BadParameterException<EventCreationRequestDTO>("image", "Nor image nor imageUrl was provided.");
 
         var inserted = evntRepo.Add(new Event
         {

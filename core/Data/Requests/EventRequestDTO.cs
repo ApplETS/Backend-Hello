@@ -20,9 +20,15 @@ public class EventRequestDTO
 }
 
 
+/// <summary>
+/// Either one of the image or imageUrl should be provided
+/// if none is, the creation will fail
+/// </summary>
 public class EventCreationRequestDTO : EventRequestDTO
 {
-    public IFormFile Image { get; set; } = null!;
+    public IFormFile? Image { get; set; }
+
+    public string? ImageUrl { get; set; }
 }
 
 public class EventUpdateRequestDTO : EventRequestDTO
