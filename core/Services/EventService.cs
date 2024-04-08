@@ -16,6 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
+using api.core.Services.Abstractions;
 
 namespace api.core.Services;
 
@@ -25,7 +26,8 @@ public class EventService(
     IOrganizerRepository orgRepo,
     IModeratorRepository moderatorRepo,
     IFileShareService fileShareService,
-    IEmailService emailService) : IEventService
+    IEmailService emailService,
+    INotificationService notificationService) : IEventService
 {
     private const double IMAGE_RATIO_SIZE_ACCEPTANCE = 2.0; // width/height ratio
     private const double TOLERANCE_ACCEPTABILITY = 0.01;
@@ -235,6 +237,7 @@ public class EventService(
         if (state == State.Approved && evnt.Publication.PublicationDate < DateTime.UtcNow)
         {
             state = State.Published;
+            notificationService.BulkAddNotificationForPublication(evnt.Id);
         }
 
         evnt.Publication.Reason = reason;
@@ -308,6 +311,7 @@ public class EventService(
         {
             evnt.Publication.State = State.Published;
             evntRepo.Update(evnt.Id, evnt);
+            notificationService.BulkAddNotificationForPublication(evnt.Id);
         }
 
         return eventsToUpdate.Count;

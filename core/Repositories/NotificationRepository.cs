@@ -4,20 +4,20 @@ using api.core.repositories.abstractions;
 
 namespace api.core.repositories;
 
-public class SubscriptionRepository(EventManagementContext context) : ISubscriptionRepository
+public class NotificationRepository(EventManagementContext context) : INotificationRepository
 {
-    public Subscription Add(Subscription entity)
+    public Notification Add(Notification entity)
     {
-        var inserted = context.Subscriptions.Add(entity);
+        var inserted = context.Notifications.Add(entity);
 
         if (inserted.Entity != null)
         {
             context.SaveChanges();
             return inserted.Entity;
         }
-        throw new Exception($"Unable to create a subscriptions {entity.Id}");
+        throw new Exception($"Unable to create a Notification {entity.Id}");
     }
-    public bool SoftDelete(Subscription entity)
+    public bool SoftDelete(Notification entity)
     {
         try
         {
@@ -31,7 +31,7 @@ public class SubscriptionRepository(EventManagementContext context) : ISubscript
         }
     }
 
-    public bool Delete(Subscription entity)
+    public bool Delete(Notification entity)
     {
         try
         {
@@ -45,20 +45,20 @@ public class SubscriptionRepository(EventManagementContext context) : ISubscript
         }
     }
 
-    public Subscription? Get(Guid id)
+    public Notification? Get(Guid id)
     {
-        var act = context.Subscriptions
+        var act = context.Notifications
             .FirstOrDefault(x => x.Id == id);
 
-        return act ?? throw new Exception($"Unable to fetch a Subscription {id}");
+        return act ?? throw new Exception($"Unable to fetch a Notification {id}");
     }
 
-    public IQueryable<Subscription> GetAll()
+    public IQueryable<Notification> GetAll()
     {
-        return context.Subscriptions;
+        return context.Notifications;
     }
 
-    public bool Update(Guid id, Subscription entity)
+    public bool Update(Guid id, Notification entity)
     {
         var sub = Get(id);
 
@@ -70,11 +70,5 @@ public class SubscriptionRepository(EventManagementContext context) : ISubscript
         }
 
         return false;
-    }
-
-    public bool IsEntryExists(Guid organizerId, string email)
-    {
-        return context.Subscriptions
-            .Any(x => x.OrganizerId == organizerId && x.Email == email);
     }
 }

@@ -7,7 +7,7 @@ namespace api.tasks.Jobs;
 
 public class SetPublicationEventJob : IJob
 {
-    public static readonly JobKey Key = new (nameof(SetPublicationEventJob), SchedulerSetup.BackgroundTaskKey);
+    public static readonly JobKey Key = new (nameof(SetPublicationEventJob), SchedulerSetup.SetPublicationPublishedKey);
 
     private readonly IServiceProvider _provider;
 

@@ -6,8 +6,6 @@ using api.core.Services.Abstractions;
 
 using Microsoft.IdentityModel.Tokens;
 
-using Supabase;
-
 namespace api.core.Services;
 
 public class ActivityAreaService(IActivityAreaRepository activityAreaRepository) : IActivityAreaService
