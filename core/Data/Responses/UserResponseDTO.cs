@@ -18,6 +18,8 @@ public class UserResponseDTO
 
     public ActivityAreaResponseDTO? ActivityArea { get; set; }
 
+    public IEnumerable<FieldOfInterestTagResponseDTO>? FieldsOfInterests { get; set; }
+
     public bool IsActive { get; set; }
 
     public bool HasLoggedIn { get; set; }

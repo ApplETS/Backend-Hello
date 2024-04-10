@@ -1,7 +1,9 @@
 ﻿using api.core.data.entities;
 using api.core.Data.Exceptions;
+using api.core.Data.Enums;
 using api.core.Data.requests;
 using api.core.Data.Responses;
+using api.core.repositories;
 using api.core.repositories.abstractions;
 using api.core.services.abstractions;
 using api.files.Services.Abstractions;
@@ -17,6 +19,7 @@ public class UserService(
     IOrganizerRepository organizerRepository,
     IFileShareService fileShareService,
     IModeratorRepository moderatorRepository,
+    ITagRepository tagRepository,
     IActivityAreaRepository activityAreaRepository) : IUserService
 {
     private const double IMAGE_RATIO_SIZE_ACCEPTANCE = 1.0; // width/height ratio avatar
@@ -62,14 +65,15 @@ public class UserService(
         if (moderator != null)
             userRes = UserResponseDTO.Map(moderator!);
 
-        if (userRes != null)
-        {
-            var avatarUri = fileShareService.FileGetDownloadUri($"{id}/{AVATAR_FILE_NAME}");
-            userRes.AvatarUrl = avatarUri.ToString();
-            return userRes;
-        }
+        if (userRes == null) throw new Exception("No users associated with this ID");
 
-        throw new Exception("No users associated with this ID");
+        var fields = tagRepository.GetInterestFieldsForOrganizer(id);
+        userRes.FieldsOfInterests = fields;
+
+        var avatarUri = fileShareService.FileGetDownloadUri($"{id}/{AVATAR_FILE_NAME}");
+        userRes.AvatarUrl = avatarUri.ToString();
+
+        return userRes;
     }
 
     public string GetUserAvatarUrl(Guid id)
@@ -78,12 +82,15 @@ public class UserService(
         return avatarUri.ToString();
     }
 
-    public IEnumerable<UserResponseDTO> GetUsers(string? search, out int count)
+    public IEnumerable<UserResponseDTO> GetUsers(string? search, OrganizerAccountActiveFilter activeFilter, out int count)
     {
         var organizers = organizerRepository.GetAll()
-            .Where(x => search.IsNullOrEmpty() ||
-                x.Organization.ToLower().Contains(search.ToLower() ?? "") ||
-                x.Email.ToLower().Contains(search.ToLower() ?? "")
+            .Where(x => (search.IsNullOrEmpty() ||
+                x.Organization.ToLower().Contains(search!.ToLower() ?? "") ||
+                x.Email.ToLower().Contains(search!.ToLower() ?? "")) &&
+                ((activeFilter.HasFlag(OrganizerAccountActiveFilter.Active) && x.IsActive) ||
+                 (activeFilter.HasFlag(OrganizerAccountActiveFilter.Inactive) && !x.IsActive) ||
+                 activeFilter.HasFlag(OrganizerAccountActiveFilter.All))
             );
         count = organizers.Count();
 

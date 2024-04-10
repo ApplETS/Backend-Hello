@@ -5,7 +5,6 @@ namespace api.files.Services;
 
 public class FileShareService(IConfiguration config) : IFileShareService
 {
-
     public Uri FileGetDownloadUri(string fileName)
         => new Uri(new Uri(config.GetValue<string>("CDN_URL")!), fileName);
 
