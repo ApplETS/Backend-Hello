@@ -3,22 +3,16 @@ using Microsoft.Extensions.Configuration;
 
 namespace api.files.Services;
 
-public class FileShareService : IFileShareService
+public class FileShareService(IConfiguration config) : IFileShareService
 {
-    private readonly IConfiguration _config;
-
-    public FileShareService(IConfiguration config)
-    {
-        _config = config;
-    }
 
     public Uri FileGetDownloadUri(string fileName)
-        => new Uri(new Uri(_config.GetValue<string>("CDN_URL")!), fileName);
+        => new Uri(new Uri(config.GetValue<string>("CDN_URL")!), fileName);
 
     public void FileUpload(string subPath, string fileName, Stream streamFile)
     {
         // Get the configurations and create share object
-        var dir = Path.Combine(_config.GetValue<string>("CONTAINER_DIR")!, subPath);
+        var dir = Path.Combine(config.GetValue<string>("CONTAINER_DIR")!, subPath);
         
         Directory.CreateDirectory(dir);
         if (streamFile.Length > 0)

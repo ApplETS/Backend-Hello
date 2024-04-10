@@ -1,4 +1,4 @@
-﻿using api.tasks.Jobs;
+﻿using api.core.Services.Jobs;
 
 using Quartz;
 using Quartz.Logging;
@@ -49,7 +49,7 @@ public static class SchedulerSetup
 
         trigger = TriggerBuilder.Create()
             .WithSimpleSchedule(x => x
-                .WithInterval(new TimeSpan(0, 0, 20, 0, 0, 0)) // Every 20 minutes
+                .WithInterval(new TimeSpan(0, 0, 20, 0, 0, 0)) // Every 1 hour
                 .RepeatForever())
             .Build();
         await scheduler.ScheduleJob(job, trigger);

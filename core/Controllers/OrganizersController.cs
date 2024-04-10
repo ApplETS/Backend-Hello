@@ -18,7 +18,11 @@ namespace api.core.controllers;
 [Authorize(Policy = AuthPolicies.IsModerator)]
 [ApiController]
 [Route("api/moderator/organizer")]
-public class ModeratorUserController(IUserService userService, IAuthService authService, IEmailService emailService) : ControllerBase
+public class ModeratorUserController(
+    IUserService userService,
+    IAuthService authService,
+    IEmailService emailService,
+    IConfiguration configuration) : ControllerBase
 {
     [AllowAnonymous]
     [HttpGet("{organizerId}")]
@@ -40,7 +44,7 @@ public class ModeratorUserController(IUserService userService, IAuthService auth
         var supabaseUser = authService.SignUp(organizer.Email, strongPassword);
         Guid.TryParse(supabaseUser, out Guid userId);
         var created = userService.AddOrganizer(userId, organizer);
-        var frontBaseUrl = Environment.GetEnvironmentVariable("FRONTEND_BASE_URL") ?? throw new Exception("FRONTEND_BASE_URL is not set");
+        var frontBaseUrl = configuration.GetValue<string>("FRONTEND_BASE_URL") ?? throw new Exception("FRONTEND_BASE_URL is not set");
         await emailService.SendEmailAsync(
             organizer.Email,
             "Votre compte Hello!",

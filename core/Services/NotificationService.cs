@@ -17,7 +17,8 @@ public class NotificationService(
     IEventRepository eventRepository,
     ISubscriptionRepository subscriptionRepository,
     INotificationRepository notificationRepository,
-    IEmailService emailService) : INotificationService
+    IEmailService emailService,
+    IConfiguration configuration) : INotificationService
 {
     private const int MAX_NOTIFICATIONS_PROCESSED_BY_CHUNK = 5;
 
@@ -83,7 +84,7 @@ public class NotificationService(
         }
 
         // send email to subscription.Email with subject and content
-        var frontBaseUrl = Environment.GetEnvironmentVariable("FRONTEND_BASE_URL") ?? throw new Exception("FRONTEND_BASE_URL is not set");
+        var frontBaseUrl = configuration.GetValue<string>("FRONTEND_BASE_URL") ?? throw new Exception("FRONTEND_BASE_URL is not set");
         
         foreach (var notification in notifications)
         {

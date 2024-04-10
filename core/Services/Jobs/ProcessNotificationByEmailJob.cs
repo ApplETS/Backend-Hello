@@ -4,24 +4,17 @@ using api.core.Services.Abstractions;
 
 using Quartz;
 
-namespace api.tasks.Jobs;
+namespace api.core.Services.Jobs;
 
-public class ProcessNotificationByEmailJob : IJob
+public class ProcessNotificationByEmailJob(IServiceProvider provider) : IJob
 {
-    public static readonly JobKey Key = new (nameof(ProcessNotificationByEmailJob), SchedulerSetup.NotificationByEmailKey);
-
-    private readonly IServiceProvider _provider;
-
-    public ProcessNotificationByEmailJob(IServiceProvider serviceProvider)
-    {
-        _provider = serviceProvider;
-    }
+    public static readonly JobKey Key = new(nameof(ProcessNotificationByEmailJob), SchedulerSetup.NotificationByEmailKey);
 
     public async Task Execute(IJobExecutionContext context)
     {
         try
         {
-            using var serviceScope = _provider.CreateScope();
+            using var serviceScope = provider.CreateScope();
             var notifService = (serviceScope.ServiceProvider?.GetService<INotificationService>()) ?? throw new SchedulerException("Cannot instantiate NotificationService from the AspNet Core IOC.");
             var logger = (serviceScope.ServiceProvider?.GetService<ILogger<ProcessNotificationByEmailJob>>()) ?? throw new SchedulerException("Cannot instantiate Logger from the AspNet Core IOC.");
 
