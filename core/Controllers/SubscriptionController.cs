@@ -16,7 +16,7 @@ public class SubscriptionController(ISubscriptionService subscriptionService) : 
         subscriptionService.Subscribe(request);
         return Ok(new Response<object>
         {
-            Data = "Subscribe successfully to this organizer posts."
+            Data = "Subscribed successfully to this organizer posts."
         });
     }
 
