@@ -98,7 +98,7 @@ public class NotificationService(
                 {
                     Title = $"Nouvelle publication de {organizer.Organization}",
                     Salutation = $"Bonjour!",
-                    HeaderText = "Une nouvelle publication a été publié de un de vos organisations préférées! Voici un aperçu de l'annonce ",
+                    HeaderText = "Une nouvelle publication a été publié par {organizer.Organization}! Voici un aperçu de l'annonce ",
                     PublicationTitle = notification.Publication.Title! ?? "",
                     ButtonSeePublicationText = "Voir la publication",
                     ButtonLink = buttonUrl,
