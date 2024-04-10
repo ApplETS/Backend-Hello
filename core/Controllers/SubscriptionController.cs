@@ -26,7 +26,7 @@ public class SubscriptionController(ISubscriptionService subscriptionService) : 
         subscriptionService.Unsubscribe(request);
         return Ok(new Response<object>
         {
-            Data = "Unsubscribe successfully from this organizer posts."
+            Data = "Unsubscribed successfully from this organizer posts."
         });
     }
 }
