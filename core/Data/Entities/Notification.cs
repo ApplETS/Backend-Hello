@@ -2,7 +2,6 @@
 
 using api.core.Data.Entities;
 
-
 namespace api.core.data.entities;
 
 [Table(nameof(Notification))]
