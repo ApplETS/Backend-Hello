@@ -76,7 +76,7 @@ public class EventService(
             throw new BadParameterException<Event>(nameof(request.Tags), "Too many tags");
 
         var id = Guid.NewGuid();
-        string uri;
+        string uri = "";
         if (request.Image != null)
         {
             uri = fileShareService.FileGetDownloadUri($"{id}/{request.Image.FileName}").ToString();
@@ -119,7 +119,8 @@ public class EventService(
             throw new BadParameterException<Event>(nameof(request.Tags), "Too many tags");
 
         var id = Guid.NewGuid();
-        string uri;
+        string uri = "";
+
         if (request.Image != null)
         {
             uri = fileShareService.FileGetDownloadUri($"{id}/{request.Image.FileName}").ToString();
@@ -193,7 +194,6 @@ public class EventService(
 
         evnt.EventStartDate = request.EventStartDate;
         evnt.EventEndDate = request.EventEndDate;
-        evnt.Publication.ReportCount = request.ReportCount;
         evnt.Publication.Title = request.Title;
         evnt.Publication.Content = request.Content;
         evnt.Publication.State = State.OnHold;
