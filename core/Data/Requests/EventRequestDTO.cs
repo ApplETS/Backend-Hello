@@ -40,7 +40,7 @@ public class EventUpdateRequestDTO : EventRequestDTO
     public IFormFile? Image { get; set; }
 }
 
-public class DraftEventCreationRequestDTO
+public class DraftEventRequestDTO
 {
     public string? Title { get; set; }
 

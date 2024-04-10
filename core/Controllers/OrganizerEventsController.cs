@@ -65,7 +65,7 @@ public class OrganizerEventsController(ILogger<OrganizerEventsController> logger
     }
 
     [HttpPost("draft")]
-    public IActionResult AddDraft([FromForm] DraftEventCreationRequestDTO dto)
+    public IActionResult AddDraft([FromForm] DraftEventRequestDTO dto)
     {
         logger.LogInformation($"Adding new draft");
 

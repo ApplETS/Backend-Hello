@@ -20,10 +20,9 @@ public class UserService(
     IFileShareService fileShareService,
     IModeratorRepository moderatorRepository,
     ITagRepository tagRepository,
-    IActivityAreaRepository activityAreaRepository) : IUserService
+    IActivityAreaRepository activityAreaRepository,
+    IImageService imageService) : IUserService
 {
-    private const double IMAGE_RATIO_SIZE_ACCEPTANCE = 1.0; // width/height ratio avatar
-    private const double TOLERANCE_ACCEPTABILITY = 0.001;
     private const string AVATAR_FILE_NAME = "avatar.webp";
 
     public UserResponseDTO AddOrganizer(Guid id, UserCreateDTO organizerDto)
@@ -161,33 +160,9 @@ public class UserService(
     {
         _ = GetUser(id);
         var userId = id.ToString();
-        HandleImageSaving(userId, avatarFile);
+        imageService.EnsureImageSizeAndStore(userId, avatarFile, AVATAR_FILE_NAME, ImageType.Avatar);
         var url = fileShareService.FileGetDownloadUri($"{userId}/{AVATAR_FILE_NAME}");
         return url.ToString();
     }
 
-    private void HandleImageSaving(string directory, IFormFile imageFile)
-    {
-        byte[] imageBytes = [];
-        try
-        {
-            using var image = Image.Load(imageFile.OpenReadStream());
-            int width = image.Size.Width;
-            int height = image.Size.Height;
-
-            if (Math.Abs((width / height) - IMAGE_RATIO_SIZE_ACCEPTANCE) > TOLERANCE_ACCEPTABILITY)
-                throw new BadParameterException<Event>(nameof(image), "Invalid image aspect ratio");
-
-            image.Mutate(c => c.Resize(200, 200));
-            using var outputStream = new MemoryStream();
-            image.SaveAsWebp(outputStream);
-            outputStream.Position = 0;
-
-            fileShareService.FileUpload(directory, AVATAR_FILE_NAME, outputStream);
-        }
-        catch (Exception e)
-        {
-            throw new BadParameterException<Event>(nameof(imageFile), $"Invalid image metadata: {e.Message}");
-        }
-    }
 }

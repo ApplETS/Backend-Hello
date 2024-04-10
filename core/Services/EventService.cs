@@ -22,14 +22,13 @@ namespace api.core.Services;
 public class EventService(
     IConfiguration config,
     IEventRepository evntRepo,
-    ITagRepository tagRepo,
+    ITagService tagService,
     IOrganizerRepository orgRepo,
     IModeratorRepository moderatorRepo,
     IFileShareService fileShareService,
-    IEmailService emailService) : IEventService
+    IEmailService emailService,
+    IImageService imageService) : IEventService
 {
-    private const double IMAGE_RATIO_SIZE_ACCEPTANCE = 2.0; // width/height ratio
-    private const double TOLERANCE_ACCEPTABILITY = 0.01;
     private const int MAX_TITLE_LENGTH = 15;
 
     public IEnumerable<EventResponseDTO> GetEvents(
@@ -76,17 +75,12 @@ public class EventService(
         if (request.Tags.Count > 5)
             throw new BadParameterException<Event>(nameof(request.Tags), "Too many tags");
 
-        var tags = tagRepo.GetAll()
-            .Where(t => request.Tags.Contains(t.Id))
-            ?? Enumerable.Empty<Tag>();
-        
-
         var id = Guid.NewGuid();
-        string uri = "";
+        string uri;
         if (request.Image != null)
         {
             uri = fileShareService.FileGetDownloadUri($"{id}/{request.Image.FileName}").ToString();
-            HandleImageSaving(id, request.Image);
+            imageService.EnsureImageSizeAndStore(id.ToString(), request.Image, null, ImageType.Publication);
         }
         else if (request.ImageUrl != null && request.ImageUrl.StartsWith(config.GetValue<string>("CDN_URL")!))
             uri = request.ImageUrl;
@@ -107,7 +101,7 @@ public class EventService(
                 ImageAltText = request.ImageAltText,
                 State = State.OnHold,
                 PublicationDate = request.PublicationDate,
-                Tags = tags.ToList(),
+                Tags = tagService.GetAssociatedTags(request.Tags),
                 Organizer = organizer,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
@@ -117,29 +111,24 @@ public class EventService(
         return EventResponseDTO.Map(inserted);
     }
 
-    public EventResponseDTO AddDraftEvent(Guid userId, DraftEventCreationRequestDTO request)
+    public EventResponseDTO AddDraftEvent(Guid userId, DraftEventRequestDTO request)
     {
         var organizer = orgRepo.Get(userId) ?? throw new UnauthorizedException();
 
         if (request.Tags.Count > 5)
             throw new BadParameterException<Event>(nameof(request.Tags), "Too many tags");
 
-        var tags = tagRepo.GetAll()
-            .Where(t => request.Tags.Contains(t.Id))
-            ?? Enumerable.Empty<Tag>();
-
         var id = Guid.NewGuid();
-        string uri = "";
-
+        string uri;
         if (request.Image != null)
         {
             uri = fileShareService.FileGetDownloadUri($"{id}/{request.Image.FileName}").ToString();
-            HandleImageSaving(id, request.Image);
+            imageService.EnsureImageSizeAndStore(id.ToString(), request.Image, null, ImageType.Publication);
         }
         else if (request.ImageUrl != null && request.ImageUrl.StartsWith(config.GetValue<string>("CDN_URL")!))
             uri = request.ImageUrl;
         else
-            throw new BadParameterException<DraftEventCreationRequestDTO>("image", "Nor image nor imageUrl was provided.");
+            throw new BadParameterException<DraftEventRequestDTO>("image", "No image nor imageUrl was provided.");
 
 
         var inserted = evntRepo.Add(new Event
@@ -156,7 +145,7 @@ public class EventService(
                 ImageAltText = request.ImageAltText,
                 State = State.Draft,
                 PublicationDate = request.PublicationDate,
-                Tags = tags.ToList(),
+                Tags = tagService.GetAssociatedTags(request.Tags),
                 Organizer = organizer,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
@@ -176,7 +165,6 @@ public class EventService(
 
         return evntRepo.Delete(eventToDelete!);
     }
-
 
     public bool UpdateEvent(Guid userId, Guid eventId, EventUpdateRequestDTO request)
     {
@@ -198,7 +186,7 @@ public class EventService(
         if (request.Image != null)
         {
             imageUrl = fileShareService.FileGetDownloadUri($"{evnt.Id}/{request.Image?.FileName}").ToString();
-            HandleImageSaving(eventId, request.Image!);
+            imageService.EnsureImageSizeAndStore(eventId.ToString(), request.Image!, null, ImageType.Publication);
         }
 
         evntRepo.ResetTags(eventId);
@@ -212,25 +200,12 @@ public class EventService(
         evnt.Publication.ImageUrl = imageUrl;
         evnt.Publication.PublicationDate = request.PublicationDate;
         evnt.Publication.ImageAltText = request.ImageAltText;
-        evnt.Publication.Tags = GetAssociatedTags(request.Tags);
+        evnt.Publication.Tags = tagService.GetAssociatedTags(request.Tags);
         evnt.Publication.UpdatedAt = DateTime.UtcNow;
 
         return evntRepo.Update(eventId, evnt);
     }
 
-    private ICollection<Tag> GetAssociatedTags(ICollection<Guid> tagIds)
-    {
-        var tags = new List<Tag>();
-
-        if (tagIds != null && tagIds.Count != 0)
-        {
-            tags = tagIds
-                .Select(tagRepo.Get)
-                .ToList()!;
-        }
-
-        return tags;
-    }
 
     public bool UpdateEventState(Guid userId, Guid eventId, State state, string? reason)
     {
@@ -348,28 +323,4 @@ public class EventService(
         return evntRepo.Update(eventId, evnt);
     }
 
-    private void HandleImageSaving(Guid eventId, IFormFile imageFile)
-    {
-        byte[] imageBytes = [];
-        try
-        {
-            using var image = Image.Load(imageFile.OpenReadStream());
-            int width = image.Size.Width;
-            int height = image.Size.Height;
-
-            if (Math.Abs((width / height) - IMAGE_RATIO_SIZE_ACCEPTANCE) > TOLERANCE_ACCEPTABILITY)
-                throw new BadParameterException<Event>(nameof(image), $"Invalid image aspect ratio {width}/{height}");
-            
-            image.Mutate(c => c.Resize(400, 200));
-            using var outputStream = new MemoryStream();
-            image.SaveAsWebp(outputStream);
-            outputStream.Position = 0;
-
-            fileShareService.FileUpload(eventId.ToString(), imageFile.FileName, outputStream);
-        }
-        catch (Exception e)
-        {
-            throw new BadParameterException<Event>(nameof(imageFile), $"Invalid image metadata: {e.Message}");
-        }
-    }
 }
