@@ -50,7 +50,6 @@ public class NotificationService(
             });
         }
 
-        // Clean up notifications
         CleanUpNotifications();
     }
 
