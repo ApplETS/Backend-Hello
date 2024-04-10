@@ -22,10 +22,10 @@ public class SetPublicationEventJob : IJob
         {
             using var serviceScope = _provider.CreateScope();
             var eventService = (serviceScope.ServiceProvider?.GetService<IEventService>()) ?? throw new SchedulerException("Cannot instantiate EventService from the AspNet Core IOC.");
-            
-            var publishedEventCount = eventService.PublishedIfApprovedPassedDue();
+            var logger = (serviceScope.ServiceProvider?.GetService<ILogger<SetPublicationEventJob>>()) ?? throw new SchedulerException("Cannot instantiate Logger from the AspNet Core IOC.");
 
-            await Console.Out.WriteLineAsync($"[SetPublicationEventJob] was trigger and transform {publishedEventCount} events from APPROVED->PUBLISHED");
+            var publishedEventCount = eventService.PublishedIfApprovedPassedDue();
+            logger.LogInformation($"[SetPublicationEventJob] was trigger and transform {publishedEventCount} events from APPROVED->PUBLISHED");
         }
         catch (Exception e)
         {

@@ -23,9 +23,10 @@ public class ProcessNotificationByEmailJob : IJob
         {
             using var serviceScope = _provider.CreateScope();
             var notifService = (serviceScope.ServiceProvider?.GetService<INotificationService>()) ?? throw new SchedulerException("Cannot instantiate NotificationService from the AspNet Core IOC.");
+            var logger = (serviceScope.ServiceProvider?.GetService<ILogger<ProcessNotificationByEmailJob>>()) ?? throw new SchedulerException("Cannot instantiate Logger from the AspNet Core IOC.");
 
             var emailsCount = await notifService.SendNewsForRemainingPublication();
-            await Console.Out.WriteLineAsync($"[NotificationByEmailJob] {emailsCount} emails were sent out");
+            logger.LogInformation($"[NotificationByEmailJob] {emailsCount} emails were sent out");
         }
         catch (Exception e)
         {
