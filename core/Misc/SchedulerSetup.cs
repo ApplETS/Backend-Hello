@@ -49,7 +49,7 @@ public static class SchedulerSetup
 
         trigger = TriggerBuilder.Create()
             .WithSimpleSchedule(x => x
-                .WithInterval(new TimeSpan(0, 0, 20, 0, 0, 0)) // Every 1 hour
+                .WithInterval(new TimeSpan(0, 0, 20, 0, 0, 0)) // Every 20 minutes
                 .RepeatForever())
             .Build();
         await scheduler.ScheduleJob(job, trigger);

@@ -41,15 +41,4 @@ public class SubscriptionService(ISubscriptionRepository subscriptionRepository)
         subscriptionRepository.Delete(subscription!);
     }
 
-    public void SendNewsForOrganizerSubscribers(Guid organizerId, string subject, string content)
-    {
-        var subscriptions = subscriptionRepository.GetAll()
-                                .Where(x => x.OrganizerId == organizerId)
-                                .ToList();
-
-        foreach (var subscription in subscriptions)
-        {
-            // send email to subscription.Email with subject and content
-        }
-    }
 }

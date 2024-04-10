@@ -38,22 +38,4 @@ public class EmailService: IEmailService
         return await email.SendAsync();
     }
 
-    public async Task<SendResponse?> BulkSendEmailAsync<T>(IEnumerable<string> emailBccs, string subject, T model, string templateName)
-    {
-        logger.LogInformation($"Sending email to BCC:\"{emailBccs}\" with subject {subject} and template {templateName}");
-
-        if (!string.IsNullOrEmpty(settings.ToWhenDebugging))
-            emailBccs = new List<string>() {
-                settings.ToWhenDebugging
-            };
-
-        var email = Email
-            .From(settings.From)
-            .BCC(string.Join(";", emailBccs.ToArray()))
-            .Subject(subject)
-            .UsingTemplateFromEmbedded(EmailsUtils.TemplateEmbeddedResourceNamespace + templateName, model, GetType().Assembly);
-
-        return await email.SendAsync();
-    }
-
 }

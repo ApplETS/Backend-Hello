@@ -16,7 +16,7 @@ public class SubscriptionController(ISubscriptionService subscriptionService) : 
         subscriptionService.Subscribe(request);
         return Ok(new Response<object>
         {
-            Data = "Subscribe successfully to this organizer posts."
+            Data = "Subscribed successfully to this organizer posts."
         });
     }
 
@@ -26,7 +26,7 @@ public class SubscriptionController(ISubscriptionService subscriptionService) : 
         subscriptionService.Unsubscribe(request);
         return Ok(new Response<object>
         {
-            Data = "Unsubscribe successfully from this organizer posts."
+            Data = "Unsubscribed successfully from this organizer posts."
         });
     }
 }

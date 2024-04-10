@@ -50,7 +50,6 @@ public class NotificationService(
             });
         }
 
-        // Clean up notifications
         CleanUpNotifications();
     }
 
@@ -94,12 +93,12 @@ public class NotificationService(
 
             await emailService.SendEmailAsync<object>(
                 notification.Subscription.Email,
-                "Subject",
+                "Nouvelle publication de {organizer.Organization}",
                 new NotifyModel
                 {
                     Title = $"Nouvelle publication de {organizer.Organization}",
                     Salutation = $"Bonjour!",
-                    HeaderText = "Une nouvelle publication a été publié de un de vos organisations préférées! Voici un aperçu de l'annonce ",
+                    HeaderText = "Une nouvelle publication a été publiée par {organizer.Organization}! Voici un aperçu de l'annonce ",
                     PublicationTitle = notification.Publication.Title! ?? "",
                     ButtonSeePublicationText = "Voir la publication",
                     ButtonLink = buttonUrl,
