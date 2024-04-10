@@ -2,14 +2,13 @@
 using api.core.Services.Abstractions;
 using api.core.Services;
 using api.emails.Services.Abstractions;
-using api.files.Services.Abstractions;
 using Moq;
-using api.core.services.abstractions;
 using Microsoft.Extensions.Logging;
 using api.core.data.entities;
 using api.core.Data.Exceptions;
-using System;
 using api.emails.Models;
+using Microsoft.Extensions.Configuration;
+using api.emails;
 
 namespace api.tests.Tests.Services;
 
@@ -22,6 +21,7 @@ public class NotificationServiceTests
     private readonly Mock<ISubscriptionRepository> _mockSubscriptionRepository;
     private readonly Mock<INotificationRepository> _mockNotifRepository;
     private readonly Mock<IEmailService> _mockEmailService;
+    private readonly IConfiguration _config;
 
     public NotificationServiceTests()
     {
@@ -30,13 +30,21 @@ public class NotificationServiceTests
         _mockSubscriptionRepository = new Mock<ISubscriptionRepository>();
         _mockNotifRepository = new Mock<INotificationRepository>();
         _mockEmailService = new Mock<IEmailService>();
+        var data = new Dictionary<string, string>
+        {
+            {"FRONTEND_BASE_URL", "http://test.com"}
+        };
+        _config = new ConfigurationBuilder()
+            .AddInMemoryCollection(data)
+            .Build();
 
         _notifService = new NotificationService(
             _mockLogger.Object,
             _mockEventRepository.Object,
             _mockSubscriptionRepository.Object,
             _mockNotifRepository.Object,
-            _mockEmailService.Object
+            _mockEmailService.Object,
+            _config
             );
     }
 
@@ -229,7 +237,8 @@ public class NotificationServiceTests
                 Subscription = new Subscription
                 {
                     Id = orgId,
-                    OrganizerId = orgId
+                    OrganizerId = orgId,
+                    SubscriptionToken = "token"
                 },
                 PublicationId = pubId,
                 Publication = new Publication
@@ -251,8 +260,11 @@ public class NotificationServiceTests
         _mockEmailService.Setup(x => x.SendEmailAsync(
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<NotifyModel>(),
-                    It.IsAny<string>())).Verifiable();
+                    It.IsAny<object>(),
+                    EmailsUtils.NotifyTemplate)).ReturnsAsync(new FluentEmail.Core.Models.SendResponse
+                    {
+
+                    });
 
         // Act
         var notif = await _notifService.SendNewsForRemainingPublication();
@@ -261,7 +273,7 @@ public class NotificationServiceTests
         _mockEmailService.Verify(x => x.SendEmailAsync(
                        It.IsAny<string>(),
                        It.IsAny<string>(),
-                       It.IsAny<NotifyModel>(),
+                       It.IsAny<object>(),
                        It.IsAny<string>()), Times.Once);
         notif.Should().Be(1);
     }
@@ -281,7 +293,8 @@ public class NotificationServiceTests
                 Subscription = new Subscription
                 {
                     Id = orgId,
-                    OrganizerId = orgId
+                    OrganizerId = orgId,
+                    SubscriptionToken = "token"
                 },
                 PublicationId = pubId,
                 Publication = new Publication
