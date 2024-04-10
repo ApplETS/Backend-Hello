@@ -226,13 +226,14 @@ public class NotificationServiceTests
     public async Task SendNewsForRemainingPublication_ShouldSendNotificationWaiting()
     {
         // Arrange
+        var notifId = Guid.NewGuid();
         var pubId = Guid.NewGuid();
         var orgId = Guid.NewGuid();
         _mockNotifRepository.Setup(x => x.GetAll()).Returns(new List<Notification>
         {
             new Notification
             {
-                Id = Guid.NewGuid(),
+                Id = notifId,
                 SubscriptionId = orgId,
                 Subscription = new Subscription
                 {
@@ -261,10 +262,8 @@ public class NotificationServiceTests
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<object>(),
-                    EmailsUtils.NotifyTemplate)).ReturnsAsync(new FluentEmail.Core.Models.SendResponse
-                    {
-
-                    });
+                    EmailsUtils.NotifyTemplate)).Verifiable();
+        _mockNotifRepository.Setup(x => x.Update(notifId, It.IsAny<Notification>())).Verifiable();
 
         // Act
         var notif = await _notifService.SendNewsForRemainingPublication();
@@ -275,6 +274,8 @@ public class NotificationServiceTests
                        It.IsAny<string>(),
                        It.IsAny<object>(),
                        It.IsAny<string>()), Times.Once);
+        _mockNotifRepository.Verify(_mockNotifRepository => _mockNotifRepository.Update(notifId, It.IsAny<Notification>()), Times.Once);
+
         notif.Should().Be(1);
     }
 
