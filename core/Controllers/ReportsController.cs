@@ -31,7 +31,7 @@ public class ReportsController(ILogger<ReportsController> logger, IReportService
         });
     }
 
-    [HttpPost("{id}/reports")]
+    [HttpPost("{id}")]
     [EnableRateLimiting(RATE_LIMITING_POLICY_NAME)]
     public IActionResult ReportEvent(Guid id, [FromBody] CreateReportRequestDTO request)
     {
