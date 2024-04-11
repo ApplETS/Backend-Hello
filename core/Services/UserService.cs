@@ -160,9 +160,8 @@ public class UserService(
     {
         _ = GetUser(id);
         var userId = id.ToString();
-        imageService.EnsureImageSizeAndStore(userId, avatarFile, AVATAR_FILE_NAME, ImageType.Avatar);
+        imageService.EnsureImageSizeAndStore(userId, avatarFile, ImageType.Avatar, AVATAR_FILE_NAME);
         var url = fileShareService.FileGetDownloadUri($"{userId}/{AVATAR_FILE_NAME}");
         return url.ToString();
     }
-
 }

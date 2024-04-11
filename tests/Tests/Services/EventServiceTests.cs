@@ -167,32 +167,35 @@ public class EventServiceTests
     private EventService _eventService;
 
     private readonly Mock<IEventRepository> _mockEventRepository;
-    private readonly Mock<ITagRepository> _mockTagRepository;
+    private readonly Mock<ITagService> _mockTagService;
     private readonly Mock<IOrganizerRepository> _mockOrganizerRepository;
     private readonly Mock<IModeratorRepository> _mockModeratorRepository;
     private readonly Mock<IFileShareService> _mockFileShareService;
     private readonly Mock<IEmailService> _mockEmailService;
+    private readonly Mock<IImageService> _mockImageService;
 
     private readonly Mock<IConfiguration> _mockConfig;
     public EventServiceTests()
     {
         _mockEventRepository = new Mock<IEventRepository>();
-        _mockTagRepository = new Mock<ITagRepository>();
+        _mockTagService = new Mock<ITagService>();
         _mockOrganizerRepository = new Mock<IOrganizerRepository>();
         _mockModeratorRepository = new Mock<IModeratorRepository>();
         _mockFileShareService = new Mock<IFileShareService>();
         _mockEmailService = new Mock<IEmailService>();
+        _mockImageService = new Mock<IImageService>();
 
         _mockConfig = new Mock<IConfiguration>();
 
         _eventService = new EventService(
             _mockConfig.Object,
             _mockEventRepository.Object,
-            _mockTagRepository.Object,
+            _mockTagService.Object,
             _mockOrganizerRepository.Object,
             _mockModeratorRepository.Object,
             _mockFileShareService.Object,
-            _mockEmailService.Object
+            _mockEmailService.Object,
+            _mockImageService.Object
             );
     }
 
@@ -418,11 +421,13 @@ public class EventServiceTests
         _eventService = new EventService(
             _mockConfig.Object,
             _mockEventRepository.Object,
-            _mockTagRepository.Object,
+            _mockTagService.Object,
             _mockOrganizerRepository.Object,
             _mockModeratorRepository.Object,
             _mockFileShareService.Object,
-            _mockEmailService.Object);
+            _mockEmailService.Object,
+            _mockImageService.Object
+        );
 
         // Act
         var result = _eventService.UpdateEvent(userId, eventId, request);

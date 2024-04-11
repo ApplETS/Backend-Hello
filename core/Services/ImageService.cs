@@ -1,7 +1,7 @@
 ﻿using api.core.data.entities;
 using api.core.Data.Enums;
 using api.core.Data.Exceptions;
-using api.files.Services;
+using api.core.services.abstractions;
 using api.files.Services.Abstractions;
 
 using SixLabors.ImageSharp;
@@ -9,7 +9,7 @@ using SixLabors.ImageSharp.Processing;
 
 namespace api.core.Services;
 
-public class ImageService(IFileShareService fileShareService)
+public class ImageService(IFileShareService fileShareService) : IImageService
 {
     private const double TOLERANCE_ACCEPTABILITY = 0.01;
 
@@ -36,10 +36,10 @@ public class ImageService(IFileShareService fileShareService)
     /// </summary>
     /// <param name="directory">the directory to store the file if valid</param>
     /// <param name="imageFile">The form file definition of the file to store</param>
-    /// <param name="name">If null, will take the formfile image</param>
     /// <param name="type">the type of the file to handle multiple configuration behavior</param>
+    /// <param name="name">If null, will take the formfile image</param>
     /// <exception cref="BadParameterException{Event}"></exception>
-    public void EnsureImageSizeAndStore(string directory, IFormFile imageFile, string? name)
+    public void EnsureImageSizeAndStore(string directory, IFormFile imageFile, ImageType type, string? name)
     {
         byte[] imageBytes = [];
         try

@@ -25,12 +25,8 @@ public class DraftEventService(
     ITagService tagService,
     IOrganizerRepository orgRepo,
     IFileShareService fileShareService,
-    IEmailService emailService) : IDraftEventService
+    IImageService imageService) : IDraftEventService
 {
-    private const double IMAGE_RATIO_SIZE_ACCEPTANCE = 2.0; // width/height ratio
-    private const double TOLERANCE_ACCEPTABILITY = 0.01;
-    private const int MAX_TITLE_LENGTH = 15;
-
     public EventResponseDTO AddDraftEvent(Guid userId, DraftEventRequestDTO request)
     {
         var organizer = orgRepo.Get(userId) ?? throw new UnauthorizedException();
@@ -44,7 +40,7 @@ public class DraftEventService(
         if (request.Image != null)
         {
             uri = fileShareService.FileGetDownloadUri($"{id}/{request.Image.FileName}");
-            HandleImageSaving(id, request.Image);
+            imageService.EnsureImageSizeAndStore(id.ToString(), request.Image, ImageType.Publication, null);
         }
 
         var inserted = evntRepo.Add(new Event
@@ -90,8 +86,8 @@ public class DraftEventService(
 
         if (request.Image != null)
         {
-            imageUrl = fileShareService.FileGetDownloadUri($"{evnt.Id}/{request.Image?.FileName}").ToString();
-            HandleImageSaving(eventId, request.Image!);
+            imageUrl = fileShareService.FileGetDownloadUri($"{evnt.Id}/{request.Image!.FileName}").ToString();
+            imageService.EnsureImageSizeAndStore(evnt.Id.ToString(), request.Image!, ImageType.Publication, null);
         }
 
         evntRepo.ResetTags(eventId);
@@ -108,36 +104,5 @@ public class DraftEventService(
         evnt.Publication.UpdatedAt = DateTime.UtcNow;
 
         return evntRepo.Update(eventId, evnt);
-    }
-
-    private static bool CanPerformAction(Guid userId, Event evnt)
-    {
-        return (evnt!.Publication.Moderator != null && evnt.Publication.Moderator.Id == userId) ||
-            (evnt!.Publication.Organizer != null && evnt.Publication.Organizer.Id == userId);
-    }
-
-    private void HandleImageSaving(Guid eventId, IFormFile imageFile)
-    {
-        byte[] imageBytes = [];
-        try
-        {
-            using var image = Image.Load(imageFile.OpenReadStream());
-            int width = image.Size.Width;
-            int height = image.Size.Height;
-
-            if (Math.Abs((width / height) - IMAGE_RATIO_SIZE_ACCEPTANCE) > TOLERANCE_ACCEPTABILITY)
-                throw new BadParameterException<Event>(nameof(image), $"Invalid image aspect ratio {width}/{height}");
-            
-            image.Mutate(c => c.Resize(400, 200));
-            using var outputStream = new MemoryStream();
-            image.SaveAsWebp(outputStream);
-            outputStream.Position = 0;
-
-            fileShareService.FileUpload(eventId.ToString(), imageFile.FileName, outputStream);
-        }
-        catch (Exception e)
-        {
-            throw new BadParameterException<Event>(nameof(imageFile), $"Invalid image metadata: {e.Message}");
-        }
     }
 }

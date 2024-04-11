@@ -13,7 +13,7 @@ namespace api.core.Controllers;
 
 [ApiController]
 [Authorize(Policy = AuthPolicies.OrganizerIsActive)]
-[Route("api/organizer/events")]
+[Route("api/organizer-events")]
 public class OrganizerEventsController(ILogger<OrganizerEventsController> logger, IEventService eventService) : ControllerBase
 {
     [HttpGet]
@@ -56,21 +56,6 @@ public class OrganizerEventsController(ILogger<OrganizerEventsController> logger
 
         var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         var evnt = eventService.AddEvent(userId, dto);
-
-        return new OkObjectResult(
-            new Response<EventResponseDTO>
-            {
-                Data = evnt,
-            });
-    }
-
-    [HttpPost("draft")]
-    public IActionResult AddDraft([FromForm] DraftEventRequestDTO dto)
-    {
-        logger.LogInformation($"Adding new draft");
-
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
-        var evnt = eventService.AddDraftEvent(userId, dto);
 
         return new OkObjectResult(
             new Response<EventResponseDTO>

@@ -2,13 +2,12 @@
 using api.core.Data.Requests;
 using api.core.services.abstractions;
 
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.core.Controllers;
 
 [ApiController]
-[Route("api/moderator")]
+[Route("api/moderators")]
 public class ModeratorController(IModeratorService moderatorService) : ControllerBase
 {
     [HttpPost]

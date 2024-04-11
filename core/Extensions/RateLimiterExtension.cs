@@ -1,6 +1,7 @@
 ﻿using System.Threading.RateLimiting;
 
 using api.core.controllers;
+using api.core.Controllers;
 
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -17,7 +18,7 @@ public static class RateLimiterExtension
 
             var window = TimeSpan.FromSeconds(windowInSeconds);
 
-            options.AddFixedWindowLimiter(EventsController.RATE_LIMITING_POLICY_NAME, limiterOptions =>
+            options.AddFixedWindowLimiter(ReportsController.RATE_LIMITING_POLICY_NAME, limiterOptions =>
             {
                 limiterOptions.PermitLimit = permitLimit;
                 limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;

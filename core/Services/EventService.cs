@@ -11,11 +11,7 @@ using api.emails.Services.Abstractions;
 using api.files.Services.Abstractions;
 using api.core.Extensions;
 
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
 
 namespace api.core.Services;
 
@@ -80,7 +76,7 @@ public class EventService(
         if (request.Image != null)
         {
             uri = fileShareService.FileGetDownloadUri($"{id}/{request.Image.FileName}").ToString();
-            imageService.EnsureImageSizeAndStore(id.ToString(), request.Image, null, ImageType.Publication);
+            imageService.EnsureImageSizeAndStore(id.ToString(), request.Image, ImageType.Publication, null);
         }
         else if (request.ImageUrl != null && request.ImageUrl.StartsWith(config.GetValue<string>("CDN_URL")!))
             uri = request.ImageUrl;
@@ -124,7 +120,7 @@ public class EventService(
         if (request.Image != null)
         {
             uri = fileShareService.FileGetDownloadUri($"{id}/{request.Image.FileName}").ToString();
-            imageService.EnsureImageSizeAndStore(id.ToString(), request.Image, null, ImageType.Publication);
+            imageService.EnsureImageSizeAndStore(id.ToString(), request.Image, ImageType.Publication, null);
         }
         else if (request.ImageUrl != null && request.ImageUrl.StartsWith(config.GetValue<string>("CDN_URL")!))
             uri = request.ImageUrl;
@@ -187,7 +183,7 @@ public class EventService(
         if (request.Image != null)
         {
             imageUrl = fileShareService.FileGetDownloadUri($"{evnt.Id}/{request.Image?.FileName}").ToString();
-            imageService.EnsureImageSizeAndStore(eventId.ToString(), request.Image!, null, ImageType.Publication);
+            imageService.EnsureImageSizeAndStore(eventId.ToString(), request.Image!, ImageType.Publication, null);
         }
 
         evntRepo.ResetTags(eventId);

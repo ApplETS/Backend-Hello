@@ -15,5 +15,5 @@ public interface IImageService
     /// <param name="imageFile">The form file definition of the file to store</param>
     /// <param name="name">If null, will take the formfile image</param>
     /// <param name="type">the type of the file to handle multiple configuration behavior</param>
-    public void EnsureImageSizeAndStore(string directory, IFormFile imageFile, string? name, ImageType type = ImageType.Publication)
+    public void EnsureImageSizeAndStore(string directory, IFormFile imageFile, ImageType type, string? name);
 }

@@ -18,7 +18,7 @@ namespace api.core.controllers;
 
 [Authorize(Policy = AuthPolicies.IsModerator)]
 [ApiController]
-[Route("api/moderator/organizer")]
+[Route("api/organizers")]
 public class ModeratorUserController(IUserService userService, IAuthService authService, IEmailService emailService) : ControllerBase
 {
     [AllowAnonymous]

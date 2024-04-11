@@ -10,6 +10,7 @@ using api.core.Data.Responses;
 using api.files.Services.Abstractions;
 using System.Diagnostics;
 using api.core.Data.Exceptions;
+using api.core.services.abstractions;
 
 namespace api.tests.Tests.Services;
 public class UserServiceTests
@@ -19,6 +20,7 @@ public class UserServiceTests
     private readonly Mock<IActivityAreaRepository> _activityAreaRepositoryMock;
     private readonly Mock<ITagRepository> _tagRepositoryMock;
     private readonly Mock<IFileShareService> _fileShareServiceMock;
+    private readonly Mock<IImageService> _imageServiceMock;
     private readonly UserService _userService;
 
     public UserServiceTests()
@@ -28,9 +30,16 @@ public class UserServiceTests
         _tagRepositoryMock = new Mock<ITagRepository>();
         _activityAreaRepositoryMock = new Mock<IActivityAreaRepository>();
         _fileShareServiceMock = new Mock<IFileShareService>();
+        _imageServiceMock = new Mock<IImageService>();
 
         _fileShareServiceMock.Setup(service => service.FileGetDownloadUri(It.IsAny<string>())).Returns(new Uri("http://example.com/avatar.webp"));
-        _userService = new UserService(_organizerRepositoryMock.Object, _fileShareServiceMock.Object, _moderatorRepositoryMock.Object, _tagRepositoryMock.Object, _activityAreaRepositoryMock.Object);
+        _userService = new UserService(
+            _organizerRepositoryMock.Object,
+            _fileShareServiceMock.Object,
+            _moderatorRepositoryMock.Object,
+            _tagRepositoryMock.Object,
+            _activityAreaRepositoryMock.Object,
+            _imageServiceMock.Object);
     }
 
     [Fact]
