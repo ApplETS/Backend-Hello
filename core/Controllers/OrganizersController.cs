@@ -13,13 +13,18 @@ using api.emails.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace api.core.controllers;
 
 [Authorize(Policy = AuthPolicies.IsModerator)]
 [ApiController]
 [Route("api/organizers")]
-public class ModeratorUserController(IUserService userService, IAuthService authService, IEmailService emailService) : ControllerBase
+public class ModeratorUserController(
+    IUserService userService,
+    IAuthService authService,
+    IEmailService emailService,
+    IConfiguration configuration) : ControllerBase
 {
     [AllowAnonymous]
     [HttpGet("{organizerId}")]

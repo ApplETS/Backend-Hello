@@ -63,4 +63,7 @@ public partial class Publication
     [ForeignKey("PublicationsId")]
     [InverseProperty("Publications")]
     public virtual ICollection<Tag> Tags { get; set; } = new List<Tag>();
+
+    [InverseProperty(nameof(Notification.Publication))]
+    public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 }
