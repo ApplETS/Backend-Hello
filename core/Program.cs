@@ -29,7 +29,7 @@ if (!EF.IsDesignTime)
     supabaseProjectId = Environment.GetEnvironmentVariable("SUPABASE_PROJECT_ID") ?? throw new Exception("SUPABASE_PROJECT_ID is not set");
 }
 
-builder.Configuration.AddEnvironmentVariables(prefix: "EMAIL_");
+builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddDbContext<EventManagementContext>(opt => opt.UseNpgsql(connectionString));
 

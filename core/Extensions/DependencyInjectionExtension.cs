@@ -29,6 +29,8 @@ public static class DependencyInjectionExtension
         services.AddTransient<IModeratorRepository, ModeratorRepository>();
         services.AddTransient<IReportRepository, ReportRepository>();
         services.AddTransient<IActivityAreaRepository, ActivityAreaRepository>();
+        services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
+        services.AddTransient<INotificationRepository, NotificationRepository>();
 
         // Services
         services.AddTransient<IUserService, UserService>();
@@ -40,6 +42,8 @@ public static class DependencyInjectionExtension
         services.AddTransient<IReportService, ReportService>();
         services.AddTransient<IActivityAreaService, ActivityAreaService>();
         services.AddTransient<IModeratorService, ModeratorService>();
+        services.AddTransient<ISubscriptionService, SubscriptionService>();
+        services.AddTransient<INotificationService, NotificationService>();
 
         return services;
     }

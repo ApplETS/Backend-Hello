@@ -10,7 +10,12 @@ using api.emails.Services.Abstractions;
 
 namespace api.core.Services;
 
-public class ReportService(IEventRepository eventRepository, IEventService eventService, IEmailService emailService, IReportRepository reportRepository) : IReportService
+public class ReportService(
+    IEventRepository eventRepository,
+    IEventService eventService,
+    IEmailService emailService,
+    IReportRepository reportRepository,
+    IConfiguration configuration) : IReportService
 {
     public IEnumerable<ReportResponseDTO> GetReports()
     {
@@ -42,8 +47,8 @@ public class ReportService(IEventRepository eventRepository, IEventService event
 
     private async Task CheckAndSendReportEmailAsync(Event? evnt)
     {
-        var frontBaseUrl = Environment.GetEnvironmentVariable("FRONTEND_BASE_URL") ?? throw new Exception("FRONTEND_BASE_URL is not set");
-        var reportCountUntilEmail = Environment.GetEnvironmentVariable("REPORT_COUNT_UNTIL_EMAIL") ?? "5";
+        var frontBaseUrl = configuration.GetValue<string>("FRONTEND_BASE_URL") ?? throw new Exception("FRONTEND_BASE_URL is not set");
+        var reportCountUntilEmail = configuration.GetValue<string>("REPORT_COUNT_UNTIL_EMAIL") ?? "5";
         if (evnt?.Publication.ReportCount >= int.Parse(reportCountUntilEmail) && !evnt.Publication.HasBeenReported)
         {
             var res = await emailService.SendEmailAsync(
@@ -76,7 +81,7 @@ public class ReportService(IEventRepository eventRepository, IEventService event
     {
         // If a request with a duplicated reason, publication id anbd category is submitted within the time window of the rate limiter,
         // we ignore the request
-        var timeWindow = int.Parse(Environment.GetEnvironmentVariable("RATE_LIMIT_TIME_WINDOW_SECONDS") ?? "10");
+        var timeWindow = int.Parse(configuration.GetValue<string>("RATE_LIMIT_TIME_WINDOW_SECONDS") ?? "10");
         var reports = reportRepository.GetRecentReports(timeWindow);
         return reports.Any(r => r.Reason == request.Reason && r.PublicationId == publicationId && r.Category == request.Category);
     }

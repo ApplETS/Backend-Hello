@@ -5,6 +5,7 @@ using api.core.Data.requests;
 using api.core.repositories.abstractions;
 using api.core.services.abstractions;
 using api.core.Services;
+using api.core.Services.Abstractions;
 using api.emails.Models;
 using api.emails.Services.Abstractions;
 using api.files.Services.Abstractions;
@@ -18,13 +19,13 @@ namespace api.tests.Tests.Services;
 public class EventServiceTests 
 {
 
-    private static readonly Guid _tagId = Guid.NewGuid();
+    private static readonly Guid TagId = Guid.NewGuid();
 
-    private static readonly Guid _activityAreaClubId = Guid.NewGuid();
-    private static readonly Guid _activityAreaSchoolId = Guid.NewGuid();
+    private static readonly Guid ActivityAreaClubId = Guid.NewGuid();
+    private static readonly Guid ActivityAreaSchoolId = Guid.NewGuid();
 
-    private readonly List<Event> _events = new List<Event>
-    {
+    private readonly List<Event> _events =
+    [
         new Event
         {
             Id = Guid.NewGuid(),
@@ -37,21 +38,21 @@ public class EventServiceTests
                 ImageUrl = "http://example.com",
                 State = State.Published,
                 PublicationDate = DateTime.UtcNow,
-                Tags = new List<Tag>
-                {
+                Tags =
+                [
                     new Tag
                     {
-                        Id = _tagId,
+                        Id = TagId,
                         Name = "Test"
                     }
-                },
+                ],
                 Organizer = new Organizer
                 {
                     Id = Guid.NewGuid(),
-                    ActivityAreaId = _activityAreaClubId,
+                    ActivityAreaId = ActivityAreaClubId,
                     ActivityArea = new ActivityArea
                     {
-                        Id = _activityAreaClubId,
+                        Id = ActivityAreaClubId,
                         NameEn = "Club",
                         NameFr = "Club"
                     }
@@ -76,21 +77,21 @@ public class EventServiceTests
                 ImageUrl = "http://example.com",
                 State = State.Published,
                 PublicationDate = DateTime.UtcNow,
-                Tags = new List<Tag>
-                {
+                Tags =
+                [
                     new Tag
                     {
-                        Id = _tagId,
+                        Id = TagId,
                         Name = "Test"
                     }
-                },
+                ],
                 Organizer = new Organizer
                 {
                     Id = Guid.NewGuid(),
-                    ActivityAreaId = _activityAreaSchoolId,
+                    ActivityAreaId = ActivityAreaSchoolId,
                     ActivityArea = new ActivityArea
                     {
-                        Id = _activityAreaSchoolId,
+                        Id = ActivityAreaSchoolId,
                         NameEn = "School",
                         NameFr = "School"
                     }
@@ -111,14 +112,14 @@ public class EventServiceTests
                 ImageUrl = "http://example.com",
                 State = State.Published,
                 PublicationDate = DateTime.UtcNow,
-                Tags = new List<Tag>(),
+                Tags = [],
                 Organizer = new Organizer
                 {
                     Id = Guid.NewGuid(),
-                    ActivityAreaId = _activityAreaSchoolId,
+                    ActivityAreaId = ActivityAreaSchoolId,
                     ActivityArea = new ActivityArea
                     {
-                        Id = _activityAreaSchoolId,
+                        Id = ActivityAreaSchoolId,
                         NameEn = "School",
                         NameFr = "School"
                     }
@@ -139,21 +140,21 @@ public class EventServiceTests
                 ImageUrl = "http://example.com",
                 State = State.Deleted,
                 PublicationDate = DateTime.UtcNow.AddDays(-1),
-                Tags = new List<Tag>
-                {
+                Tags =
+                [
                     new Tag
                     {
-                        Id = _tagId,
+                        Id = TagId,
                         Name = "Test"
                     }
-                },
+                ],
                 Organizer = new Organizer
                 {
                     Id = Guid.NewGuid(),
-                    ActivityAreaId = _activityAreaSchoolId,
+                    ActivityAreaId = ActivityAreaSchoolId,
                     ActivityArea = new ActivityArea
                     {
-                        Id = _activityAreaSchoolId,
+                        Id = ActivityAreaSchoolId,
                         NameEn = "School",
                         NameFr = "School"
                     }
@@ -163,7 +164,7 @@ public class EventServiceTests
                 DeletedAt = DateTime.Now
             }
         }
-    };
+    ];
     private EventService _eventService;
 
     private readonly Mock<IEventRepository> _mockEventRepository;
@@ -172,6 +173,7 @@ public class EventServiceTests
     private readonly Mock<IModeratorRepository> _mockModeratorRepository;
     private readonly Mock<IFileShareService> _mockFileShareService;
     private readonly Mock<IEmailService> _mockEmailService;
+    private readonly Mock<INotificationService> _mockNotificationService;
 
     private readonly Mock<IConfiguration> _mockConfig;
     public EventServiceTests()
@@ -182,6 +184,7 @@ public class EventServiceTests
         _mockModeratorRepository = new Mock<IModeratorRepository>();
         _mockFileShareService = new Mock<IFileShareService>();
         _mockEmailService = new Mock<IEmailService>();
+        _mockNotificationService = new Mock<INotificationService>();
 
         _mockConfig = new Mock<IConfiguration>();
 
@@ -192,7 +195,8 @@ public class EventServiceTests
             _mockOrganizerRepository.Object,
             _mockModeratorRepository.Object,
             _mockFileShareService.Object,
-            _mockEmailService.Object
+            _mockEmailService.Object,
+            _mockNotificationService.Object
             );
     }
 
@@ -249,10 +253,10 @@ public class EventServiceTests
         _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events.AsQueryable());
 
         // Act
-        var events = _eventService.GetEvents(null, null, new List<Guid>
-        {
-            _activityAreaClubId
-        }, null, null, null, State.All, ignorePublicationDate: true);
+        var events = _eventService.GetEvents(null, null,
+        [
+            ActivityAreaClubId
+        ], null, null, null, State.All, ignorePublicationDate: true);
 
         // Assert
         _mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
@@ -267,10 +271,10 @@ public class EventServiceTests
         _mockEventRepository.Setup(repo => repo.GetAll()).Returns(_events.AsQueryable());
 
         // Act
-        var events = _eventService.GetEvents(null, null, null, new List<Guid>
-        {
-            _tagId
-        }, null, null, State.All);
+        var events = _eventService.GetEvents(null, null, null,
+        [
+            TagId
+        ], null, null, State.All);
 
         // Assert
         _mockEventRepository.Verify(repo => repo.GetAll(), Times.Once);
@@ -404,11 +408,11 @@ public class EventServiceTests
             PublicationDate = DateTime.UtcNow,
             EventStartDate = DateTime.UtcNow.AddDays(10),
             EventEndDate = DateTime.UtcNow.AddDays(10).AddHours(1),
-            Tags = new List<Guid>
-            {
+            Tags =
+            [
                 Guid.NewGuid(),
                 Guid.NewGuid()
-            }
+            ]
         };
 
         _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(_events.First());
@@ -422,7 +426,8 @@ public class EventServiceTests
             _mockOrganizerRepository.Object,
             _mockModeratorRepository.Object,
             _mockFileShareService.Object,
-            _mockEmailService.Object);
+            _mockEmailService.Object,
+            _mockNotificationService.Object);
 
         // Act
         var result = _eventService.UpdateEvent(userId, eventId, request);
@@ -446,11 +451,11 @@ public class EventServiceTests
             PublicationDate = DateTime.UtcNow,
             EventStartDate = DateTime.UtcNow.AddDays(10),
             EventEndDate = DateTime.UtcNow.AddDays(10).AddHours(1),
-            Tags = new List<Guid>
-            {
+            Tags =
+            [
                 Guid.NewGuid(),
                 Guid.NewGuid()
-            }
+            ]
         };
 
         // Assuming _events.First() returns an event where the organizer ID does not match `unauthorizedUserId`

@@ -16,6 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
+using api.core.Services.Abstractions;
 
 namespace api.core.Services;
 
@@ -26,7 +27,8 @@ public class EventService(
     IOrganizerRepository orgRepo,
     IModeratorRepository moderatorRepo,
     IFileShareService fileShareService,
-    IEmailService emailService) : IEventService
+    IEmailService emailService,
+    INotificationService notificationService) : IEventService
 {
     private const double IMAGE_RATIO_SIZE_ACCEPTANCE = 2.0; // width/height ratio
     private const double TOLERANCE_ACCEPTABILITY = 0.01;
@@ -171,10 +173,9 @@ public class EventService(
         var eventToDelete = evntRepo.Get(eventId);
         NotFoundException<Event>.ThrowIfNull(eventToDelete);
 
-        if (!CanPerformAction(userId, eventToDelete!))
+        return CanPerformAction(userId, eventToDelete!) ?
+            evntRepo.Delete(eventToDelete!) :
             throw new UnauthorizedException();
-
-        return evntRepo.Delete(eventToDelete!);
     }
 
 
@@ -218,7 +219,7 @@ public class EventService(
         return evntRepo.Update(eventId, evnt);
     }
 
-    private ICollection<Tag> GetAssociatedTags(ICollection<Guid> tagIds)
+    private List<Tag> GetAssociatedTags(ICollection<Guid> tagIds)
     {
         var tags = new List<Tag>();
 
@@ -248,6 +249,7 @@ public class EventService(
         if (state == State.Approved && evnt.Publication.PublicationDate < DateTime.UtcNow)
         {
             state = State.Published;
+            notificationService.BulkAddNotificationForPublication(evnt.Id);
         }
 
         evnt.Publication.Reason = reason;
@@ -262,28 +264,17 @@ public class EventService(
     {
         var evntName = evnt.Publication.Title!;
         if (evntName.Length > MAX_TITLE_LENGTH)
-            evntName = evntName.Substring(0, MAX_TITLE_LENGTH) + "...";
+            evntName = evntName[..MAX_TITLE_LENGTH] + "...";
 
         string subject;
-        string statusStr;
-        switch (evnt.Publication.State)
+        string statusStr = evnt.Publication.State switch
         {
-            case State.Approved:
-                statusStr = "approuvée";
-                break;
-            case State.Denied:
-                statusStr = "refusée";
-                break;
-            case State.Published:
-                statusStr = "publiée";
-                break;
-            case State.Deleted:
-                statusStr = "supprimée";
-                break;
-            default:
-                statusStr = "changement de status";
-                break;
-        }
+            State.Approved => "approuvée",
+            State.Denied => "refusée",
+            State.Published => "publiée",
+            State.Deleted => "supprimée",
+            _ => "changement de status",
+        };
         subject = $"Publication {statusStr} - {evntName}";
 
         emailService.SendEmailAsync(
@@ -303,7 +294,7 @@ public class EventService(
             EmailsUtils.StatusChangeTemplate);
     }
 
-    private bool CanPerformAction(Guid userId, Event evnt)
+    private static bool CanPerformAction(Guid userId, Event evnt)
     {
         return (evnt!.Publication.Moderator != null && evnt.Publication.Moderator.Id == userId) ||
             (evnt!.Publication.Organizer != null && evnt.Publication.Organizer.Id == userId);
@@ -321,6 +312,7 @@ public class EventService(
         {
             evnt.Publication.State = State.Published;
             evntRepo.Update(evnt.Id, evnt);
+            notificationService.BulkAddNotificationForPublication(evnt.Id);
         }
 
         return eventsToUpdate.Count;
