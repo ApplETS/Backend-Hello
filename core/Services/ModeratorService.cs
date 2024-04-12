@@ -6,11 +6,11 @@ using api.core.services.abstractions;
 
 namespace api.core.Services;
 
-public class ModeratorService(IModeratorRepository moderatorRepository) : IModeratorService
+public class ModeratorService(IModeratorRepository moderatorRepository, IConfiguration configuration) : IModeratorService
 {
     public ModeratorResponseDTO CreateModerator(string apiKey, ModeratorCreateRequestDTO req)
     {
-        var adminAccessKey = Environment.GetEnvironmentVariable("ADMIN_ACCESS_API_KEY");
+        var adminAccessKey = configuration.GetValue<string>("ADMIN_ACCESS_API_KEY");
         if (adminAccessKey == null)
             throw new Exception("Admin access key not defined, can't trigger this function");
 

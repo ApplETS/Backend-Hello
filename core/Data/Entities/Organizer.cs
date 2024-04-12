@@ -37,4 +37,7 @@ public partial class Organizer : User
     [ForeignKey("ActivityAreaId")]
     [InverseProperty("Organizers")]
     public virtual ActivityArea? ActivityArea { get; set; }
+
+    [InverseProperty(nameof(Subscription.Organizer))]
+    public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 }

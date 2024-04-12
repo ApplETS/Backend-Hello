@@ -176,6 +176,10 @@ csharp_style_prefer_top_level_statements = true:silent
 csharp_style_prefer_primary_constructors = true:suggestion
 
 #### Naming styles ####
+
+# CA1862: Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
+dotnet_diagnostic.CA1862.severity = suggestion
+
 [*.{cs,vb}]
 
 # Naming rules

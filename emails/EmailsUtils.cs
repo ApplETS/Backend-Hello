@@ -5,6 +5,8 @@ public static class EmailsUtils
 
     public const string UserCreationTemplate = "UserSignUp.cshtml";
 
+    public const string NotifyTemplate = "Notify.cshtml";
+
     public const string ReportTemplate = "Report.cshtml";
 
     public const string UserDeactivationTemplate = "UserDeactivation.cshtml";

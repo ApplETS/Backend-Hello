@@ -32,6 +32,10 @@ public partial class EventManagementContext : DbContext
 
     public virtual DbSet<ActivityArea> ActivityAreas { get; set; }
 
+    public virtual DbSet<Subscription> Subscriptions { get; set; }
+
+    public virtual DbSet<Notification> Notifications { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Event>(entity =>
@@ -115,6 +119,10 @@ public partial class EventManagementContext : DbContext
                         j.HasIndex(new[] { "ParentTagsId" }, "IX_TagsHierarchy_ParentTagsId");
                     });
         });
+
+        modelBuilder.Entity<Subscription>()
+            .HasIndex(a => new { a.Email, a.OrganizerId })
+            .IsUnique();
 
         OnModelCreatingPartial(modelBuilder);
     }
