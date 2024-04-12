@@ -42,6 +42,7 @@ public static class DependencyInjectionExtension
         services.AddTransient<IReportService, ReportService>();
         services.AddTransient<IActivityAreaService, ActivityAreaService>();
         services.AddTransient<IModeratorService, ModeratorService>();
+        services.AddTransient<IImageService, ImageService>();
         services.AddTransient<ISubscriptionService, SubscriptionService>();
         services.AddTransient<INotificationService, NotificationService>();
 

@@ -6,8 +6,6 @@ public class EventRequestDTO
 
     public string Content { get; set; } = null!;
 
-    public int ReportCount { get; set; }
-
     public DateTime PublicationDate { get; set; }
 
     public DateTime EventStartDate { get; set; }
@@ -40,7 +38,7 @@ public class EventUpdateRequestDTO : EventRequestDTO
     public IFormFile? Image { get; set; }
 }
 
-public class DraftEventCreationRequestDTO
+public class DraftEventRequestDTO
 {
     public string? Title { get; set; }
 

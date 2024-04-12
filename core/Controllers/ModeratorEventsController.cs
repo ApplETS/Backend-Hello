@@ -1,10 +1,8 @@
-using api.core.Data;
 using api.core.Data.Enums;
 using api.core.Data.Requests;
 using api.core.Data.Responses;
 using api.core.Misc;
 using api.core.services.abstractions;
-using api.core.Services;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +11,7 @@ namespace api.core.Controllers;
 
 [ApiController]
 [Authorize(Policy = AuthPolicies.IsModerator)]
-[Route("api/moderator/events")]
+[Route("api/moderator-events")]
 public class ModeratorEventsController(ILogger<ModeratorEventsController> logger, IEventService eventService, IReportService reportService, IUserService userService) : ControllerBase
 {
     [HttpPatch("{id}/state")]
@@ -65,16 +63,5 @@ public class ModeratorEventsController(ILogger<ModeratorEventsController> logger
         var response = PaginationHelper.CreatePaginatedReponse(paginatedRes, validFilter, totalRecords);
 
         return Ok(response);
-    }
-
-    [HttpGet("reports")]
-    public ActionResult<IEnumerable<ReportResponseDTO>> GetEventsReports()
-    {
-        var reports = reportService.GetReports();
-
-        return Ok(new Response<IEnumerable<ReportResponseDTO>>
-        {
-            Data = reports,
-        });
     }
 }

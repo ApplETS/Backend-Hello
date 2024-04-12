@@ -14,8 +14,6 @@ public interface IEventService
 
     public EventResponseDTO AddEvent(Guid userId, EventCreationRequestDTO request);
 
-    public EventResponseDTO AddDraftEvent(Guid userId, DraftEventCreationRequestDTO dto);
-
     public bool DeleteEvent(Guid userId, Guid eventId);
 
     public bool UpdateEvent(Guid userId, Guid eventId, EventUpdateRequestDTO request);

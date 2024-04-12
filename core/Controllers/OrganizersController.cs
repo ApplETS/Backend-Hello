@@ -13,12 +13,13 @@ using api.emails.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace api.core.controllers;
 
 [Authorize(Policy = AuthPolicies.IsModerator)]
 [ApiController]
-[Route("api/moderator/organizer")]
+[Route("api/organizers")]
 public class ModeratorUserController(
     IUserService userService,
     IAuthService authService,
@@ -43,9 +44,9 @@ public class ModeratorUserController(
     {
         var strongPassword = GenerateRandomPassword(12);
         var supabaseUser = authService.SignUp(organizer.Email, strongPassword);
-        Guid.TryParse(supabaseUser, out Guid userId);
+        _ = Guid.TryParse(supabaseUser, out Guid userId);
         var created = userService.AddOrganizer(userId, organizer);
-        var frontBaseUrl = configuration.GetValue<string>("FRONTEND_BASE_URL") ?? throw new Exception("FRONTEND_BASE_URL is not set");
+        var frontBaseUrl = configuration.GetValue<string>("FRONTEND_BASE_URL") ?? throw new ArgumentNullException("FRONTEND_BASE_URL is not set");
         await emailService.SendEmailAsync(
             organizer.Email,
             "Votre compte Hello!",
