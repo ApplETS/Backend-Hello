@@ -94,7 +94,7 @@ public class NotificationService(
 
             await emailService.SendEmailAsync<object>(
                 notification.Subscription.Email,
-                "Nouvelle publication de {organizer.Organization}",
+                $"Nouvelle publication de {organizer.Organization}",
                 new NotifyModel
                 {
                     Title = $"Nouvelle publication de {organizer.Organization}",
