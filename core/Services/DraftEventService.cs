@@ -96,7 +96,7 @@ public class DraftEventService(
         evnt.EventEndDate = request.EventEndDate;
         evnt.Publication.Title = request.Title;
         evnt.Publication.Content = request.Content;
-        evnt.Publication.State = State.OnHold;
+        evnt.Publication.State = State.Draft;
         evnt.Publication.ImageUrl = imageUrl;
         evnt.Publication.PublicationDate = request.PublicationDate;
         evnt.Publication.ImageAltText = request.ImageAltText;
