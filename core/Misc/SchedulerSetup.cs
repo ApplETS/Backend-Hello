@@ -1,5 +1,7 @@
 ﻿using api.tasks.Jobs;
 
+using Microsoft.AspNetCore.Http;
+
 using Quartz;
 using Quartz.Logging;
 
@@ -7,8 +9,8 @@ namespace api.core.Misc;
 
 public static class SchedulerSetup
 {
-    public static string BackgroundTaskKey = "_BackgroundTask";
-    private static string TriggerEveryMinutes = "_TriggerEveryMinutes";
+    public const string SetPublicationPublishedKey = "_SetPublicationPublished";
+    public const string NotificationByEmailKey = "_NotificationByEmail";
 
     public static void SetupScheduler(this IServiceCollection services)
     {
