@@ -14,6 +14,7 @@ COPY tests/api.tests.csproj ./tests/
 COPY Hello.sln ./
 RUN dotnet restore
 
+
 COPY . .
 WORKDIR /src
 RUN dotnet build -c $BUILD_CONFIGURATION -o /app/build
