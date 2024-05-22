@@ -116,5 +116,4 @@ public class NotificationService(
 
         return notifications.Count;
     }
-
 }
