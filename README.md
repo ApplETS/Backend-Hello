@@ -49,19 +49,19 @@ You will need a couple of things to get started developing and maintaining Hello
 - .NET8 (which is supposed to come package with VS2022, but in case it's not.)
 
 #### Setup
-1- Open Bash, navigate to somewhere you like:
+1. Open Bash, navigate to somewhere you like:
 ```bash
 cd path/to/repo
 ```
-2- Clone the repo using an [ssh key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) or without:
+2. Clone the repo using an [ssh key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) or without:
 ```bash
 # With an SSH Key
 git clone git@github.com:ApplETS/Backend-Hello.git
 # Without an ssh key
 git clone https://github.com/ApplETS/Backend-Hello.git
 ```
-3- Open the .sln in Visual Studio 2022
-4- You'll now need to create your `.env` file from the `.env.template`. You can ask help to fill the empty values from a project maintainer.
+3. Open the .sln in Visual Studio 2022
+4. You'll now need to create your `.env` file from the `.env.template`. You can ask help to fill the empty values from a project maintainer.
 
 
 #### Running the app using Visual Studio
