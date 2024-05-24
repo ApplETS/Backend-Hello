@@ -46,6 +46,7 @@ You will need a couple of things to get started developing and maintaining Hello
 - Visual Studio 2022 or above version.
   - Make sure to check the ASP.NET and web development component
 <img width="927" alt="image" src="https://github.com/ApplETS/Backend-Hello/assets/25663435/43d8ce41-2990-445b-9621-8f1418d33f0f">
+
 - .NET8 (which is supposed to come package with VS2022, but in case it's not.)
 
 #### Setup
