@@ -1,6 +1,5 @@
 ﻿using System.Threading.RateLimiting;
 
-using api.core.controllers;
 using api.core.Controllers;
 
 using Microsoft.AspNetCore.RateLimiting;

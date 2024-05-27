@@ -11,11 +11,29 @@ using api.core.Data.Enums;
 
 namespace api.core.Controllers;
 
+/// <summary>
+/// A controller for handling events related to the organizer. This controller is used by 
+/// the organizer to manage their events. They can create, update, delete and get their events.
+/// </summary>
+/// <param name="logger">A logger provider to log informations in the controller</param>
+/// <param name="eventService">A service to manage events</param>
 [ApiController]
 [Authorize(Policy = AuthPolicies.OrganizerIsActive)]
 [Route("api/organizer-events")]
 public class OrganizerEventsController(ILogger<OrganizerEventsController> logger, IEventService eventService) : ControllerBase
 {
+    /// <summary>
+    /// Fetch events for the currently connected organizer
+    /// </summary>
+    /// <param name="startDate">if null, will get every event until the first element</param>
+    /// <param name="endDate">if null, will get every element unitl infinity</param>
+    /// <param name="title">Filter by title</param>
+    /// <param name="activityAreas">Filter by a list of OR applicable activityAreas</param>
+    /// <param name="tags">Filter by a list of OR applicable tags</param>
+    /// <param name="state">Filter by state or multiple by using the </param>
+    /// <param name="ordering">Sort and take only the necessary page</param>
+    /// <param name="pagination">Sort and take only the necessary page</param>
+    /// <returns>events filtered and sorted</returns>
     [HttpGet]
     public IActionResult MyEvents(
         [FromQuery] DateTime? startDate,

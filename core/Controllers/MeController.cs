@@ -9,11 +9,24 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace api.core.controllers;
 
+/// <summary>
+/// A controller to handle calls to your own user. This allows calling function to yourself
+/// without having to know your own id. This is useful for updating your own information or fetching 
+/// your profile information. This can work for either a moderator or an organizer.
+/// 
+/// Under the hood, this controller uses the IUserService to manage the data by passing the userId found in 
+/// your JWT token.
+/// </summary>
+/// <param name="userService">The User Service will allows managing your user's data</param>
 [Authorize]
 [ApiController]
 [Route("api/me")]
 public class MeController(IUserService userService) : ControllerBase
 {
+    /// <summary>
+    /// Get the user connected to the API using the JWT token
+    /// </summary>
+    /// <returns>The user connected data</returns>
     [HttpGet]
     public IActionResult GetUser()
     {
@@ -27,6 +40,11 @@ public class MeController(IUserService userService) : ControllerBase
              });
     }
 
+    /// <summary>
+    /// Modify the user's connected data
+    /// </summary>
+    /// <param name="user">a user DTO object to allow modifying info </param>
+    /// <returns>returns 200 OK if everything went well or 400 Bad request if there was an error with the data sent out</returns>
     [HttpPatch]
     public IActionResult UpdateUser([FromBody] UserUpdateDTO user)
     {
@@ -37,7 +55,7 @@ public class MeController(IUserService userService) : ControllerBase
     /// <summary>
     /// Update the user connected avatar
     /// </summary>
-    /// <param name="avatarReq"></param>
+    /// <param name="avatarReq">The update form data to modify an avatar</param>
     /// <returns>The url of the downloadable avatar file</returns>
     [HttpPatch("avatar")]
     public IActionResult UpdateUserAvatar([FromForm] UserAvatarUpdateDTO avatarReq)

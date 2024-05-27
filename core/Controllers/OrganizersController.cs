@@ -12,11 +12,22 @@ using api.emails.Services.Abstractions;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
 
 namespace api.core.controllers;
 
+
+/// <summary>
+/// A controller to handle calls to manage the organizers. This controller is only accessible to moderators.
+/// A moderator can create, get, toggle the active state of an organizer and get a list of all organizers.
+/// 
+/// Under the hood, this controller uses the IUserService to manage the data. It also uses the IAuthService to
+/// create a new user in the Supabase database. Finally, it uses the IEmailService to send an email to the newly
+/// created organizer with a temporary password.
+/// </summary>
+/// <param name="userService">Used to fetch and manage the organizers</param>
+/// <param name="authService">Used to create a new user in the Supabase database</param>
+/// <param name="emailService">Used to send an email to the newly created organizer</param>
+/// <param name="configuration">Used to fetch the FRONTEND_BASE_URL from the environments variables</param>
 [Authorize(Policy = AuthPolicies.IsModerator)]
 [ApiController]
 [Route("api/organizers")]
@@ -26,6 +37,15 @@ public class ModeratorUserController(
     IEmailService emailService,
     IConfiguration configuration) : ControllerBase
 {
+
+    /// <summary>
+    /// Get a specific organizer by its id.
+    /// 
+    /// This function is specifically bypassing the authorization policy to allow anyone to get an organizer.
+    /// </summary>
+    /// <param name="organizerId"></param>
+    /// <returns></returns>
+    /// <exception cref="NotFoundException{Organizer}"></exception>
     [AllowAnonymous]
     [HttpGet("{organizerId}")]
     public IActionResult GetOrganizer(Guid organizerId)
@@ -39,6 +59,14 @@ public class ModeratorUserController(
             : throw new NotFoundException<Organizer>();
     }
 
+    /// <summary>
+    /// Create an organizer
+    /// 
+    /// TODO: would be nice to move the organizer creation in a separate service
+    /// </summary>
+    /// <param name="organizer"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     [HttpPost]
     public async Task<IActionResult> CreateOrganizer([FromBody] UserCreateDTO organizer)
     {
@@ -66,6 +94,13 @@ public class ModeratorUserController(
         return Ok(new Response<UserResponseDTO> { Data = created });
     }
 
+    /// <summary>
+    /// Get all users with pagination and search term
+    /// </summary>
+    /// <param name="search">an optional search field to filter data</param>
+    /// <param name="filter">filter based on different attributes define in OrganizerAccountActiveFilter</param>
+    /// <param name="pagination">paginate the data using the correct attributes</param>
+    /// <returns></returns>
     [HttpGet]
     public IActionResult GetUsers(string? search, OrganizerAccountActiveFilter filter, [FromQuery] PaginationRequest pagination)
     {
@@ -88,6 +123,12 @@ public class ModeratorUserController(
         return Ok(response);
     }
 
+    /// <summary>
+    /// Toggle an organizer active state
+    /// </summary>
+    /// <param name="organizerId">the organizer tyou want to enable</param>
+    /// <param name="reason">pass a reason for the toggle active change, will be send by email</param>
+    /// <returns></returns>
     [HttpPatch("{organizerId}/toggle")]
     public async Task<IActionResult> ToggleOrganizer(Guid organizerId, [FromQuery] string? reason)
     {
@@ -113,6 +154,11 @@ public class ModeratorUserController(
         return success ? Ok() : BadRequest();
     }
 
+    /// <summary>
+    /// Generate a random password of a given length
+    /// </summary>
+    /// <param name="length">the given length of the random password</param>
+    /// <returns>A random password</returns>
     private string GenerateRandomPassword(int length)
     {
         const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!?.$_";
