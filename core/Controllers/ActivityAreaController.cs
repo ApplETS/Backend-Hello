@@ -40,6 +40,7 @@ public class ActivityAreaController(IActivityAreaService activityAreaService) : 
     /// <param name="id">The activity Area Id</param>
     /// <returns>data of the activityArea</returns>
     [HttpGet("{id}")]
+    [ProducesResponseType<Response<ActivityAreaResponseDTO>>(StatusCodes.Status200OK)]
     public IActionResult GetOneActivityArea(Guid id)
     {
         var activityArea = activityAreaService.GetActivityArea(id);
