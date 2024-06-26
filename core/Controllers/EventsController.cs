@@ -10,9 +10,24 @@ using Microsoft.AspNetCore.OutputCaching;
 
 namespace api.core.controllers;
 
+/// <summary>
+/// One of the most important controller in the system, it handles the events/publications.
+/// This route is public and can be accessed by anyone. This is mostly what the mobile app will 
+/// consume and the open data API accessible from the front-end or external parties that want to
+/// show data.
+/// 
+/// Under the hood, this controller uses the IEventService to manage the event data fetching, as well as
+/// the IUserService to fetch the organizer's avatar url for each event returned.
+/// </summary>
+/// <param name="logger">A logger provider to log informations in the controller</param>
+/// <param name="eventService">Used to fetch events</param>
+/// <param name="userService">Used to fetch the avatar url of the organiser for each event fetched</param>
 [ApiController]
 [Route("api/events")]
-public class EventsController(ILogger<EventsController> logger, IEventService eventService, IUserService userService) : ControllerBase
+public class EventsController(
+    ILogger<EventsController> logger,
+    IEventService eventService,
+    IUserService userService) : ControllerBase
 {
 
     /// <summary>
@@ -59,6 +74,11 @@ public class EventsController(ILogger<EventsController> logger, IEventService ev
         return Ok(response);
     }
 
+    /// <summary>
+    /// Get one event by it's id to show every detail about it.
+    /// </summary>
+    /// <param name="id">An event id provided</param>
+    /// <returns>The event data</returns>
     [HttpGet("{id}")]
     public IActionResult GetEvent(Guid id)
     {
