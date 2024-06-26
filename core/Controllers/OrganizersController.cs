@@ -22,7 +22,8 @@ namespace api.core.controllers;
 /// 
 /// Under the hood, this controller uses the IUserService to manage the data. It also uses the IAuthService to
 /// create a new user in the Supabase database. Finally, it uses the IEmailService to send an email to the newly
-/// created organizer with a temporary password.
+/// created organizer with a temporary password. All the EMAIL_ env must be configured in the environment variables.
+/// for this to work.
 /// </summary>
 /// <param name="userService">Used to fetch and manage the organizers</param>
 /// <param name="authService">Used to create a new user in the Supabase database</param>
