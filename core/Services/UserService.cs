@@ -3,15 +3,12 @@ using api.core.Data.Exceptions;
 using api.core.Data.Enums;
 using api.core.Data.requests;
 using api.core.Data.Responses;
-using api.core.repositories;
 using api.core.repositories.abstractions;
 using api.core.services.abstractions;
 using api.files.Services.Abstractions;
 
-using Microsoft.IdentityModel.Tokens;
 
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
 
 namespace api.core.Services;
 
@@ -49,13 +46,13 @@ public class UserService(
         var avatarUri = fileShareService.FileGetDownloadUri($"{id}/{AVATAR_FILE_NAME}");
         var user = UserResponseDTO.Map(inserted);
         user.AvatarUrl = avatarUri.ToString();
-        
+
         return user;
     }
 
     public UserResponseDTO GetUser(Guid id)
     {
-        UserResponseDTO? userRes = null; 
+        UserResponseDTO? userRes = null;
         var organizer = organizerRepository.Get(id);
         if (organizer != null)
             userRes = UserResponseDTO.Map(organizer!);
@@ -84,7 +81,7 @@ public class UserService(
     public IEnumerable<UserResponseDTO> GetUsers(string? search, OrganizerAccountActiveFilter activeFilter, out int count)
     {
         var organizers = organizerRepository.GetAll()
-            .Where(x => (search.IsNullOrEmpty() ||
+            .Where(x => (search == null || search.Equals("") ||
                 x.Organization.ToLower().Contains(search!.ToLower() ?? "") ||
                 x.Email.ToLower().Contains(search!.ToLower() ?? "")) &&
                 ((activeFilter.HasFlag(OrganizerAccountActiveFilter.Active) && x.IsActive) ||

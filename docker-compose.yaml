@@ -1,0 +1,40 @@
+version: '3.9'
+services:
+  backend:
+    image: ghcr.io/applets/backend-hello:main
+    restart: always
+    ports:
+      - 8080:8080
+    env_file:
+      - core/.env
+    volumes:
+      - ./backend-data:/app/volume:rw
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8090:8080
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    env_file:
+      - core/.env
+  redis:
+    image: redis:7.2.4
+    restart: always
+    ports:
+      - '63790:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    volumes: 
+      - cache:/data
+  cdn:
+    image: nginx:1.25.3
+    restart: always
+    ports:
+      - 6464:80
+volumes:
+  cache:
+    driver: local
+  

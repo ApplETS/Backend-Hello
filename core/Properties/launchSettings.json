@@ -15,7 +15,9 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "REDIS_CONNECTION_STRING": "localhost:63790,password=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81,abortConnect=False,resolvedns=1",
+        "CONNECTION_STRING": "User ID=postgres;Password=test123;Host=localhost;Port=5432;Database=ps;"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7272;http://localhost:5010"

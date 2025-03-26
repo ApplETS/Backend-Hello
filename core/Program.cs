@@ -1,48 +1,54 @@
-using api.core.Extensions;
-
+using System.Reflection;
 using System.Text;
 
 using api.core.data;
-
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using api.core.Extensions;
 using api.core.Misc;
 using api.emails;
-using System.Reflection;
+
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Web;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+
+
+IdentityModelEventSource.ShowPII = true;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Environments setup
-string supabaseSecretKey = null!;
-string supabaseProjectId = null!;
 string connectionString = null!;
 string? redisConnString = null!;
 
-connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new Exception("CONNECTION_STRING is not set");
+connectionString =
+    Environment.GetEnvironmentVariable("CONNECTION_STRING")
+    ?? throw new Exception("CONNECTION_STRING is not set");
 
 redisConnString = Environment.GetEnvironmentVariable("REDIS_CONNECTION_STRING");
-
-if (!EF.IsDesignTime)
-{
-    supabaseSecretKey = Environment.GetEnvironmentVariable("SUPABASE_SECRET_KEY") ?? throw new Exception("SUPABASE_SECRET_KEY is not set");
-    supabaseProjectId = Environment.GetEnvironmentVariable("SUPABASE_PROJECT_ID") ?? throw new Exception("SUPABASE_PROJECT_ID is not set");
-}
 
 builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddDbContext<EventManagementContext>(opt => opt.UseNpgsql(connectionString));
 
-builder.Services.AddAuthentication().AddJwtBearer(o =>
-{
-    o.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(supabaseSecretKey)),
-        ValidAudiences = ["authenticated"],
-        ValidIssuer = $"https://{supabaseProjectId}.supabase.co/auth/v1"
-    };
-});
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+       .AddJwtBearer(options =>
+       {
+           options.RequireHttpsMetadata = false;
+           options.SaveToken = true;
+           options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+           {
+               ValidateIssuer = true,
+               ValidateAudience = true,
+               ValidateLifetime = true,
+               ValidateIssuerSigningKey = true,
+               ValidIssuer = "https://login.microsoftonline.com/188c27a3-86bf-4988-9c94-025a75fcf0d1/v2.0",
+               ValidAudience = "bf42ef76-b599-4ab1-a015-6e4b8afa347b",
+               IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(""))
+           };
+       });
 
 builder.Services.SetupScheduler();
 
@@ -56,8 +62,7 @@ if (string.IsNullOrEmpty(redisConnString))
 
 builder.Services.AddOutputCache(options =>
 {
-    options.AddBasePolicy(builder =>
-        builder.Cache());
+    options.AddBasePolicy(builder => builder.Cache());
 });
 
 // Errors handling
@@ -67,8 +72,7 @@ builder.Services.AddProblemDetails();
 // Endpoints
 builder.Services.AddControllers();
 
-builder.Services.AddHealthChecks()
-    .AddNpgSql(connectionString);
+builder.Services.AddHealthChecks().AddNpgSql(connectionString);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -81,22 +85,22 @@ builder.Services.AddSwaggerGen(options =>
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
         Description = "JWT Authorization header using the Bearer scheme. " +
-        "\r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.",
+       "\r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.",
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
-         {
-               new OpenApiSecurityScheme
-               {
-                     Reference = new OpenApiReference
-                     {
-                         Type = ReferenceType.SecurityScheme,
-                         Id = "Bearer"
-                     }
-               },
-         Array.Empty<string>()
-         }
+        {
+              new OpenApiSecurityScheme
+              {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+              },
+        Array.Empty<string>()
+        }
     });
     options.UseInlineDefinitionsForEnums();
 
@@ -121,11 +125,11 @@ await db!.Database.MigrateAsync();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-
 app.UseExceptionMiddleware();
 
 // app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapHealthChecks("/health");
