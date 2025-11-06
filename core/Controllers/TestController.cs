@@ -1,4 +1,4 @@
-﻿using api.core.Data.Requests;
+using api.core.Data.Requests;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,14 +14,20 @@ namespace api.core.controllers;
 public class TestController(IConfiguration configuration) : ControllerBase
 {
 
-    //[HttpPost("login")]
-    //public async Task<IActionResult> Login([FromBody] LoginRequestDTO req, CancellationToken ct)
-    //{
-        //var projectId = configuration.GetValue<string>("SUPABASE_PROJECT_ID");
-        //var anonKey = configuration.GetValue<string>("SUPABASE_ANON_KEY");
+    [HttpGet]
+    public IActionResult Login()
+    {
+        var redirectionURL = Environment.GetEnvironmentVariable("OPENID_BASE_URL") + "authorize/?";
+        
+        Dictionary<string, string> queryParameters = new();
+        
+        queryParameters["client_id"] = Environment.GetEnvironmentVariable("OPENID_CLIENT_ID");
+        queryParameters["response_type"] = "code";
+        queryParameters["redirect_uri"] = "http://localhost:8080";
+        queryParameters["scope"] = "email";
+        //queryParameters["response_type"] = "code";
+        
+        return Redirect(redirectionURL + string.Join('&', queryParameters.Select(qp => qp.Key + '=' + qp.Value)));
+    }
 
-        //var client = new Supabase.Client($"https://{projectId}.supabase.co", anonKey);
-        //var response = await client.Auth.SignInWithPassword(req.Email, req.Password);
-        //return Ok(response);
-    //}
 }
