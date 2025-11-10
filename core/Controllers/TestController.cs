@@ -1,6 +1,7 @@
-using api.core.Data.Requests;
+﻿using api.core.Data.Requests;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client.Platforms.Features.DesktopOs.Kerberos;
 
 
 namespace api.core.controllers;
@@ -25,9 +26,34 @@ public class TestController(IConfiguration configuration) : ControllerBase
         queryParameters["response_type"] = "code";
         queryParameters["redirect_uri"] = "http://localhost:8080";
         queryParameters["scope"] = "email";
-        //queryParameters["response_type"] = "code";
+        queryParameters["state"] = "1234";
         
         return Redirect(redirectionURL + string.Join('&', queryParameters.Select(qp => qp.Key + '=' + qp.Value)));
     }
 
+    [HttpGet]
+    [Route("/")]
+    public async Task<IActionResult> Reception([FromQuery] string code, [FromQuery] string? state)
+    {
+        using HttpClient client = new(new HttpClientHandler
+        {
+            PreAuthenticate = true,
+        })
+;
+        string claimUrl = Environment.GetEnvironmentVariable("OPENID_BASE_URL") + "token/";
+
+        Dictionary<string, string> body = new()
+        {
+            ["grant_type"] = "authorization_code",
+            ["redirect_uri"] = Request.Scheme + "://" + Request.Host.Value,
+            ["code"] = code
+        };
+
+        HttpResponseMessage response = await client.PostAsync(claimUrl, new FormUrlEncodedContent(body));
+
+
+
+
+        return Ok();
+    }
 }
