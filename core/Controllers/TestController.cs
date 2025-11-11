@@ -1,7 +1,9 @@
-﻿using api.core.Data.Requests;
+﻿using System.Runtime.Serialization.Json;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client.Platforms.Features.DesktopOs.Kerberos;
 
 
 namespace api.core.controllers;
@@ -20,13 +22,14 @@ public class TestController(IConfiguration configuration) : ControllerBase
     {
         var redirectionURL = Environment.GetEnvironmentVariable("OPENID_BASE_URL") + "authorize/?";
         
-        Dictionary<string, string> queryParameters = new();
-        
-        queryParameters["client_id"] = Environment.GetEnvironmentVariable("OPENID_CLIENT_ID");
-        queryParameters["response_type"] = "code";
-        queryParameters["redirect_uri"] = "http://localhost:8080";
-        queryParameters["scope"] = "email";
-        queryParameters["state"] = "1234";
+        Dictionary<string, string> queryParameters = new()
+        {
+            ["client_id"] = Environment.GetEnvironmentVariable("OPENID_CLIENT_ID"),
+            ["response_type"] = "code",
+            ["redirect_uri"] = "http://localhost:8080",
+            ["scope"] = "email",
+            //["state"] = "1234"
+        };
         
         return Redirect(redirectionURL + string.Join('&', queryParameters.Select(qp => qp.Key + '=' + qp.Value)));
     }
@@ -35,11 +38,7 @@ public class TestController(IConfiguration configuration) : ControllerBase
     [Route("/")]
     public async Task<IActionResult> Reception([FromQuery] string code, [FromQuery] string? state)
     {
-        using HttpClient client = new(new HttpClientHandler
-        {
-            PreAuthenticate = true,
-        })
-;
+        using HttpClient client = new();
         string claimUrl = Environment.GetEnvironmentVariable("OPENID_BASE_URL") + "token/";
 
         Dictionary<string, string> body = new()
@@ -49,11 +48,41 @@ public class TestController(IConfiguration configuration) : ControllerBase
             ["code"] = code
         };
 
-        HttpResponseMessage response = await client.PostAsync(claimUrl, new FormUrlEncodedContent(body));
+        string clientId = Environment.GetEnvironmentVariable("OPENID_CLIENT_ID");
+        string clientSecret = Environment.GetEnvironmentVariable("OPENID_CLIENT_SECRET");
 
+        using HttpRequestMessage request = new(HttpMethod.Post, claimUrl);
+         
+        request.Content = new FormUrlEncodedContent(body);
+        request.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:{clientSecret}")));
 
+        HttpResponseMessage response = await client.SendAsync(request);
 
+        if (! response.IsSuccessStatusCode)
+        {
+            return BadRequest();
+        }
 
-        return Ok();
+        string contenu = await response.Content.ReadAsStringAsync();
+
+        JsonSerializerOptions settings = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
+        };
+
+        TokenResponse token = JsonSerializer.Deserialize<TokenResponse>(contenu, settings)!;
+
+        return Ok(token);
     }
+}
+
+[JsonSerializable(typeof(TokenResponse))]
+[JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
+public record class TokenResponse
+{
+    public string AccessToken { get; set; }
+    public string TokenType { get; set; }
+    public string Scope { get; set; }
+    public string IdToken { get; set; }
+    public int ExpiresIn { get; set; }
 }
