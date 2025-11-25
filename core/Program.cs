@@ -7,15 +7,16 @@ using api.core.Misc;
 using api.emails;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 
 IdentityModelEventSource.ShowPII = true;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,27 +27,65 @@ string? redisConnString = null!;
 connectionString =
     Environment.GetEnvironmentVariable("CONNECTION_STRING")
     ?? throw new Exception("CONNECTION_STRING is not set");
-
 redisConnString = Environment.GetEnvironmentVariable("REDIS_CONNECTION_STRING");
 
 builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddDbContext<EventManagementContext>(opt => opt.UseNpgsql(connectionString));
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-       .AddJwtBearer(options =>
+builder.Services
+    .AddAuthentication(options =>
+    {
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = "oicd";
+    })
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.Authority = Environment.GetEnvironmentVariable("OPENID_ISSUER");
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidIssuer = Environment.GetEnvironmentVariable("OPENID_ISSUER"),
+            ValidAudience = Environment.GetEnvironmentVariable("OPENID_CLIENT_ID"),
+            NameClaimType = "email"
+        };
+    })
+    .AddOpenIdConnect("oicd", options =>
        {
-           options.RequireHttpsMetadata = false;
-           options.SaveToken = true;
-           options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+           options.Authority = Environment.GetEnvironmentVariable("OPENID_ISSUER");
+           options.ClientId = Environment.GetEnvironmentVariable("OPENID_CLIENT_ID");
+           options.ClientSecret = Environment.GetEnvironmentVariable("OPENID_CLIENT_SECRET");
+           options.ResponseType = OpenIdConnectResponseType.Code;
+
+           options.SaveTokens = false;
+
+           // TODO : Mettre les scopes requis
+
+           options.Scope.Add("openid");
+           options.Scope.Add("email");
+           options.Scope.Add("profile");
+
+           options.GetClaimsFromUserInfoEndpoint = true;
+
+           options.TokenValidationParameters = new TokenValidationParameters
            {
-               ValidateIssuer = true,
-               ValidateAudience = true,
-               ValidateLifetime = true,
-               ValidateIssuerSigningKey = true,
-               ValidIssuer = "https://login.microsoftonline.com/188c27a3-86bf-4988-9c94-025a75fcf0d1/v2.0",
-               ValidAudience = "bf42ef76-b599-4ab1-a015-6e4b8afa347b",
-               IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(""))
+               NameClaimType = "email"
+           };
+
+           options.Events = new OpenIdConnectEvents
+           {
+               OnTokenValidated = context =>
+               {
+                   return Task.CompletedTask;
+               },
+               OnAuthenticationFailed = context =>
+               {
+                   return Task.CompletedTask;
+               }
            };
        });
 
@@ -83,9 +122,10 @@ builder.Services.AddSwaggerGen(options =>
         Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer",
         BearerFormat = "JWT",
-        In = ParameterLocation.Header,
+        In = ParameterLocation.Cookie,
         Description = "JWT Authorization header using the Bearer scheme. " +
-       "\r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.",
+        "\r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.",
+        OpenIdConnectUrl = new Uri(Environment.GetEnvironmentVariable("OPENID_ISSUER")!)
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
