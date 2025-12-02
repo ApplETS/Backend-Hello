@@ -21,21 +21,20 @@ public class TestController(IConfiguration configuration) : ControllerBase
     public IActionResult Login()
     {
         var redirectionURL = Environment.GetEnvironmentVariable("OPENID_BASE_URL") + "authorize/?";
-        
         Dictionary<string, string> queryParameters = new()
         {
             ["client_id"] = Environment.GetEnvironmentVariable("OPENID_CLIENT_ID"),
             ["response_type"] = "code",
-            ["redirect_uri"] = "http://localhost:8080",
-            ["scope"] = "email",
-            //["state"] = "1234"
+            ["redirect_uri"] = "https://localhost:8081/callback/code",
+            ["scope"] = "email,profile,openid",
+            ["state"] = "1234"
         };
         
         return Redirect(redirectionURL + string.Join('&', queryParameters.Select(qp => qp.Key + '=' + qp.Value)));
     }
 
     [HttpGet]
-    [Route("/")]
+    [Route("/callback/code")]
     public async Task<IActionResult> Reception([FromQuery] string code, [FromQuery] string? state)
     {
         using HttpClient client = new();

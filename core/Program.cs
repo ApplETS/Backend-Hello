@@ -7,11 +7,8 @@ using api.core.Misc;
 using api.emails;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -33,61 +30,81 @@ builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddDbContext<EventManagementContext>(opt => opt.UseNpgsql(connectionString));
 
+
+var key = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("OPENID_CLIENT_SECRET") ?? "");
 builder.Services
     .AddAuthentication(options =>
     {
-        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = "oicd";
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     })
+    //.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+    //{
+    //    options.RequireHttpsMetadata = false;
+    //    options.SaveToken = true;
+    //    options.Authority = Environment.GetEnvironmentVariable("OPENID_ISSUER");
+
+    //    options.TokenValidationParameters = new TokenValidationParameters
+    //    {
+    //        ValidateIssuer = true,
+    //        ValidateAudience = true,
+    //        ValidIssuer = Environment.GetEnvironmentVariable("OPENID_ISSUER"),
+    //        ValidAudience = Environment.GetEnvironmentVariable("OPENID_CLIENT_ID"),
+    //        NameClaimType = "email"
+    //    };
+    //})
     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
     {
-        options.RequireHttpsMetadata = false;
-        options.SaveToken = true;
+        // The URL of your Identity Provider (e.g., "https://dev-xyz.us.auth0.com/")
+        // The API will download the public keys from here automatically.
         options.Authority = Environment.GetEnvironmentVariable("OPENID_ISSUER");
 
+        // Who is this token for? (This usually matches the "API Identifier" in your IdP)
+        options.Audience = Environment.GetEnvironmentVariable("OPENID_CLIENT_ID");
         options.TokenValidationParameters = new TokenValidationParameters
         {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidIssuer = Environment.GetEnvironmentVariable("OPENID_ISSUER"),
-            ValidAudience = Environment.GetEnvironmentVariable("OPENID_CLIENT_ID"),
-            NameClaimType = "email"
+            ValidAudience = Environment.GetEnvironmentVariable("OPENID_CLIENT_ID")
         };
-    })
-    .AddOpenIdConnect("oicd", options =>
-       {
-           options.Authority = Environment.GetEnvironmentVariable("OPENID_ISSUER");
-           options.ClientId = Environment.GetEnvironmentVariable("OPENID_CLIENT_ID");
-           options.ClientSecret = Environment.GetEnvironmentVariable("OPENID_CLIENT_SECRET");
-           options.ResponseType = OpenIdConnectResponseType.Code;
+        // Ensure HTTPS is used (should be true in production)
+        options.RequireHttpsMetadata = true;
+    });
+//.AddOpenIdConnect(options =>
+//   {
+//       options.Authority = Environment.GetEnvironmentVariable("OPENID_ISSUER");
+//       options.ClientId = Environment.GetEnvironmentVariable("OPENID_CLIENT_ID");
+//       //options.ClientSecret = Environment.GetEnvironmentVariable("OPENID_CLIENT_SECRET");
 
-           options.SaveTokens = false;
+//       //options.SaveTokens = false;
 
-           // TODO : Mettre les scopes requis
+//       //// TODO : Mettre les scopes requis
 
-           options.Scope.Add("openid");
-           options.Scope.Add("email");
-           options.Scope.Add("profile");
+//       options.Scope.Add("openid");
+//       options.Scope.Add("email");
+//       options.Scope.Add("profile");
 
-           options.GetClaimsFromUserInfoEndpoint = true;
+//       //options.GetClaimsFromUserInfoEndpoint = true;
 
-           options.TokenValidationParameters = new TokenValidationParameters
-           {
-               NameClaimType = "email"
-           };
+//       //options.TokenValidationParameters = new TokenValidationParameters
+//       //{
+//       //    NameClaimType = "email"
+//       //};
 
-           options.Events = new OpenIdConnectEvents
-           {
-               OnTokenValidated = context =>
-               {
-                   return Task.CompletedTask;
-               },
-               OnAuthenticationFailed = context =>
-               {
-                   return Task.CompletedTask;
-               }
-           };
-       });
+//       //options.Events = new OpenIdConnectEvents
+//       //{
+//       //    OnTokenValidated = context =>
+//       //    {
+//       //        return Task.CompletedTask;
+//       //    },
+//       //    OnAuthenticationFailed = context =>
+//       //    {
+//       //        return Task.CompletedTask;
+//       //    }
+//       //};
+//   });
 
 builder.Services.SetupScheduler();
 
@@ -119,10 +136,10 @@ builder.Services.AddSwaggerGen(options =>
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
     {
         Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
+        Type = SecuritySchemeType.Http,
         Scheme = "Bearer",
         BearerFormat = "JWT",
-        In = ParameterLocation.Cookie,
+        In = ParameterLocation.Header,
         Description = "JWT Authorization header using the Bearer scheme. " +
         "\r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.",
         OpenIdConnectUrl = new Uri(Environment.GetEnvironmentVariable("OPENID_ISSUER")!)
