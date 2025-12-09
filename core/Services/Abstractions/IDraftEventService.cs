@@ -8,7 +8,7 @@ namespace api.core.services.abstractions;
 
 public interface IDraftEventService
 {
-    public EventResponseDTO AddDraftEvent(Guid userId, DraftEventRequestDTO request);
+    public EventResponseDTO AddDraftEvent(string userId, DraftEventRequestDTO request);
 
-    public bool UpdateDraftEvent(Guid userId, Guid eventId, DraftEventRequestDTO request);
+    public bool UpdateDraftEvent(string userId, Guid eventId, DraftEventRequestDTO request);
 }

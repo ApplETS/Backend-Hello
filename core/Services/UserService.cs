@@ -22,7 +22,7 @@ public class UserService(
 {
     private const string AVATAR_FILE_NAME = "avatar.webp";
 
-    public UserResponseDTO AddOrganizer(Guid id, UserCreateDTO organizerDto)
+    public UserResponseDTO AddOrganizer(string id, UserCreateDTO organizerDto)
     {
         if (organizerDto.ActivityAreaId != null)
         {
@@ -50,7 +50,7 @@ public class UserService(
         return user;
     }
 
-    public UserResponseDTO GetUser(Guid id)
+    public UserResponseDTO GetUser(string id)
     {
         UserResponseDTO? userRes = null;
         var organizer = organizerRepository.Get(id);
@@ -72,7 +72,7 @@ public class UserService(
         return userRes;
     }
 
-    public string GetUserAvatarUrl(Guid id)
+    public string GetUserAvatarUrl(string id)
     {
         var avatarUri = fileShareService.FileGetDownloadUri($"{id}/{AVATAR_FILE_NAME}");
         return avatarUri.ToString();
@@ -93,7 +93,7 @@ public class UserService(
         return organizers.Select(UserResponseDTO.Map);
     }
 
-    public bool ToggleUserActiveState(Guid id)
+    public bool ToggleUserActiveState(string id)
     {
         EnsureIsOrganizer(id);
 
@@ -102,7 +102,7 @@ public class UserService(
         return organizerRepository.Update(id, user);
     }
 
-    private void EnsureIsOrganizer(Guid id)
+    private void EnsureIsOrganizer(string id)
     {
         var user = GetUser(id);
 
@@ -110,7 +110,7 @@ public class UserService(
             throw new Exception("Moderators cannot be disabled");
     }
 
-    public bool UpdateUser(Guid id, UserUpdateDTO dto)
+    public bool UpdateUser(string id, UserUpdateDTO dto)
     {
         var user = GetUser(id);
 
@@ -153,7 +153,7 @@ public class UserService(
         };
     }
 
-    public string UpdateUserAvatar(Guid id, IFormFile avatarFile)
+    public string UpdateUserAvatar(string id, IFormFile avatarFile)
     {
         _ = GetUser(id);
         var userId = id.ToString();

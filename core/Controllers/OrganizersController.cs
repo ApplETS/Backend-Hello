@@ -47,7 +47,7 @@ public class ModeratorUserController(
     /// <exception cref="NotFoundException{Organizer}"></exception>
     [AllowAnonymous]
     [HttpGet("{organizerId}")]
-    public IActionResult GetOrganizer(Guid organizerId)
+    public IActionResult GetOrganizer(string organizerId)
     {
         var user = userService.GetUser(organizerId);
         return user.Type == "Organizer" ?
@@ -129,7 +129,7 @@ public class ModeratorUserController(
     /// <param name="reason">pass a reason for the toggle active change, will be send by email</param>
     /// <returns></returns>
     [HttpPatch("{organizerId}/toggle")]
-    public async Task<IActionResult> ToggleOrganizer(Guid organizerId, [FromQuery] string? reason)
+    public async Task<IActionResult> ToggleOrganizer(string organizerId, [FromQuery] string? reason)
     {
         var success = userService.ToggleUserActiveState(organizerId);
         var organizer = userService.GetUser(organizerId);

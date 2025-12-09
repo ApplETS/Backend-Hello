@@ -27,7 +27,7 @@ public class DraftEventService(
     IFileShareService fileShareService,
     IImageService imageService) : IDraftEventService
 {
-    public EventResponseDTO AddDraftEvent(Guid userId, DraftEventRequestDTO request)
+    public EventResponseDTO AddDraftEvent(string userId, DraftEventRequestDTO request)
     {
         var organizer = orgRepo.Get(userId) ?? throw new UnauthorizedException();
 
@@ -67,7 +67,7 @@ public class DraftEventService(
         return EventResponseDTO.Map(inserted);
     }
 
-    public bool UpdateDraftEvent(Guid userId, Guid eventId, DraftEventRequestDTO request)
+    public bool UpdateDraftEvent(string userId, Guid eventId, DraftEventRequestDTO request)
     {
         _ = orgRepo.Get(userId)
             ?? throw new UnauthorizedException();

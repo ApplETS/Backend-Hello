@@ -5,7 +5,7 @@ public class ModeratorCreateRequestDTO
     /// <summary>
     /// This id when passed needs to be already created in supabase.
     /// </summary>
-    public required Guid Id { get; set; }
+    public required string Id { get; set; }
 
     /// <summary>
     /// A email that will be bound to the moderator, make sure that this email match the 

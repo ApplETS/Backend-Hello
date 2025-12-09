@@ -12,10 +12,11 @@ public class OrganizerIsActiveHandler(IUserService userService) : AuthorizationH
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, OrganizerIsActiveRequirement requirement)
     {
+        // TODO : Remplacer cette politique autrement
         var identifierClaim = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-        var userId = Guid.Parse(identifierClaim ?? throw new UnauthorizedException());
+        //var userId = Guid.Parse(identifierClaim ?? throw new UnauthorizedException());
 
-        var user = userService.GetUser(userId);
+        var user = userService.GetUser(identifierClaim);
         if (user.Type != "Organizer" || !user.IsActive)
             throw new UnauthorizedException();
         else

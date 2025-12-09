@@ -36,9 +36,9 @@ public partial class Publication
 
     public bool HasBeenReported { get; set; } = false;
 
-    public Guid? ModeratorId { get; set; }
+    public string? ModeratorId { get; set; }
 
-    public Guid OrganizerId { get; set; }
+    public string OrganizerId { get; set; } = null!;
 
     public DateTime CreatedAt { get; set; }
 

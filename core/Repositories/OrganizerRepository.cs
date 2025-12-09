@@ -25,7 +25,7 @@ public class OrganizerRepository(EventManagementContext context) : IOrganizerRep
         throw new NotImplementedException();
     }
 
-    public Organizer? Get(Guid id)
+    public Organizer? Get(string id)
     {
         var entity = context.Organizers
             .Include(x => x.ActivityArea)
@@ -43,7 +43,7 @@ public class OrganizerRepository(EventManagementContext context) : IOrganizerRep
             .Include(x => x.ActivityArea);
     }
 
-    public bool Update(Guid id, Organizer entity)
+    public bool Update(string id, Organizer entity)
     {
         var existingEntity = Get(id);
 

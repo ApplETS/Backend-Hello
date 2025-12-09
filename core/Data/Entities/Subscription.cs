@@ -9,8 +9,8 @@ namespace api.core.data.entities;
 public partial class Subscription : BaseEntity
 {
     public string Email { get; set; } = null!;
-    
-    public Guid OrganizerId { get; set; }
+
+    public string OrganizerId { get; set; } = null!;
 
     public string SubscriptionToken { get; set; } = null!;
 

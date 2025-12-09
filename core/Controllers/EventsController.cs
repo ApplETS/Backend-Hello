@@ -46,7 +46,7 @@ public class EventsController(
     public ActionResult<IEnumerable<EventResponseDTO>> GetEvents(
         [FromQuery] DateTime? startDate,
         [FromQuery] DateTime? endDate,
-        [FromQuery] Guid? organizerId,
+        [FromQuery] string? organizerId,
         [FromQuery] string? title,
         [FromQuery] IEnumerable<Guid>? activityAreas,
         [FromQuery] IEnumerable<Guid>? tags,

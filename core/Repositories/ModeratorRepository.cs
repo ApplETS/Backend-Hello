@@ -23,7 +23,7 @@ public class ModeratorRepository(EventManagementContext context) : IModeratorRep
         throw new NotImplementedException();
     }
 
-    public Moderator? Get(Guid id)
+    public Moderator? Get(string id)
     {
         var entity = context.Moderators.Find(id);
         if (entity != null && entity.DeletedAt == null)
@@ -38,7 +38,7 @@ public class ModeratorRepository(EventManagementContext context) : IModeratorRep
         throw new NotImplementedException();
     }
 
-    public bool Update(Guid id, Moderator entity)
+    public bool Update(string id, Moderator entity)
     {
         var existingEntity = Get(id);
 
