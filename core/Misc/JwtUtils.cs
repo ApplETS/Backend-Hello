@@ -4,7 +4,7 @@ namespace api.core.Misc;
 
 public static class JwtUtils
 {
-    public static Guid GetUserIdFromAuthHeader(string authHeader)
+    public static string GetUserIdFromAuthHeader(string authHeader)
     {
         var token = authHeader.Replace("Bearer ", "");
         var handler = new JwtSecurityTokenHandler();
@@ -18,14 +18,19 @@ public static class JwtUtils
         var payload = jsonToken.Payload;
         if (payload.TryGetValue("sub", out var userIdValue))
         {
-            if (Guid.TryParse(userIdValue.ToString(), out Guid userId))
+            if (userIdValue == null)
             {
-                return userId;
+                throw new ArgumentException("sub has not a valid value");
             }
-            else
-            {
-                throw new ArgumentException("sub is not in a valid Guid format");
-            }
+            return userIdValue.ToString()!;
+            //if (Guid.TryParse(userIdValue.ToString(), out Guid userId))
+            //{
+            //    return userId;
+            //}
+            //else
+            //{
+            //    throw new ArgumentException("sub is not in a valid Guid format");
+            //}
         }
         else
         {
