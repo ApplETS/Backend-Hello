@@ -52,8 +52,8 @@ public class EventService(
          (state.HasFlag(e.Publication.State)) &&
          (organizerId == null || e.Publication.OrganizerId == organizerId) &&
          (title == null || (e.Publication.Title != null && e.Publication.Title.ToLower().Contains(title.ToLower()))) &&
-         (tags.Count() < 1 || e.Publication.Tags.Any(t => tags!.Any(tt => t.Id == tt))) &&
-         (activityAreas.Count() < 1 || activityAreas!.Any(aa => aa == e.Publication.Organizer.ActivityAreaId)))
+         (tags == null || tags.Count() < 1 || e.Publication.Tags.Any(t => tags!.Any(tt => t.Id == tt))) &&
+         (activityAreas == null || activityAreas.Count() < 1 || activityAreas!.Any(aa => aa == e.Publication.Organizer.ActivityAreaId)))
             .AsQueryable()
             .OrderBy(orderBy, desc)
             .Select(EventResponseDTO.Map);

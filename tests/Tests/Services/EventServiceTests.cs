@@ -48,7 +48,7 @@ public class EventServiceTests
                 ],
                 Organizer = new Organizer
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     ActivityAreaId = ActivityAreaClubId,
                     ActivityArea = new ActivityArea
                     {
@@ -59,7 +59,7 @@ public class EventServiceTests
                 },
                 Moderator = new Moderator
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                 },
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
@@ -87,7 +87,7 @@ public class EventServiceTests
                 ],
                 Organizer = new Organizer
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     ActivityAreaId = ActivityAreaSchoolId,
                     ActivityArea = new ActivityArea
                     {
@@ -115,7 +115,7 @@ public class EventServiceTests
                 Tags = [],
                 Organizer = new Organizer
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     ActivityAreaId = ActivityAreaSchoolId,
                     ActivityArea = new ActivityArea
                     {
@@ -150,7 +150,7 @@ public class EventServiceTests
                 ],
                 Organizer = new Organizer
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     ActivityAreaId = ActivityAreaSchoolId,
                     ActivityArea = new ActivityArea
                     {
@@ -335,11 +335,11 @@ public class EventServiceTests
     public void AddEvents_ShouldThrowAnExceptionWhenOrganizerIsUnknown()
     {
         // Arrange
-        _mockOrganizerRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns((Organizer?)null);
+        _mockOrganizerRepository.Setup(repo => repo.Get(It.IsAny<string>())).Returns((Organizer?)null);
 
         // Act
         _eventService.Invoking(s =>
-            s.AddEvent(Guid.Empty, new EventCreationRequestDTO()))
+            s.AddEvent("", new EventCreationRequestDTO()))
                 .Should().Throw<UnauthorizedException>();
     }
 
@@ -371,7 +371,7 @@ public class EventServiceTests
         _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns((Event?)null);
 
         // Act
-        Action act = () => _eventService.DeleteEvent(userId, eventId);
+        Action act = () => _eventService.DeleteEvent("", eventId);
 
         // Assert
         act.Should().Throw<NotFoundException<Event>>();
@@ -382,7 +382,7 @@ public class EventServiceTests
     public void DeleteEvent_ShouldThrowUnauthorizedException_WhenUserIsNotAuthorized()
     {
         // Arrange
-        var unauthorizedUserId = Guid.NewGuid();
+        var unauthorizedUserId = "unauthorized-user";
         var eventId = _events.First().Id;
 
         _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(_events.First());
@@ -420,7 +420,7 @@ public class EventServiceTests
 
         _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(_events.First());
         _mockEventRepository.Setup(repo => repo.Update(eventId, It.IsAny<Event>())).Returns(true);
-        _mockOrganizerRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns(new Organizer { Id = userId });
+        _mockOrganizerRepository.Setup(repo => repo.Get(It.IsAny<string>())).Returns(new Organizer { Id = userId });
 
         _eventService = new EventService(
             _mockConfig.Object,
@@ -445,7 +445,7 @@ public class EventServiceTests
     public void UpdateEvent_ShouldThrowUnauthorizedException_WhenUserIsNotAuthorized()
     {
         // Arrange
-        var unauthorizedUserId = Guid.NewGuid();
+        var unauthorizedUserId = "unauthorized-user";
         var eventId = _events.First().Id;
 
         var request = new EventUpdateRequestDTO
@@ -488,7 +488,7 @@ public class EventServiceTests
 
         _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(eventToUpdate);
         _mockEventRepository.Setup(repo => repo.Update(eventId, It.IsAny<Event>())).Returns(true);
-        _mockModeratorRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns(new Moderator { Id = userId });
+        _mockModeratorRepository.Setup(repo => repo.Get(It.IsAny<string>())).Returns(new Moderator { Id = userId });
         _mockEmailService.Setup(service => service.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StatusChangeModel>(), It.IsAny<string>()));
         
         // Act
@@ -513,7 +513,7 @@ public class EventServiceTests
 
         _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(eventToUpdate);
         _mockEventRepository.Setup(repo => repo.Update(eventId, It.IsAny<Event>())).Returns(true);
-        _mockModeratorRepository.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns(new Moderator { Id = userId });
+        _mockModeratorRepository.Setup(repo => repo.Get(It.IsAny<string>())).Returns(new Moderator { Id = userId });
         _mockEmailService.Setup(service => service.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StatusChangeModel>(), It.IsAny<string>()));
 
         // Act
@@ -532,12 +532,12 @@ public class EventServiceTests
     public void UpdateEventState_ShouldThrowUnauthorizedException_WhenUserIsNotAuthorized()
     {
         // Arrange
-        var unauthorizedUserId = Guid.NewGuid();
+        var unauthorizedUserId = "unauthorized-user";
         var eventId = _events.First().Id;
         var newState = State.Approved;
 
         var eventToUpdate = _events.First();
-        eventToUpdate.Publication.ModeratorId = Guid.NewGuid();
+        eventToUpdate.Publication.ModeratorId = "moderator-id";
 
         _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(eventToUpdate);
 

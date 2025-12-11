@@ -53,7 +53,7 @@ public class NotificationServiceTests
     {
         // Arrange
         var pubId = Guid.NewGuid();
-        var orgId = Guid.NewGuid();
+        var orgId = "org";
         _mockEventRepository.Setup(x => x.GetAll()).Returns(new List<Event>
         {
             new Event
@@ -131,8 +131,8 @@ public class NotificationServiceTests
     {
         // Arrange
         var pubId = Guid.NewGuid();
-        var orgId = Guid.NewGuid();
-        var otherOrgId = Guid.NewGuid();
+        var orgId = "org";
+        var otherOrgId = "otherOrg";
         _mockEventRepository.Setup(x => x.GetAll()).Returns(new List<Event>
         {
             new Event
@@ -176,7 +176,8 @@ public class NotificationServiceTests
     {
         // Arrange
         var pubId = Guid.NewGuid();
-        var orgId = Guid.NewGuid();
+        var subId = Guid.NewGuid();
+        var orgId = "org";
         _mockEventRepository.Setup(x => x.GetAll()).Returns(new List<Event>
         {
             new Event
@@ -193,7 +194,7 @@ public class NotificationServiceTests
         {
             new Subscription
             {
-                Id = Guid.NewGuid(),
+                Id = subId,
                 OrganizerId = orgId,
                 DeletedAt = null,
                 CreatedAt = DateTime.UtcNow
@@ -204,7 +205,7 @@ public class NotificationServiceTests
             new Notification
             {
                 Id = Guid.NewGuid(),
-                SubscriptionId = orgId,
+                SubscriptionId = subId,
                 PublicationId = pubId,
                 IsSent = true,
                 DeletedAt = null,
@@ -228,18 +229,19 @@ public class NotificationServiceTests
         // Arrange
         var notifId = Guid.NewGuid();
         var pubId = Guid.NewGuid();
-        var orgId = Guid.NewGuid();
+        var subId = Guid.NewGuid();
+        var orgId = "org";
         _mockNotifRepository.Setup(x => x.GetAll()).Returns(new List<Notification>
         {
             new Notification
             {
                 Id = notifId,
-                SubscriptionId = orgId,
+                SubscriptionId = subId,
                 Subscription = new Subscription
                 {
-                    Id = orgId,
+                    Id = subId,
                     OrganizerId = orgId,
-                    SubscriptionToken = "token"
+                    SubscriptionToken = "token",
                 },
                 PublicationId = pubId,
                 Publication = new Publication
@@ -284,16 +286,17 @@ public class NotificationServiceTests
     {
         // Arrange
         var pubId = Guid.NewGuid();
-        var orgId = Guid.NewGuid();
+        var subId = Guid.NewGuid();
+        var orgId = "org";
         _mockNotifRepository.Setup(x => x.GetAll()).Returns(new List<Notification>
         {
             new Notification
             {
                 Id = Guid.NewGuid(),
-                SubscriptionId = orgId,
+                SubscriptionId = subId,
                 Subscription = new Subscription
                 {
-                    Id = orgId,
+                    Id = subId,
                     OrganizerId = orgId,
                     SubscriptionToken = "token"
                 },

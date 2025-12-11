@@ -51,7 +51,8 @@ public class UserServiceTests
         {
             Email = "john.doe@example.com",
             Organization = "ExampleOrg",
-            ActivityAreaId = actAreaModified
+            ActivityAreaId = actAreaModified,
+            Id = "1234"
         };
 
         var activity = new ActivityArea
@@ -74,7 +75,7 @@ public class UserServiceTests
         _organizerRepositoryMock.Setup(repo => repo.Add(It.IsAny<Organizer>())).Returns(organizer);
 
         // Act
-        var result = _userService.AddOrganizer(Guid.NewGuid(), organizerDto);
+        var result = _userService.AddOrganizer("1234", organizerDto);
 
         // Assert
         result.Should().NotBeNull();
@@ -89,7 +90,7 @@ public class UserServiceTests
     public void GetUser_ShouldReturnUserResponseDTO_WhenOrganizerIsFoundById()
     {
         // Arrange
-        var organizerId = Guid.NewGuid();
+        var organizerId = "organizer";
         var organizer = new Organizer
         {
             Id = organizerId,
@@ -124,7 +125,7 @@ public class UserServiceTests
     public void GetUser_ShouldReturnUserResponseDTO_WhenModeratorIsFoundById()
     {
         // Arrange
-        var moderatorId = Guid.NewGuid();
+        var moderatorId = "Moderator";
         var moderator = new Moderator
         {
             Id = moderatorId,
@@ -152,7 +153,7 @@ public class UserServiceTests
     public void GetUser_ShouldThrowException_WhenNoUserIsAssociatedWithProvidedId()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = "nobody";
 
         // Setup both organizer and moderator repositories to return null, simulating that no user is found with the provided ID
         _organizerRepositoryMock.Setup(repo => repo.Get(userId)).Returns(null as Organizer);
@@ -172,13 +173,14 @@ public class UserServiceTests
     public void UpdateUser_ShouldReturnTrue_WhenOrganizerIsUpdatedSuccessfully()
     {
         // Arrange
-        var organizerId = Guid.NewGuid();
+        var organizerId = "jane-doe";
         var actAreaIdModified = Guid.NewGuid();
         var updateDto = new UserUpdateDTO
         {
             Email = "jane.doe@example.com",
             Organization = "NewOrg",
-            ActivityAreaId = actAreaIdModified
+            ActivityAreaId = actAreaIdModified,
+            Id = organizerId
         };
 
         var activity = new ActivityArea
@@ -214,13 +216,14 @@ public class UserServiceTests
     public void UpdateUser_ShouldThrow_WhenActivityAreaIsNotFoundInTheList()
     {
         // Arrange
-        var organizerId = Guid.NewGuid();
+        var organizerId = "org";
         var badActAreaIdModified = Guid.NewGuid();
         var updateDto = new UserUpdateDTO
         {
             Email = "jane.doe@example.com",
             Organization = "NewOrg",
-            ActivityAreaId = badActAreaIdModified
+            ActivityAreaId = badActAreaIdModified,
+            Id = organizerId
         };
 
         var existingOrganizer = new Organizer
@@ -249,10 +252,11 @@ public class UserServiceTests
     public void UpdateUser_ShouldReturnTrue_WhenModeratorIsUpdatedSuccessfully()
     {
         // Arrange
-        var moderatorId = Guid.NewGuid();
+        var moderatorId = "mod";
         var updateDto = new UserUpdateDTO
         {
-            Email = "john.updated@example.com"
+            Email = "john.updated@example.com",
+            Id = moderatorId
         };
 
         var existingModerator = new Moderator
