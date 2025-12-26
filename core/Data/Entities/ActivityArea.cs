@@ -12,9 +12,9 @@ public partial class ActivityArea : BaseEntity
     
     public string NameEn { get; set; } = null!;
 
-    [InverseProperty("ActivityArea")]
-    public virtual ICollection<Organizer> Organizers { get; set; } = new List<Organizer>();
+    //[InverseProperty("ActivityArea")]
+    public virtual ICollection<User> Organizers { get; set; } = new List<User>();
 
-    [InverseProperty("ActivityArea")]
-    public virtual ICollection<Moderator> Moderators { get; set; } = new List<Moderator>();
+    //[InverseProperty("ActivityArea")]
+    public virtual ICollection<User> Moderators { get; set; } = new List<User>();
 }
