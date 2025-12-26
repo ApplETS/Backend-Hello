@@ -1,4 +1,5 @@
 ﻿using api.core.data.entities;
+using api.core.Data.Entities;
 
 namespace api.core.Data.Responses;
 
@@ -84,6 +85,29 @@ public class UserResponseDTO
             HasLoggedIn = true,
             CreatedAt = moderator.CreatedAt,
             UpdatedAt = moderator.UpdatedAt
+        };
+    }
+
+    public static UserResponseDTO Map(User user)
+    {
+        List<UserRole> roles = new List<UserRole>();
+        foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
+        {
+            if (user.Role.HasFlag(role))
+            {
+                roles.Add(role);
+            }
+        }
+
+        return new UserResponseDTO
+        {
+            Id = user.Id,
+            Email = user.Email,
+            Type = string.Join(',', roles.Select(r => r.ToString())),
+            IsActive = true,
+            HasLoggedIn = true,
+            CreatedAt = user.CreatedAt,
+            UpdatedAt = user.UpdatedAt
         };
     }
 }

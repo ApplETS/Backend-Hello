@@ -60,5 +60,6 @@ public class User
 public enum UserRole
 {
     Admin = 0b00000001,
-    Moderator = 0b00000010
+    Moderator = 0b00000010,
+    Organizer = 0b00000100
 }

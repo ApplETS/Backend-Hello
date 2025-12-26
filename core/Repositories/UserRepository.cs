@@ -1,14 +1,16 @@
 ﻿using api.core.data;
 using api.core.data.entities;
+using api.core.Data.Entities;
 using api.core.repositories.abstractions;
+using api.core.Repositories.Abstractions;
 
 namespace api.core.repositories;
 
-public class ModeratorRepository(EventManagementContext context) : IModeratorRepository
+public class UserRepository(EventManagementContext context) : IUserRepository
 {
-    public Moderator Add(Moderator entity)
+    public User Add(User entity)
     {
-        var inserted = context.Moderators.Add(entity);
+        var inserted = context.Users.Add(entity);
 
         if (inserted.Entity != null)
         {
@@ -18,14 +20,14 @@ public class ModeratorRepository(EventManagementContext context) : IModeratorRep
         throw new Exception($"Unable to create a Moderator {entity.Id}");
     }
 
-    public bool Delete(Moderator entity)
+    public bool Delete(User entity)
     {
         throw new NotImplementedException();
     }
 
-    public Moderator? Get(string id)
+    public User? Get(string id)
     {
-        var entity = context.Moderators.Find(id);
+        var entity = context.Users.Find(id);
         if (entity != null && entity.DeletedAt == null)
         {
             return entity;
@@ -33,12 +35,12 @@ public class ModeratorRepository(EventManagementContext context) : IModeratorRep
         return null;
     }
 
-    public IQueryable<Moderator> GetAll()
+    public IQueryable<User> GetAll()
     {
         throw new NotImplementedException();
     }
 
-    public bool Update(string id, Moderator entity)
+    public bool Update(string id, User entity)
     {
         var existingEntity = Get(id);
 
@@ -50,5 +52,27 @@ public class ModeratorRepository(EventManagementContext context) : IModeratorRep
         }
 
         return false;
+    }
+
+    public User? GetOrganizer(string id)
+    {
+        var user = Get(id);
+        if (user == null || !user.Role.HasFlag(UserRole.Organizer))
+        {
+            return null;
+        }
+
+        return user;
+    }
+
+    public User? GetModerator(string id)
+    {
+        var user = Get(id);
+        if (user == null || !user.Role.HasFlag(UserRole.Moderator))
+        {
+            return null;
+        }
+
+        return user;
     }
 }

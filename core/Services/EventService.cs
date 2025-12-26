@@ -13,6 +13,7 @@ using api.files.Services.Abstractions;
 using api.core.Extensions;
 
 using Microsoft.IdentityModel.Tokens;
+using api.core.Repositories.Abstractions;
 
 
 namespace api.core.Services;
@@ -21,8 +22,7 @@ public class EventService(
     IConfiguration config,
     IEventRepository evntRepo,
     ITagService tagService,
-    IOrganizerRepository orgRepo,
-    IModeratorRepository moderatorRepo,
+    IUserRepository userRepository,
     IFileShareService fileShareService,
     IEmailService emailService,
     IImageService imageService,
@@ -69,7 +69,7 @@ public class EventService(
 
     public EventResponseDTO AddEvent(string userId, EventCreationRequestDTO request)
     {
-        var organizer = orgRepo.Get(userId) ?? throw new UnauthorizedException();
+        var organizer = userRepository.GetOrganizer(userId) ?? throw new UnauthorizedException();
 
         if (request.Tags.Count > 5)
             throw new BadParameterException<Event>(nameof(request.Tags), "Too many tags");
@@ -112,7 +112,7 @@ public class EventService(
 
     public EventResponseDTO AddDraftEvent(string userId, DraftEventRequestDTO request)
     {
-        var organizer = orgRepo.Get(userId) ?? throw new UnauthorizedException();
+        var organizer = userRepository.GetOrganizer(userId) ?? throw new UnauthorizedException();
 
         if (request.Tags.Count > 5)
             throw new BadParameterException<Event>(nameof(request.Tags), "Too many tags");
@@ -167,7 +167,7 @@ public class EventService(
 
     public bool UpdateEvent(string userId, Guid eventId, EventUpdateRequestDTO request)
     {
-        _ = orgRepo.Get(userId)
+        _ = userRepository.GetOrganizer(userId)
             ?? throw new UnauthorizedException();
 
         if (request.Tags.Count > 5)
@@ -206,7 +206,7 @@ public class EventService(
 
     public bool UpdateEventState(string userId, Guid eventId, State state, string? reason)
     {
-        var moderator = moderatorRepo.Get(userId) ?? throw new UnauthorizedException();
+        var moderator = userRepository.GetModerator(userId) ?? throw new UnauthorizedException();
         var evnt = evntRepo.Get(eventId);
 
         if (evnt!.Publication.ModeratorId == null)

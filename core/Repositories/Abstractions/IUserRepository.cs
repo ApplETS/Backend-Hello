@@ -2,11 +2,13 @@
 
 namespace api.core.Repositories.Abstractions;
 
-public interface IUserRepository<T> where T : User
+public interface IUserRepository
 {
-    public T Add(T entity);
-    public bool Delete(T entity);
-    public T? Get(string id);
-    public IQueryable<T> GetAll();
-    public bool Update(string id, T entity);
+    public User Add(User entity);
+    public bool Delete(User entity);
+    public User? Get(string id);
+    public IQueryable<User> GetAll();
+    public bool Update(string id, User entity);
+    public User? GetOrganizer(string id);
+    public User? GetModerator(string id);
 }
