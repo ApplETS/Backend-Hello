@@ -49,6 +49,9 @@ public class User
 
     public string? WebSiteLink { get; set; }
 
+    [ForeignKey("ActivityAreaId")]
+    public virtual ActivityArea? ActivityArea { get; set; }
+
     [InverseProperty(nameof(Subscription.Organizer))]
     public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 

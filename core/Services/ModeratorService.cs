@@ -1,12 +1,14 @@
 ﻿using api.core.data.entities;
+using api.core.Data.Entities;
 using api.core.Data.Exceptions;
 using api.core.Data.Requests;
 using api.core.repositories.abstractions;
+using api.core.Repositories.Abstractions;
 using api.core.services.abstractions;
 
 namespace api.core.Services;
 
-public class ModeratorService(IModeratorRepository moderatorRepository, IConfiguration configuration) : IModeratorService
+public class ModeratorService(IUserRepository userRepository, IConfiguration configuration) : IModeratorService
 {
     public ModeratorResponseDTO CreateModerator(string apiKey, ModeratorCreateRequestDTO req)
     {
@@ -18,12 +20,13 @@ public class ModeratorService(IModeratorRepository moderatorRepository, IConfigu
             throw new UnauthorizedException();
 
         // Create the moderator
-        moderatorRepository.Add(new Moderator
+        userRepository.Add(new User
         {
             Id = req.Id,
             Email = req.Email,
             CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+            UpdatedAt = DateTime.UtcNow,
+            Role = UserRole.Moderator
         });
 
         return new ModeratorResponseDTO

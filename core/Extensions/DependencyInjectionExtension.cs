@@ -1,6 +1,7 @@
 using api.core.Misc;
 using api.core.repositories;
 using api.core.repositories.abstractions;
+using api.core.Repositories.Abstractions;
 using api.core.services.abstractions;
 using api.core.Services;
 using api.core.Services.Abstractions;
@@ -19,10 +20,9 @@ public static class DependencyInjectionExtension
         services.AddTransient<CustomExceptionsCheckerMiddleware>();
 
         // Repositories
-        services.AddTransient<IOrganizerRepository, OrganizerRepository>();
         services.AddTransient<ITagRepository, TagRepository>();
         services.AddTransient<IEventRepository, EventRepository>();
-        services.AddTransient<IModeratorRepository, ModeratorRepository>();
+        services.AddTransient<IUserRepository, UserRepository>();
         services.AddTransient<IReportRepository, ReportRepository>();
         services.AddTransient<IActivityAreaRepository, ActivityAreaRepository>();
         services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();

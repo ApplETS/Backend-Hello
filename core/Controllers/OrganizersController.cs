@@ -1,5 +1,6 @@
 ﻿using api.core.data.entities;
 using api.core.Data;
+using api.core.Data.Entities;
 using api.core.Data.Enums;
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
@@ -55,7 +56,7 @@ public class ModeratorUserController(
             {
                 Data = user
             })
-            : throw new NotFoundException<Organizer>();
+            : throw new NotFoundException<User>();
     }
 
     /// <summary>

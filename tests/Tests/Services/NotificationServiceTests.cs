@@ -9,6 +9,7 @@ using api.core.Data.Exceptions;
 using api.emails.Models;
 using Microsoft.Extensions.Configuration;
 using api.emails;
+using api.core.Data.Entities;
 
 namespace api.tests.Tests.Services;
 
@@ -248,10 +249,11 @@ public class NotificationServiceTests
                 {
                     Id = pubId,
                     OrganizerId = orgId,
-                    Organizer = new Organizer
+                    Organizer = new User
                     {
                         Id = orgId,
                         Email = "blabla@bla.com",
+                        Role = UserRole.Organizer
                     }
                 },
                 IsSent = false,
@@ -305,10 +307,11 @@ public class NotificationServiceTests
                 {
                     Id = pubId,
                     OrganizerId = orgId,
-                    Organizer = new Organizer
+                    Organizer = new User
                     {
                         Id = orgId,
                         Email = "blabla@bla.com",
+                        Role = UserRole.Organizer
                     }
                 },
                 IsSent = true, // Won't be sent twice

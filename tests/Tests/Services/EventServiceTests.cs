@@ -1,8 +1,10 @@
 using api.core.data.entities;
+using api.core.Data.Entities;
 using api.core.Data.Enums;
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
 using api.core.repositories.abstractions;
+using api.core.Repositories.Abstractions;
 using api.core.services.abstractions;
 using api.core.Services;
 using api.core.Services.Abstractions;
@@ -46,20 +48,22 @@ public class EventServiceTests
                         Name = "Test"
                     }
                 ],
-                Organizer = new Organizer
+                Organizer = new User
                 {
                     Id = Guid.NewGuid().ToString(),
                     ActivityAreaId = ActivityAreaClubId,
-                    ActivityArea = new ActivityArea
-                    {
-                        Id = ActivityAreaClubId,
-                        NameEn = "Club",
-                        NameFr = "Club"
-                    }
+                    //ActivityArea = new ActivityArea
+                    //{
+                    //    Id = ActivityAreaClubId,
+                    //    NameEn = "Club",
+                    //    NameFr = "Club"
+                    //},
+                    Role = UserRole.Organizer
                 },
-                Moderator = new Moderator
+                Moderator = new User
                 {
                     Id = Guid.NewGuid().ToString(),
+                    Role = UserRole.Moderator
                 },
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
@@ -85,16 +89,17 @@ public class EventServiceTests
                         Name = "Test"
                     }
                 ],
-                Organizer = new Organizer
+                Organizer = new User
                 {
                     Id = Guid.NewGuid().ToString(),
                     ActivityAreaId = ActivityAreaSchoolId,
-                    ActivityArea = new ActivityArea
-                    {
-                        Id = ActivityAreaSchoolId,
-                        NameEn = "School",
-                        NameFr = "School"
-                    }
+                    //ActivityArea = new ActivityArea
+                    //{
+                    //    Id = ActivityAreaSchoolId,
+                    //    NameEn = "School",
+                    //    NameFr = "School"
+                    //}
+                    Role = UserRole.Organizer
                 },
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
@@ -113,16 +118,16 @@ public class EventServiceTests
                 State = State.Published,
                 PublicationDate = DateTime.UtcNow,
                 Tags = [],
-                Organizer = new Organizer
+                Organizer = new User
                 {
                     Id = Guid.NewGuid().ToString(),
                     ActivityAreaId = ActivityAreaSchoolId,
-                    ActivityArea = new ActivityArea
-                    {
-                        Id = ActivityAreaSchoolId,
-                        NameEn = "School",
-                        NameFr = "School"
-                    }
+                    //ActivityArea = new ActivityArea
+                    //{
+                    //    Id = ActivityAreaSchoolId,
+                    //    NameEn = "School",
+                    //    NameFr = "School"
+                    //}
                 },
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
@@ -148,16 +153,16 @@ public class EventServiceTests
                         Name = "Test"
                     }
                 ],
-                Organizer = new Organizer
+                Organizer = new User
                 {
                     Id = Guid.NewGuid().ToString(),
                     ActivityAreaId = ActivityAreaSchoolId,
-                    ActivityArea = new ActivityArea
-                    {
-                        Id = ActivityAreaSchoolId,
-                        NameEn = "School",
-                        NameFr = "School"
-                    }
+                    //ActivityArea = new ActivityArea
+                    //{
+                    //    Id = ActivityAreaSchoolId,
+                    //    NameEn = "School",
+                    //    NameFr = "School"
+                    //}
                 },
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
@@ -169,8 +174,7 @@ public class EventServiceTests
 
     private readonly Mock<IEventRepository> _mockEventRepository;
     private readonly Mock<ITagService> _mockTagService;
-    private readonly Mock<IOrganizerRepository> _mockOrganizerRepository;
-    private readonly Mock<IModeratorRepository> _mockModeratorRepository;
+    private readonly Mock<IUserRepository> _mockUserRepository;
     private readonly Mock<IFileShareService> _mockFileShareService;
     private readonly Mock<IEmailService> _mockEmailService;
     private readonly Mock<IImageService> _mockImageService;
@@ -181,8 +185,7 @@ public class EventServiceTests
     {
         _mockEventRepository = new Mock<IEventRepository>();
         _mockTagService = new Mock<ITagService>();
-        _mockOrganizerRepository = new Mock<IOrganizerRepository>();
-        _mockModeratorRepository = new Mock<IModeratorRepository>();
+        _mockUserRepository = new Mock<IUserRepository>();
         _mockFileShareService = new Mock<IFileShareService>();
         _mockEmailService = new Mock<IEmailService>();
         _mockImageService = new Mock<IImageService>();
@@ -194,8 +197,7 @@ public class EventServiceTests
             _mockConfig.Object,
             _mockEventRepository.Object,
             _mockTagService.Object,
-            _mockOrganizerRepository.Object,
-            _mockModeratorRepository.Object,
+            _mockUserRepository.Object,
             _mockFileShareService.Object,
             _mockEmailService.Object,
             _mockImageService.Object,
@@ -335,7 +337,7 @@ public class EventServiceTests
     public void AddEvents_ShouldThrowAnExceptionWhenOrganizerIsUnknown()
     {
         // Arrange
-        _mockOrganizerRepository.Setup(repo => repo.Get(It.IsAny<string>())).Returns((Organizer?)null);
+        _mockUserRepository.Setup(repo => repo.GetOrganizer(It.IsAny<string>())).Returns((User?)null);
 
         // Act
         _eventService.Invoking(s =>
@@ -420,14 +422,13 @@ public class EventServiceTests
 
         _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(_events.First());
         _mockEventRepository.Setup(repo => repo.Update(eventId, It.IsAny<Event>())).Returns(true);
-        _mockOrganizerRepository.Setup(repo => repo.Get(It.IsAny<string>())).Returns(new Organizer { Id = userId });
+        _mockUserRepository.Setup(repo => repo.GetOrganizer(It.IsAny<string>())).Returns(new User { Id = userId, Role = UserRole.Organizer });
 
         _eventService = new EventService(
             _mockConfig.Object,
             _mockEventRepository.Object,
             _mockTagService.Object,
-            _mockOrganizerRepository.Object,
-            _mockModeratorRepository.Object,
+            _mockUserRepository.Object,
             _mockFileShareService.Object,
             _mockEmailService.Object,
             _mockImageService.Object,
@@ -488,7 +489,7 @@ public class EventServiceTests
 
         _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(eventToUpdate);
         _mockEventRepository.Setup(repo => repo.Update(eventId, It.IsAny<Event>())).Returns(true);
-        _mockModeratorRepository.Setup(repo => repo.Get(It.IsAny<string>())).Returns(new Moderator { Id = userId });
+        _mockUserRepository.Setup(repo => repo.GetModerator(It.IsAny<string>())).Returns(new User { Id = userId, Role = UserRole.Moderator });
         _mockEmailService.Setup(service => service.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StatusChangeModel>(), It.IsAny<string>()));
         
         // Act
@@ -513,7 +514,7 @@ public class EventServiceTests
 
         _mockEventRepository.Setup(repo => repo.Get(eventId)).Returns(eventToUpdate);
         _mockEventRepository.Setup(repo => repo.Update(eventId, It.IsAny<Event>())).Returns(true);
-        _mockModeratorRepository.Setup(repo => repo.Get(It.IsAny<string>())).Returns(new Moderator { Id = userId });
+        _mockUserRepository.Setup(repo => repo.GetModerator(It.IsAny<string>())).Returns(new User { Id = userId, Role = UserRole.Moderator });
         _mockEmailService.Setup(service => service.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StatusChangeModel>(), It.IsAny<string>()));
 
         // Act
