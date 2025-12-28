@@ -42,6 +42,9 @@ public static class DependencyInjectionExtension
         services.AddTransient<ISubscriptionService, SubscriptionService>();
         services.AddTransient<INotificationService, NotificationService>();
 
+        // Utils
+        services.AddTransient<IJwtUtils, JwtUtils>();
+
         return services;
     }
 

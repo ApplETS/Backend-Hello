@@ -20,7 +20,8 @@ public class UserService(
     IFileShareService fileShareService,
     ITagRepository tagRepository,
     IActivityAreaRepository activityAreaRepository,
-    IImageService imageService) : IUserService
+    IImageService imageService,
+    IJwtUtils jwtUtils) : IUserService
 {
     private const string AVATAR_FILE_NAME = "avatar.webp";
 
@@ -53,23 +54,24 @@ public class UserService(
         return user;
     }
 
-    public UserResponseDTO GetUser(string id)
+    public UserResponseDTO GetUser(string authHeader)
     {
+        string userId = jwtUtils.GetUserIdFromAuthHeader(authHeader);
         UserResponseDTO? userRes = null;
-        var organizer = organizerRepository.Get(id);
+        var organizer = userRepository.GetOrganizer(userId);
         if (organizer != null)
             userRes = UserResponseDTO.Map(organizer!);
 
-        var moderator = moderatorRepository.Get(id);
+        var moderator = userRepository.GetModerator(userId);
         if (moderator != null)
             userRes = UserResponseDTO.Map(moderator!);
 
         if (userRes == null) throw new Exception("No users associated with this ID");
 
-        var fields = tagRepository.GetInterestFieldsForOrganizer(id);
+        var fields = tagRepository.GetInterestFieldsForOrganizer(userId);
         userRes.FieldsOfInterests = fields;
 
-        var avatarUri = fileShareService.FileGetDownloadUri($"{id}/{AVATAR_FILE_NAME}");
+        var avatarUri = fileShareService.FileGetDownloadUri($"{userId}/{AVATAR_FILE_NAME}");
         userRes.AvatarUrl = avatarUri.ToString();
 
         return userRes;

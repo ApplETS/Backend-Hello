@@ -13,6 +13,8 @@ using api.core.Data.Exceptions;
 using api.core.services.abstractions;
 using api.core.Data.Entities;
 using api.core.Repositories.Abstractions;
+using Microsoft.IdentityModel.JsonWebTokens;
+using api.core.Misc;
 
 namespace api.tests.Tests.Services;
 public class UserServiceTests
@@ -22,6 +24,7 @@ public class UserServiceTests
     private readonly Mock<ITagRepository> _tagRepositoryMock;
     private readonly Mock<IFileShareService> _fileShareServiceMock;
     private readonly Mock<IImageService> _imageServiceMock;
+    private readonly Mock<IJwtUtils> _jwtUtilsMock;
     private readonly UserService _userService;
 
     public UserServiceTests()
@@ -31,6 +34,7 @@ public class UserServiceTests
         _activityAreaRepositoryMock = new Mock<IActivityAreaRepository>();
         _fileShareServiceMock = new Mock<IFileShareService>();
         _imageServiceMock = new Mock<IImageService>();
+        _jwtUtilsMock = new Mock<IJwtUtils>();
 
         _fileShareServiceMock.Setup(service => service.FileGetDownloadUri(It.IsAny<string>())).Returns(new Uri("http://example.com/avatar.webp"));
         _userService = new UserService(
@@ -38,7 +42,8 @@ public class UserServiceTests
             _fileShareServiceMock.Object,
             _tagRepositoryMock.Object,
             _activityAreaRepositoryMock.Object,
-            _imageServiceMock.Object);
+            _imageServiceMock.Object,
+            _jwtUtilsMock.Object);
     }
 
     [Fact]
@@ -70,7 +75,6 @@ public class UserServiceTests
         };
 
         _activityAreaRepositoryMock.Setup(repo => repo.Get(It.IsAny<Guid>())).Returns(activity);
-
         _userRepositoryMock.Setup(repo => repo.Add(It.IsAny<User>())).Returns(organizer);
 
         // Act
@@ -109,6 +113,7 @@ public class UserServiceTests
         };
 
         _userRepositoryMock.Setup(repo => repo.GetOrganizer(organizerId)).Returns(organizer);
+        _jwtUtilsMock.Setup(jwtUtils => jwtUtils.GetUserIdFromAuthHeader(organizerId)).Returns(organizerId);
 
         // Act
         var result = _userService.GetUser(organizerId);
@@ -135,6 +140,7 @@ public class UserServiceTests
             Role = UserRole.Moderator
         };
 
+        _jwtUtilsMock.Setup(jwtUtil => jwtUtil.GetUserIdFromAuthHeader(moderatorId)).Returns(moderatorId);
         _userRepositoryMock.Setup(repo => repo.GetOrganizer(moderatorId)).Returns((User?)null); // Simulate no organizer found
         _userRepositoryMock.Setup(repo => repo.GetModerator(moderatorId)).Returns(moderator); // Simulate moderator found
 
@@ -148,6 +154,7 @@ public class UserServiceTests
 
         _userRepositoryMock.Verify(repo => repo.GetOrganizer(moderatorId), Times.Once);
         _userRepositoryMock.Verify(repo => repo.GetModerator(moderatorId), Times.Once);
+        _jwtUtilsMock.Verify(jwtUtil => jwtUtil.GetUserIdFromAuthHeader(moderatorId), Times.Once);
     }
 
     [Fact]
@@ -159,6 +166,7 @@ public class UserServiceTests
         // Setup both organizer and moderator repositories to return null, simulating that no user is found with the provided ID
         _userRepositoryMock.Setup(repo => repo.GetOrganizer(userId)).Returns(null as User);
         _userRepositoryMock.Setup(repo => repo.GetModerator(userId)).Returns(null as User);
+        _jwtUtilsMock.Setup(jwtUtil => jwtUtil.GetUserIdFromAuthHeader(userId)).Returns(userId);
 
         // Act
         Action act = () => _userService.GetUser(userId);
@@ -203,6 +211,7 @@ public class UserServiceTests
         _activityAreaRepositoryMock.Setup(repo => repo.Get(actAreaIdModified)).Returns(activity); // Simulate activity area found
         _userRepositoryMock.Setup(repo => repo.GetOrganizer(organizerId)).Returns(existingOrganizer);
         _userRepositoryMock.Setup(repo => repo.Update(organizerId, It.IsAny<User>())).Returns(true);
+        _jwtUtilsMock.Setup(jwtUtils => jwtUtils.GetUserIdFromAuthHeader(organizerId)).Returns(organizerId);
 
         // Act
         var result = _userService.UpdateUser(organizerId, updateDto);
@@ -243,6 +252,7 @@ public class UserServiceTests
         _activityAreaRepositoryMock.Setup(repo => repo.Get(badActAreaIdModified)).Returns(null as ActivityArea); // Simulate activity area not found
         _userRepositoryMock.Setup(repo => repo.GetOrganizer(organizerId)).Returns(existingOrganizer);
         _userRepositoryMock.Setup(repo => repo.Update(organizerId, It.IsAny<User>())).Returns(true);
+        _jwtUtilsMock.Setup(jwtUtils => jwtUtils.GetUserIdFromAuthHeader(organizerId)).Returns(organizerId);
 
         // Act & Assert
         Assert.Throws<NotFoundException<ActivityArea>>(() => _userService.UpdateUser(organizerId, updateDto));
@@ -271,6 +281,7 @@ public class UserServiceTests
 
         _userRepositoryMock.Setup(repo => repo.GetModerator(moderatorId)).Returns(existingModerator); // Simulate moderator found
         _userRepositoryMock.Setup(repo => repo.Update(moderatorId, It.IsAny<User>())).Returns(true);
+        _jwtUtilsMock.Setup(jwtUtils => jwtUtils.GetUserIdFromAuthHeader(moderatorId)).Returns(moderatorId);
 
         // Act
         var result = _userService.UpdateUser(moderatorId, updateDto);

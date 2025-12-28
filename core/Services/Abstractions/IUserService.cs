@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Tracing;
+using System.Diagnostics.Tracing;
 
 using api.core.Data.Enums;
 using api.core.Data.requests;
@@ -10,7 +10,7 @@ public interface IUserService
 {
     public UserResponseDTO AddOrganizer(string id, UserCreateDTO organizerDto);
 
-    public UserResponseDTO GetUser(string id);
+    public UserResponseDTO GetUser(string userToken);
 
     public string GetUserAvatarUrl(string id);
 

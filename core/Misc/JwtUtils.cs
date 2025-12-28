@@ -2,9 +2,9 @@
 
 namespace api.core.Misc;
 
-public static class JwtUtils
+public class JwtUtils : IJwtUtils
 {
-    public static string GetUserIdFromAuthHeader(string authHeader)
+    public string GetUserIdFromAuthHeader(string authHeader)
     {
         var token = authHeader.Replace("Bearer ", "");
         var handler = new JwtSecurityTokenHandler();

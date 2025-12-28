@@ -1,4 +1,4 @@
-﻿using api.core.Data;
+using api.core.Data;
 using api.core.Data.requests;
 using api.core.Data.Responses;
 using api.core.Misc;
@@ -18,10 +18,11 @@ namespace api.core.controllers;
 /// your JWT token.
 /// </summary>
 /// <param name="userService">The User Service will allows managing your user's data</param>
+/// <param name="jwtUtils">The JWT Utils allow to retrieve the ID from the user</param>
 [Authorize]
 [ApiController]
 [Route("api/me")]
-public class MeController(IUserService userService) : ControllerBase
+public class MeController(IUserService userService, IJwtUtils jwtUtils) : ControllerBase
 {
     /// <summary>
     /// Get the user connected to the API using the JWT token
