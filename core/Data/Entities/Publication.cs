@@ -51,11 +51,9 @@ public partial class Publication
     public virtual Event? Event { get; set; }
 
     [ForeignKey("ModeratorId")]
-    [InverseProperty("Publications")]
     public virtual User? Moderator { get; set; }
 
     [ForeignKey("OrganizerId")]
-    [InverseProperty("Publications")]
     public virtual User Organizer { get; set; } = null!;
 
     [InverseProperty("Publication")]

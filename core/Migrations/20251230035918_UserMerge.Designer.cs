@@ -12,8 +12,8 @@ using api.core.data;
 namespace api.core.Migrations
 {
     [DbContext(typeof(EventManagementContext))]
-    [Migration("20251219194542_UserIdTypeReplacement")]
-    partial class UserIdTypeReplacement
+    [Migration("20251230035918_UserMerge")]
+    partial class UserMerge
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -68,117 +68,7 @@ namespace api.core.Migrations
                     b.ToTable("TagsHierarchy", (string)null);
                 });
 
-            modelBuilder.Entity("api.core.data.entities.ActivityArea", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("NameEn")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("NameFr")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ActivityArea");
-                });
-
-            modelBuilder.Entity("api.core.data.entities.Event", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("EventEndDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("EventStartDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Event");
-                });
-
-            modelBuilder.Entity("api.core.data.entities.Moderator", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("ActivityAreaId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActivityAreaId");
-
-                    b.ToTable("Moderator");
-                });
-
-            modelBuilder.Entity("api.core.data.entities.Notification", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsSent")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("PublicationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("SubscriptionId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PublicationId");
-
-                    b.HasIndex("SubscriptionId");
-
-                    b.ToTable("Notification");
-                });
-
-            modelBuilder.Entity("api.core.data.entities.Organizer", b =>
+            modelBuilder.Entity("api.core.Data.Entities.User", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
@@ -228,6 +118,9 @@ namespace api.core.Migrations
                     b.Property<string>("RedditLink")
                         .HasColumnType("text");
 
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
                     b.Property<string>("TikTokLink")
                         .HasColumnType("text");
 
@@ -246,7 +139,84 @@ namespace api.core.Migrations
 
                     b.HasIndex("ActivityAreaId");
 
-                    b.ToTable("Organizer");
+                    b.ToTable("User");
+                });
+
+            modelBuilder.Entity("api.core.data.entities.ActivityArea", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NameFr")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ActivityArea");
+                });
+
+            modelBuilder.Entity("api.core.data.entities.Event", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("EventEndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("EventStartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Event");
+                });
+
+            modelBuilder.Entity("api.core.data.entities.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsSent")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("PublicationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SubscriptionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PublicationId");
+
+                    b.HasIndex("SubscriptionId");
+
+                    b.ToTable("Notification");
                 });
 
             modelBuilder.Entity("api.core.data.entities.Publication", b =>
@@ -448,6 +418,15 @@ namespace api.core.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("api.core.Data.Entities.User", b =>
+                {
+                    b.HasOne("api.core.data.entities.ActivityArea", "ActivityArea")
+                        .WithMany("Users")
+                        .HasForeignKey("ActivityAreaId");
+
+                    b.Navigation("ActivityArea");
+                });
+
             modelBuilder.Entity("api.core.data.entities.Event", b =>
                 {
                     b.HasOne("api.core.data.entities.Publication", "Publication")
@@ -457,15 +436,6 @@ namespace api.core.Migrations
                         .IsRequired();
 
                     b.Navigation("Publication");
-                });
-
-            modelBuilder.Entity("api.core.data.entities.Moderator", b =>
-                {
-                    b.HasOne("api.core.data.entities.ActivityArea", "ActivityArea")
-                        .WithMany("Moderators")
-                        .HasForeignKey("ActivityAreaId");
-
-                    b.Navigation("ActivityArea");
                 });
 
             modelBuilder.Entity("api.core.data.entities.Notification", b =>
@@ -487,28 +457,17 @@ namespace api.core.Migrations
                     b.Navigation("Subscription");
                 });
 
-            modelBuilder.Entity("api.core.data.entities.Organizer", b =>
-                {
-                    b.HasOne("api.core.data.entities.ActivityArea", "ActivityArea")
-                        .WithMany("Organizers")
-                        .HasForeignKey("ActivityAreaId");
-
-                    b.Navigation("ActivityArea");
-                });
-
             modelBuilder.Entity("api.core.data.entities.Publication", b =>
                 {
-                    b.HasOne("api.core.data.entities.Moderator", "Moderator")
-                        .WithMany("Publications")
-                        .HasForeignKey("ModeratorId")
-                        .HasConstraintName("Publication_ModeratorId_fkey");
+                    b.HasOne("api.core.Data.Entities.User", "Moderator")
+                        .WithMany()
+                        .HasForeignKey("ModeratorId");
 
-                    b.HasOne("api.core.data.entities.Organizer", "Organizer")
-                        .WithMany("Publications")
+                    b.HasOne("api.core.Data.Entities.User", "Organizer")
+                        .WithMany()
                         .HasForeignKey("OrganizerId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("Publication_OrganizerId_fkey");
+                        .IsRequired();
 
                     b.Navigation("Moderator");
 
@@ -529,7 +488,7 @@ namespace api.core.Migrations
 
             modelBuilder.Entity("api.core.data.entities.Subscription", b =>
                 {
-                    b.HasOne("api.core.data.entities.Organizer", "Organizer")
+                    b.HasOne("api.core.Data.Entities.User", "Organizer")
                         .WithMany("Subscriptions")
                         .HasForeignKey("OrganizerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -538,23 +497,14 @@ namespace api.core.Migrations
                     b.Navigation("Organizer");
                 });
 
+            modelBuilder.Entity("api.core.Data.Entities.User", b =>
+                {
+                    b.Navigation("Subscriptions");
+                });
+
             modelBuilder.Entity("api.core.data.entities.ActivityArea", b =>
                 {
-                    b.Navigation("Moderators");
-
-                    b.Navigation("Organizers");
-                });
-
-            modelBuilder.Entity("api.core.data.entities.Moderator", b =>
-                {
-                    b.Navigation("Publications");
-                });
-
-            modelBuilder.Entity("api.core.data.entities.Organizer", b =>
-                {
-                    b.Navigation("Publications");
-
-                    b.Navigation("Subscriptions");
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("api.core.data.entities.Publication", b =>

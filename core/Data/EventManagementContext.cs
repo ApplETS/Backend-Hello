@@ -46,12 +46,6 @@ public partial class EventManagementContext : DbContext
             entity.Property(e => e.Id).ValueGeneratedNever();
         });
 
-        //modelBuilder.Entity<Moderator>(entity =>
-        //{
-        //    entity.Property(e => e.CreatedAt).HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
-        //    entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
-        //});
-
         modelBuilder.Entity<User>(entity =>
         {
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
@@ -63,10 +57,6 @@ public partial class EventManagementContext : DbContext
             entity.Property(e => e.Id).HasDefaultValueSql("gen_random_uuid()");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
-
-            entity.HasOne(d => d.Moderator).WithMany(p => p.Publications).HasConstraintName("Publication_ModeratorId_fkey");
-
-            entity.HasOne(d => d.Organizer).WithMany(p => p.Publications).HasConstraintName("Publication_OrganizerId_fkey");
 
             entity.HasMany(d => d.Tags).WithMany(p => p.Publications)
                 .UsingEntity<Dictionary<string, object>>(
