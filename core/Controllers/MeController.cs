@@ -1,4 +1,4 @@
-using api.core.Data;
+﻿using api.core.Data;
 using api.core.Data.requests;
 using api.core.Data.Responses;
 using api.core.Misc;
@@ -31,8 +31,8 @@ public class MeController(IUserService userService, IJwtUtils jwtUtils) : Contro
     [HttpGet]
     public IActionResult GetUser()
     {
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
-        var organizer = userService.GetUser(userId);
+        //var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers.Authorization!);
+        var organizer = userService.GetUser(Request.Headers.Authorization!);
 
         return new OkObjectResult(
              new Response<UserResponseDTO>
@@ -49,7 +49,7 @@ public class MeController(IUserService userService, IJwtUtils jwtUtils) : Contro
     [HttpPatch]
     public IActionResult UpdateUser([FromBody] UserUpdateDTO user)
     {
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
+        var userId = jwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         return userService.UpdateUser(userId, user) ? Ok() : BadRequest();
     }
 
@@ -61,7 +61,7 @@ public class MeController(IUserService userService, IJwtUtils jwtUtils) : Contro
     [HttpPatch("avatar")]
     public IActionResult UpdateUserAvatar([FromForm] UserAvatarUpdateDTO avatarReq)
     {
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
+        var userId = jwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         var url = userService.UpdateUserAvatar(userId, avatarReq.avatarFile);
 
         return new OkObjectResult(
