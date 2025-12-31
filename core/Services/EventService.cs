@@ -13,6 +13,7 @@ using api.files.Services.Abstractions;
 using api.core.Extensions;
 
 using Microsoft.IdentityModel.Tokens;
+using api.core.Repositories.Abstractions;
 
 
 namespace api.core.Services;
@@ -21,8 +22,7 @@ public class EventService(
     IConfiguration config,
     IEventRepository evntRepo,
     ITagService tagService,
-    IOrganizerRepository orgRepo,
-    IModeratorRepository moderatorRepo,
+    IUserRepository userRepository,
     IFileShareService fileShareService,
     IEmailService emailService,
     IImageService imageService,
@@ -35,7 +35,7 @@ public class EventService(
         DateTime? endDate,
         IEnumerable<Guid>? activityAreas,
         IEnumerable<Guid>? tags,
-        Guid? organizerId,
+        string? organizerId,
         string? title,
         State state,
         string orderBy = "EventStartDate",
@@ -52,8 +52,8 @@ public class EventService(
          (state.HasFlag(e.Publication.State)) &&
          (organizerId == null || e.Publication.OrganizerId == organizerId) &&
          (title == null || (e.Publication.Title != null && e.Publication.Title.ToLower().Contains(title.ToLower()))) &&
-         (tags.IsNullOrEmpty() || e.Publication.Tags.Any(t => tags!.Any(tt => t.Id == tt))) &&
-         (activityAreas.IsNullOrEmpty() || activityAreas!.Any(aa => aa == e.Publication.Organizer.ActivityAreaId)))
+         (tags == null || tags.Count() < 1 || e.Publication.Tags.Any(t => tags!.Any(tt => t.Id == tt))) &&
+         (activityAreas == null || activityAreas.Count() < 1 || activityAreas!.Any(aa => aa == e.Publication.Organizer.ActivityAreaId)))
             .AsQueryable()
             .OrderBy(orderBy, desc)
             .Select(EventResponseDTO.Map);
@@ -67,9 +67,9 @@ public class EventService(
         return EventResponseDTO.Map(evnt!);
     }
 
-    public EventResponseDTO AddEvent(Guid userId, EventCreationRequestDTO request)
+    public EventResponseDTO AddEvent(string userId, EventCreationRequestDTO request)
     {
-        var organizer = orgRepo.Get(userId) ?? throw new UnauthorizedException();
+        var organizer = userRepository.GetOrganizer(userId) ?? throw new UnauthorizedException();
 
         if (request.Tags.Count > 5)
             throw new BadParameterException<Event>(nameof(request.Tags), "Too many tags");
@@ -110,9 +110,9 @@ public class EventService(
         return EventResponseDTO.Map(inserted);
     }
 
-    public EventResponseDTO AddDraftEvent(Guid userId, DraftEventRequestDTO request)
+    public EventResponseDTO AddDraftEvent(string userId, DraftEventRequestDTO request)
     {
-        var organizer = orgRepo.Get(userId) ?? throw new UnauthorizedException();
+        var organizer = userRepository.GetOrganizer(userId) ?? throw new UnauthorizedException();
 
         if (request.Tags.Count > 5)
             throw new BadParameterException<Event>(nameof(request.Tags), "Too many tags");
@@ -155,7 +155,7 @@ public class EventService(
         return EventResponseDTO.Map(inserted);
     }
 
-    public bool DeleteEvent(Guid userId, Guid eventId)
+    public bool DeleteEvent(string userId, Guid eventId)
     {
         var eventToDelete = evntRepo.Get(eventId);
         NotFoundException<Event>.ThrowIfNull(eventToDelete);
@@ -165,9 +165,9 @@ public class EventService(
             throw new UnauthorizedException();
     }
 
-    public bool UpdateEvent(Guid userId, Guid eventId, EventUpdateRequestDTO request)
+    public bool UpdateEvent(string userId, Guid eventId, EventUpdateRequestDTO request)
     {
-        _ = orgRepo.Get(userId) 
+        _ = userRepository.GetOrganizer(userId)
             ?? throw new UnauthorizedException();
 
         if (request.Tags.Count > 5)
@@ -204,9 +204,9 @@ public class EventService(
         return evntRepo.Update(eventId, evnt);
     }
 
-    public bool UpdateEventState(Guid userId, Guid eventId, State state, string? reason)
+    public bool UpdateEventState(string userId, Guid eventId, State state, string? reason)
     {
-        var moderator = moderatorRepo.Get(userId) ?? throw new UnauthorizedException();
+        var moderator = userRepository.GetModerator(userId) ?? throw new UnauthorizedException();
         var evnt = evntRepo.Get(eventId);
 
         if (evnt!.Publication.ModeratorId == null)
@@ -265,7 +265,7 @@ public class EventService(
             EmailsUtils.StatusChangeTemplate);
     }
 
-    private static bool CanPerformAction(Guid userId, Event evnt)
+    private static bool CanPerformAction(string userId, Event evnt)
     {
         return (evnt!.Publication.Moderator != null && evnt.Publication.Moderator.Id == userId) ||
             (evnt!.Publication.Organizer != null && evnt.Publication.Organizer.Id == userId);

@@ -4,5 +4,5 @@ namespace api.core.repositories.abstractions;
 
 public interface ISubscriptionRepository : IRepository<Subscription>
 {
-    public bool IsEntryExists(Guid organizerId, string email);
+    public bool IsEntryExists(string organizerId, string email);
 }

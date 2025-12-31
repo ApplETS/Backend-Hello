@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 
 using api.core.data.entities;
+using api.core.Data.Entities;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -20,9 +21,11 @@ public partial class EventManagementContext : DbContext
 
     public virtual DbSet<Event> Events { get; set; }
 
-    public virtual DbSet<Moderator> Moderators { get; set; }
+    //public virtual DbSet<Moderator> Moderators { get; set; }
 
-    public virtual DbSet<Organizer> Organizers { get; set; }
+    //public virtual DbSet<Organizer> Organizers { get; set; }
+
+    public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<Publication> Publications { get; set; }
 
@@ -43,16 +46,8 @@ public partial class EventManagementContext : DbContext
             entity.Property(e => e.Id).ValueGeneratedNever();
         });
 
-        modelBuilder.Entity<Moderator>(entity =>
+        modelBuilder.Entity<User>(entity =>
         {
-            entity.Property(e => e.Id).HasDefaultValueSql("gen_random_uuid()");
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
-        });
-
-        modelBuilder.Entity<Organizer>(entity =>
-        {
-            entity.Property(e => e.Id).HasDefaultValueSql("gen_random_uuid()");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
         });
@@ -62,10 +57,6 @@ public partial class EventManagementContext : DbContext
             entity.Property(e => e.Id).HasDefaultValueSql("gen_random_uuid()");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)");
-
-            entity.HasOne(d => d.Moderator).WithMany(p => p.Publications).HasConstraintName("Publication_ModeratorId_fkey");
-
-            entity.HasOne(d => d.Organizer).WithMany(p => p.Publications).HasConstraintName("Publication_OrganizerId_fkey");
 
             entity.HasMany(d => d.Tags).WithMany(p => p.Publications)
                 .UsingEntity<Dictionary<string, object>>(

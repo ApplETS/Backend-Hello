@@ -20,7 +20,7 @@ namespace api.core.Controllers;
 [ApiController]
 [Authorize(Policy = AuthPolicies.OrganizerIsActive)]
 [Route("api/organizer-events")]
-public class OrganizerEventsController(ILogger<OrganizerEventsController> logger, IEventService eventService) : ControllerBase
+public class OrganizerEventsController(ILogger<OrganizerEventsController> logger, IEventService eventService, IJwtUtils jwtUtils) : ControllerBase
 {
     /// <summary>
     /// Fetch events for the currently connected organizer
@@ -46,7 +46,7 @@ public class OrganizerEventsController(ILogger<OrganizerEventsController> logger
         [FromQuery] State state = State.All
         )
     {
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
+        var userId = jwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
 
         logger.LogInformation("Getting events");
         var validFilter = new PaginationRequest(pagination.PageNumber, pagination.PageSize);
@@ -72,7 +72,7 @@ public class OrganizerEventsController(ILogger<OrganizerEventsController> logger
     {
         logger.LogInformation($"Adding new event");
 
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
+        var userId = jwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         var evnt = eventService.AddEvent(userId, dto);
 
         return new OkObjectResult(
@@ -85,7 +85,7 @@ public class OrganizerEventsController(ILogger<OrganizerEventsController> logger
     [HttpDelete("{id}")]
     public IActionResult DeleteEvent(Guid id)
     {
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
+        var userId = jwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         var isDeleted = eventService.DeleteEvent(userId, id);
         return isDeleted ? Ok() : BadRequest();
     }
@@ -93,7 +93,7 @@ public class OrganizerEventsController(ILogger<OrganizerEventsController> logger
     [HttpPatch("{id}")]
     public IActionResult UpdateEvent(Guid id, [FromForm] EventUpdateRequestDTO dto)
     {
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
+        var userId = jwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         return eventService.UpdateEvent(userId, id, dto) ? Ok() : BadRequest();
     }
 }

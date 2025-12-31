@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using api.core.Data.Entities;
 using api.core.Data.Enums;
 
 using Microsoft.EntityFrameworkCore;
@@ -36,9 +37,9 @@ public partial class Publication
 
     public bool HasBeenReported { get; set; } = false;
 
-    public Guid? ModeratorId { get; set; }
+    public string? ModeratorId { get; set; }
 
-    public Guid OrganizerId { get; set; }
+    public string OrganizerId { get; set; } = null!;
 
     public DateTime CreatedAt { get; set; }
 
@@ -50,12 +51,10 @@ public partial class Publication
     public virtual Event? Event { get; set; }
 
     [ForeignKey("ModeratorId")]
-    [InverseProperty("Publications")]
-    public virtual Moderator? Moderator { get; set; }
+    public virtual User? Moderator { get; set; }
 
     [ForeignKey("OrganizerId")]
-    [InverseProperty("Publications")]
-    public virtual Organizer Organizer { get; set; } = null!;
+    public virtual User Organizer { get; set; } = null!;
 
     [InverseProperty("Publication")]
     public virtual ICollection<Report> Reports { get; set; } = new List<Report>();

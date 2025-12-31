@@ -1,5 +1,6 @@
 ﻿using api.core.data.entities;
 using api.core.Data;
+using api.core.Data.Entities;
 using api.core.Data.Enums;
 using api.core.Data.Exceptions;
 using api.core.Data.requests;
@@ -26,7 +27,6 @@ namespace api.core.controllers;
 /// for this to work.
 /// </summary>
 /// <param name="userService">Used to fetch and manage the organizers</param>
-/// <param name="authService">Used to create a new user in the Supabase database</param>
 /// <param name="emailService">Used to send an email to the newly created organizer</param>
 /// <param name="configuration">Used to fetch the FRONTEND_BASE_URL from the environments variables</param>
 [Authorize(Policy = AuthPolicies.IsModerator)]
@@ -34,7 +34,6 @@ namespace api.core.controllers;
 [Route("api/organizers")]
 public class ModeratorUserController(
     IUserService userService,
-    IAuthService authService,
     IEmailService emailService,
     IConfiguration configuration) : ControllerBase
 {
@@ -49,7 +48,7 @@ public class ModeratorUserController(
     /// <exception cref="NotFoundException{Organizer}"></exception>
     [AllowAnonymous]
     [HttpGet("{organizerId}")]
-    public IActionResult GetOrganizer(Guid organizerId)
+    public IActionResult GetOrganizer(string organizerId)
     {
         var user = userService.GetUser(organizerId);
         return user.Type == "Organizer" ?
@@ -57,7 +56,7 @@ public class ModeratorUserController(
             {
                 Data = user
             })
-            : throw new NotFoundException<Organizer>();
+            : throw new NotFoundException<User>();
     }
 
     /// <summary>
@@ -68,32 +67,32 @@ public class ModeratorUserController(
     /// <param name="organizer"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    [HttpPost]
-    public async Task<IActionResult> CreateOrganizer([FromBody] UserCreateDTO organizer)
-    {
-        var strongPassword = GenerateRandomPassword(12);
-        var supabaseUser = authService.SignUp(organizer.Email, strongPassword);
-        _ = Guid.TryParse(supabaseUser, out Guid userId);
-        var created = userService.AddOrganizer(userId, organizer);
-        var frontBaseUrl = configuration.GetValue<string>("FRONTEND_BASE_URL") ?? throw new ArgumentNullException("FRONTEND_BASE_URL is not set");
-        await emailService.SendEmailAsync(
-            organizer.Email,
-            "Votre compte Hello!",
-            new UserCreationModel
-            {
-                Title = "Création de votre compte Hello!",
-                Salutation = $"Bonjour {organizer.Organization},",
-                AccountCreatedText = "Votre compte Hello a été créé!",
-                TemporaryPasswordHeader = "Votre mot de passe temporaire est: ",
-                TemporaryPassword = strongPassword,
-                LoginButtonText = "Se connecter",
-                ButtonLink = new Uri($"{frontBaseUrl}/fr/login")
-            },
-            emails.EmailsUtils.UserCreationTemplate
-        );
+    //[HttpPost]
+    //public async Task<IActionResult> CreateOrganizer([FromBody] UserCreateDTO organizer)
+    //{
+    //    var strongPassword = GenerateRandomPassword(12);
+    //    var supabaseUser = authService.SignUp(organizer.Email, strongPassword);
+    //    _ = Guid.TryParse(supabaseUser, out Guid userId);
+    //    var created = userService.AddOrganizer(userId, organizer);
+    //    var frontBaseUrl = configuration.GetValue<string>("FRONTEND_BASE_URL") ?? throw new ArgumentNullException("FRONTEND_BASE_URL is not set");
+    //    await emailService.SendEmailAsync(
+    //        organizer.Email,
+    //        "Votre compte Hello!",
+    //        new UserCreationModel
+    //        {
+    //            Title = "Création de votre compte Hello!",
+    //            Salutation = $"Bonjour {organizer.Organization},",
+    //            AccountCreatedText = "Votre compte Hello a été créé!",
+    //            TemporaryPasswordHeader = "Votre mot de passe temporaire est: ",
+    //            TemporaryPassword = strongPassword,
+    //            LoginButtonText = "Se connecter",
+    //            ButtonLink = new Uri($"{frontBaseUrl}/fr/login")
+    //        },
+    //        emails.EmailsUtils.UserCreationTemplate
+    //    );
 
-        return Ok(new Response<UserResponseDTO> { Data = created });
-    }
+    //    return Ok(new Response<UserResponseDTO> { Data = created });
+    //}
 
     /// <summary>
     /// Get all users with pagination and search term
@@ -131,7 +130,7 @@ public class ModeratorUserController(
     /// <param name="reason">pass a reason for the toggle active change, will be send by email</param>
     /// <returns></returns>
     [HttpPatch("{organizerId}/toggle")]
-    public async Task<IActionResult> ToggleOrganizer(Guid organizerId, [FromQuery] string? reason)
+    public async Task<IActionResult> ToggleOrganizer(string organizerId, [FromQuery] string? reason)
     {
         var success = userService.ToggleUserActiveState(organizerId);
         var organizer = userService.GetUser(organizerId);

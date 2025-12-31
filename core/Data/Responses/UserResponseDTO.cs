@@ -1,10 +1,11 @@
 ﻿using api.core.data.entities;
+using api.core.Data.Entities;
 
 namespace api.core.Data.Responses;
 
 public class UserResponseDTO
 {
-    public Guid Id { get; set; }
+    public string Id { get; set; }
 
     public string Name { get; set; } = null!;
 
@@ -46,44 +47,79 @@ public class UserResponseDTO
 
     public DateTime UpdatedAt { get; set; }
 
-    public static UserResponseDTO Map(Organizer organizer)
-    {
-        return new UserResponseDTO
-        {
-            Id = organizer.Id,
-            Email = organizer.Email,
-            Type = "Organizer",
-            Organization = organizer.Organization,
-            ActivityArea = organizer.ActivityArea != null ?
-                ActivityAreaResponseDTO.Map(organizer.ActivityArea) :
-                null,
-            IsActive = organizer.IsActive,
-            HasLoggedIn = organizer.HasLoggedIn,
-            ProfileDescription = organizer.ProfileDescription,
-            FacebookLink = organizer.FacebookLink,
-            InstagramLink = organizer.InstagramLink,
-            TikTokLink = organizer.TikTokLink,
-            XLink = organizer.XLink,
-            DiscordLink = organizer.DiscordLink,
-            LinkedInLink = organizer.LinkedInLink,
-            RedditLink = organizer.RedditLink,
-            WebSiteLink = organizer.WebSiteLink,
-            CreatedAt = organizer.CreatedAt,
-            UpdatedAt = organizer.UpdatedAt
-        };
-    }
+    //public static UserResponseDTO Map(Organizer organizer)
+    //{
+    //    return new UserResponseDTO
+    //    {
+    //        Id = organizer.Id,
+    //        Email = organizer.Email,
+    //        Type = "Organizer",
+    //        Organization = organizer.Organization,
+    //        ActivityArea = organizer.ActivityArea != null ?
+    //            ActivityAreaResponseDTO.Map(organizer.ActivityArea) :
+    //            null,
+    //        IsActive = organizer.IsActive,
+    //        HasLoggedIn = organizer.HasLoggedIn,
+    //        ProfileDescription = organizer.ProfileDescription,
+    //        FacebookLink = organizer.FacebookLink,
+    //        InstagramLink = organizer.InstagramLink,
+    //        TikTokLink = organizer.TikTokLink,
+    //        XLink = organizer.XLink,
+    //        DiscordLink = organizer.DiscordLink,
+    //        LinkedInLink = organizer.LinkedInLink,
+    //        RedditLink = organizer.RedditLink,
+    //        WebSiteLink = organizer.WebSiteLink,
+    //        CreatedAt = organizer.CreatedAt,
+    //        UpdatedAt = organizer.UpdatedAt
+    //    };
+    //}
 
-    public static UserResponseDTO Map(Moderator moderator)
+    //public static UserResponseDTO Map(Moderator moderator)
+    //{
+    //    return new UserResponseDTO
+    //    {
+    //        Id = moderator.Id,
+    //        Email = moderator.Email,
+    //        Type = "Moderator",
+    //        IsActive = true,
+    //        HasLoggedIn = true,
+    //        CreatedAt = moderator.CreatedAt,
+    //        UpdatedAt = moderator.UpdatedAt
+    //    };
+    //}
+
+    public static UserResponseDTO Map(User user)
     {
+        List<UserRole> roles = new List<UserRole>();
+        foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
+        {
+            if (user.Role.HasFlag(role))
+            {
+                roles.Add(role);
+            }
+        }
+
         return new UserResponseDTO
         {
-            Id = moderator.Id,
-            Email = moderator.Email,
-            Type = "Moderator",
-            IsActive = true,
-            HasLoggedIn = true,
-            CreatedAt = moderator.CreatedAt,
-            UpdatedAt = moderator.UpdatedAt
+            Id = user.Id,
+            Email = user.Email,
+            Type = string.Join(',', roles.Select(r => r.ToString())),
+            IsActive = user.IsActive,
+            HasLoggedIn = user.HasLoggedIn,
+            ProfileDescription = user.ProfileDescription,
+            FacebookLink = user.FacebookLink,
+            InstagramLink = user.InstagramLink,
+            TikTokLink = user.TikTokLink,
+            XLink = user.XLink,
+            DiscordLink = user.DiscordLink,
+            LinkedInLink = user.LinkedInLink,
+            RedditLink = user.RedditLink,
+            WebSiteLink = user.WebSiteLink,
+            Organization = user.Organization,
+            ActivityArea = user.ActivityArea != null ?
+                ActivityAreaResponseDTO.Map(user.ActivityArea) : null,
+            CreatedAt = user.CreatedAt,
+            UpdatedAt = user.UpdatedAt
         };
     }
 }

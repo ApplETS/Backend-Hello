@@ -72,7 +72,7 @@ public class SubscriptionRepository(EventManagementContext context) : ISubscript
         return false;
     }
 
-    public bool IsEntryExists(Guid organizerId, string email)
+    public bool IsEntryExists(string organizerId, string email)
     {
         return context.Subscriptions
             .Any(x => x.OrganizerId == organizerId && x.Email == email);

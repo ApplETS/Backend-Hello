@@ -25,7 +25,8 @@ namespace api.core.Controllers;
 public class ModeratorEventsController(
     ILogger<ModeratorEventsController> logger,
     IEventService eventService,
-    IUserService userService) : ControllerBase
+    IUserService userService,
+    IJwtUtils jwtUtils) : ControllerBase
 {
     /// <summary>
     /// Update the state of an event. This is used for a moderator that needs to 
@@ -41,7 +42,7 @@ public class ModeratorEventsController(
     [HttpPatch("{id}/state")]
     public IActionResult UpdateEventState(Guid id, [FromQuery] State newState, [FromQuery] string? reason)
     {
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
+        var userId = jwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         return eventService.UpdateEventState(userId, id, newState, reason) ? Ok() : BadRequest();
     }
 

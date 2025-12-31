@@ -17,19 +17,20 @@ using Microsoft.IdentityModel.Tokens;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using api.core.Services.Abstractions;
+using api.core.Repositories.Abstractions;
 
 namespace api.core.Services;
 
 public class DraftEventService(
     IEventRepository evntRepo,
     ITagService tagService,
-    IOrganizerRepository orgRepo,
+    IUserRepository orgRepo,
     IFileShareService fileShareService,
     IImageService imageService) : IDraftEventService
 {
-    public EventResponseDTO AddDraftEvent(Guid userId, DraftEventRequestDTO request)
+    public EventResponseDTO AddDraftEvent(string userId, DraftEventRequestDTO request)
     {
-        var organizer = orgRepo.Get(userId) ?? throw new UnauthorizedException();
+        var organizer = orgRepo.GetOrganizer(userId) ?? throw new UnauthorizedException();
 
         if (request.Tags.Count > 5)
             throw new BadParameterException<Event>(nameof(request.Tags), "Too many tags");
@@ -67,7 +68,7 @@ public class DraftEventService(
         return EventResponseDTO.Map(inserted);
     }
 
-    public bool UpdateDraftEvent(Guid userId, Guid eventId, DraftEventRequestDTO request)
+    public bool UpdateDraftEvent(string userId, Guid eventId, DraftEventRequestDTO request)
     {
         _ = orgRepo.Get(userId)
             ?? throw new UnauthorizedException();

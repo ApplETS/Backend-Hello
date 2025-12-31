@@ -2,6 +2,8 @@
 
 public class UserCreateDTO
 {
+    public required string Id { get; set; } = null!;
+
     public required string Email { get; set; }
 
     public string? Organization { get; set; } = null!;
@@ -11,8 +13,6 @@ public class UserCreateDTO
 
 public class UserUpdateDTO : UserCreateDTO
 {
-    public Guid Id { get; set; }
-
     public bool? HasLoggedIn { get; set; }
 
     public string? ProfileDescription { get; set; } = null!;

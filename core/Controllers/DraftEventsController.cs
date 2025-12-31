@@ -28,7 +28,7 @@ namespace api.core.Controllers;
 [ApiController]
 [Authorize(Policy = AuthPolicies.OrganizerIsActive)]
 [Route("api/organizer-drafts")] // TODO : Change route to /api/me/drafts
-public class DraftEventsController(ILogger<DraftEventsController> logger, IDraftEventService draftService) : ControllerBase
+public class DraftEventsController(ILogger<DraftEventsController> logger, IDraftEventService draftService, IJwtUtils jwtUtils) : ControllerBase
 {
     /// <summary>
     /// Add a draft event to the database. This event will be saved as a draft and will not be visible
@@ -41,7 +41,7 @@ public class DraftEventsController(ILogger<DraftEventsController> logger, IDraft
     {
         logger.LogInformation($"Adding new draft");
 
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
+        var userId = jwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         var evnt = draftService.AddDraftEvent(userId, draftEvent);
 
         return new OkObjectResult(
@@ -61,7 +61,7 @@ public class DraftEventsController(ILogger<DraftEventsController> logger, IDraft
     [HttpPatch("{id}")] // TODO: Change this to a HttpPut instead
     public IActionResult UpdateDraft(Guid id, [FromForm] DraftEventRequestDTO draftEvent)
     {
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
+        var userId = jwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         return draftService.UpdateDraftEvent(userId, id, draftEvent) ? Ok() : BadRequest();
     }
 }

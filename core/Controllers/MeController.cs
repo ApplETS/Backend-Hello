@@ -18,10 +18,11 @@ namespace api.core.controllers;
 /// your JWT token.
 /// </summary>
 /// <param name="userService">The User Service will allows managing your user's data</param>
+/// <param name="jwtUtils">The JWT Utils allow to retrieve the ID from the user</param>
 [Authorize]
 [ApiController]
 [Route("api/me")]
-public class MeController(IUserService userService) : ControllerBase
+public class MeController(IUserService userService, IJwtUtils jwtUtils) : ControllerBase
 {
     /// <summary>
     /// Get the user connected to the API using the JWT token
@@ -30,8 +31,8 @@ public class MeController(IUserService userService) : ControllerBase
     [HttpGet]
     public IActionResult GetUser()
     {
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
-        var organizer = userService.GetUser(userId);
+        //var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers.Authorization!);
+        var organizer = userService.GetUser(Request.Headers.Authorization!);
 
         return new OkObjectResult(
              new Response<UserResponseDTO>
@@ -48,7 +49,7 @@ public class MeController(IUserService userService) : ControllerBase
     [HttpPatch]
     public IActionResult UpdateUser([FromBody] UserUpdateDTO user)
     {
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
+        var userId = jwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         return userService.UpdateUser(userId, user) ? Ok() : BadRequest();
     }
 
@@ -60,7 +61,7 @@ public class MeController(IUserService userService) : ControllerBase
     [HttpPatch("avatar")]
     public IActionResult UpdateUserAvatar([FromForm] UserAvatarUpdateDTO avatarReq)
     {
-        var userId = JwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
+        var userId = jwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
         var url = userService.UpdateUserAvatar(userId, avatarReq.avatarFile);
 
         return new OkObjectResult(

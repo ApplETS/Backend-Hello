@@ -12,9 +12,15 @@ public partial class ActivityArea : BaseEntity
     
     public string NameEn { get; set; } = null!;
 
-    [InverseProperty("ActivityArea")]
-    public virtual ICollection<Organizer> Organizers { get; set; } = new List<Organizer>();
+    /// <summary>
+    /// Groups all Users, no matter their role
+    /// </summary>
+    [InverseProperty(nameof(User.ActivityArea))]
+    public virtual ICollection<User> Users { get; set; } = new List<User>();
 
-    [InverseProperty("ActivityArea")]
-    public virtual ICollection<Moderator> Moderators { get; set; } = new List<Moderator>();
+    [NotMapped]
+    public ICollection<User> Organizers => Users.Where(u => u.Role.HasFlag(UserRole.Organizer)).ToList();
+
+    [NotMapped]
+    public ICollection<User> Moderators => Users.Where(u => u.Role.HasFlag(UserRole.Moderator)).ToList();
 }

@@ -49,7 +49,7 @@ public class TagRepository(EventManagementContext context) : ITagRepository
         return context.Tags;
     }
 
-    public IEnumerable<FieldOfInterestTagResponseDTO> GetInterestFieldsForOrganizer(Guid organizerId, int take = 3)
+    public IEnumerable<FieldOfInterestTagResponseDTO> GetInterestFieldsForOrganizer(string organizerId, int take = 3)
     {
         return context.Publications
             .Include(x => x.Tags)

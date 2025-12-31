@@ -14,7 +14,7 @@ public class ActivityAreaService(IActivityAreaRepository activityAreaRepository)
     {
         return activityAreaRepository.GetAll()
             .Where(aa =>
-            (search.IsNullOrEmpty() || 
+            (search == null || search.Equals("") ||
                 aa.NameFr.ToLower().Contains(search!.ToLower() ?? "") ||
                 aa.NameEn.ToLower().Contains(search!.ToLower() ?? "")) &&
             aa.DeletedAt == null)

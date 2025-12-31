@@ -4,7 +4,7 @@ public class SubscribeRequestDTO
 {
     public required string Email { get; set; }
 
-    public required Guid OrganizerId { get; set; }
+    public required string OrganizerId { get; set; }
 }
 
 
