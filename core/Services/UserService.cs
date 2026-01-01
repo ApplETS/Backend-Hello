@@ -1,4 +1,4 @@
-using api.core.data.entities;
+﻿using api.core.data.entities;
 using api.core.Data.Exceptions;
 using api.core.Data.Enums;
 using api.core.Data.requests;
@@ -12,6 +12,7 @@ using SixLabors.ImageSharp;
 using api.core.Misc;
 using api.core.Repositories.Abstractions;
 using api.core.Data.Entities;
+using api.core.Services.Abstractions;
 
 namespace api.core.Services;
 
@@ -21,7 +22,8 @@ public class UserService(
     ITagRepository tagRepository,
     IActivityAreaRepository activityAreaRepository,
     IImageService imageService,
-    IJwtUtils jwtUtils) : IUserService
+    IJwtUtils jwtUtils,
+    IIdentityProviderService identityProvider) : IUserService
 {
     private const string AVATAR_FILE_NAME = "avatar.webp";
 
@@ -57,16 +59,11 @@ public class UserService(
     public UserResponseDTO GetUser(string authHeader)
     {
         string userId = jwtUtils.GetUserIdFromAuthHeader(authHeader);
-        UserResponseDTO? userRes = null;
-        var organizer = userRepository.GetOrganizer(userId);
-        if (organizer != null)
-            userRes = UserResponseDTO.Map(organizer!);
+        var user = userRepository.Get(userId);
 
-        var moderator = userRepository.GetModerator(userId);
-        if (moderator != null)
-            userRes = UserResponseDTO.Map(moderator!);
-
-        if (userRes == null) throw new Exception("No users associated with this ID");
+        UserResponseDTO? userRes = user == null ?
+            AddUser(authHeader, userId) : 
+            UserResponseDTO.Map(user);
 
         var fields = tagRepository.GetInterestFieldsForOrganizer(userId);
         userRes.FieldsOfInterests = fields;
@@ -165,5 +162,25 @@ public class UserService(
         imageService.EnsureImageSizeAndStore(userId, avatarFile, ImageType.Avatar, AVATAR_FILE_NAME);
         var url = fileShareService.FileGetDownloadUri($"{userId}/{AVATAR_FILE_NAME}");
         return url.ToString();
+    }
+
+    /// <summary>
+    /// Adds a new user by calling the ID Provider endpoint for the users' information
+    /// </summary>
+    /// <param name="authHeader">The header used for calling de ID Provider's endpoint</param>
+    /// <param name="userId">User to add</param>
+    /// <returns></returns>
+    public UserResponseDTO AddUser(string authHeader, string userId)
+    {
+        UserInfoDto? userInfo = identityProvider.GetUserInfo(authHeader);
+
+        if (userInfo == null)
+        {
+            throw new Exception("No users associated with this ID");
+        }
+
+        User addedUser = userRepository.Add(new User { Email = userInfo.Email, Id = userId });
+
+        return UserResponseDTO.Map(addedUser);
     }
 }

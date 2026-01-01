@@ -15,6 +15,7 @@ using api.core.Data.Entities;
 using api.core.Repositories.Abstractions;
 using Microsoft.IdentityModel.JsonWebTokens;
 using api.core.Misc;
+using api.core.Services.Abstractions;
 
 namespace api.tests.Tests.Services;
 public class UserServiceTests
@@ -25,6 +26,7 @@ public class UserServiceTests
     private readonly Mock<IFileShareService> _fileShareServiceMock;
     private readonly Mock<IImageService> _imageServiceMock;
     private readonly Mock<IJwtUtils> _jwtUtilsMock;
+    private readonly Mock<IIdentityProviderService> _providerServiceMock;
     private readonly UserService _userService;
 
     public UserServiceTests()
@@ -35,6 +37,7 @@ public class UserServiceTests
         _fileShareServiceMock = new Mock<IFileShareService>();
         _imageServiceMock = new Mock<IImageService>();
         _jwtUtilsMock = new Mock<IJwtUtils>();
+        _providerServiceMock = new Mock<IIdentityProviderService>();
 
         _fileShareServiceMock.Setup(service => service.FileGetDownloadUri(It.IsAny<string>())).Returns(new Uri("http://example.com/avatar.webp"));
         _userService = new UserService(
@@ -43,7 +46,8 @@ public class UserServiceTests
             _tagRepositoryMock.Object,
             _activityAreaRepositoryMock.Object,
             _imageServiceMock.Object,
-            _jwtUtilsMock.Object);
+            _jwtUtilsMock.Object,
+            _providerServiceMock.Object);
     }
 
     [Fact]
@@ -112,7 +116,7 @@ public class UserServiceTests
             Role = UserRole.Organizer
         };
 
-        _userRepositoryMock.Setup(repo => repo.GetOrganizer(organizerId)).Returns(organizer);
+        _userRepositoryMock.Setup(repo => repo.Get(organizerId)).Returns(organizer);
         _jwtUtilsMock.Setup(jwtUtils => jwtUtils.GetUserIdFromAuthHeader(organizerId)).Returns(organizerId);
 
         // Act
@@ -123,7 +127,7 @@ public class UserServiceTests
         result.Id.Should().Be(organizerId);
         result.Email.Should().Be(organizer.Email);
 
-        _userRepositoryMock.Verify(repo => repo.GetOrganizer(organizerId), Times.Once);
+        _userRepositoryMock.Verify(repo => repo.Get(organizerId), Times.Once);
     }
 
     [Fact]
@@ -141,8 +145,7 @@ public class UserServiceTests
         };
 
         _jwtUtilsMock.Setup(jwtUtil => jwtUtil.GetUserIdFromAuthHeader(moderatorId)).Returns(moderatorId);
-        _userRepositoryMock.Setup(repo => repo.GetOrganizer(moderatorId)).Returns((User?)null); // Simulate no organizer found
-        _userRepositoryMock.Setup(repo => repo.GetModerator(moderatorId)).Returns(moderator); // Simulate moderator found
+        _userRepositoryMock.Setup(repo => repo.Get(moderatorId)).Returns(moderator); // Simulate moderator found
 
         // Act
         var result = _userService.GetUser(moderatorId);
@@ -152,29 +155,76 @@ public class UserServiceTests
         result.Id.Should().Be(moderatorId);
         result.Email.Should().Be(moderator.Email);
 
-        _userRepositoryMock.Verify(repo => repo.GetOrganizer(moderatorId), Times.Once);
-        _userRepositoryMock.Verify(repo => repo.GetModerator(moderatorId), Times.Once);
+        _userRepositoryMock.Verify(repo => repo.Get(moderatorId), Times.Once);
         _jwtUtilsMock.Verify(jwtUtil => jwtUtil.GetUserIdFromAuthHeader(moderatorId), Times.Once);
     }
 
     [Fact]
-    public void GetUser_ShouldThrowException_WhenNoUserIsAssociatedWithProvidedId()
+    public void GetUser_ShouldReturnUserResponseDTO_WhenNewUserIsFoundById()
+    {
+        // Arrange
+        var userId = "userId";
+        var user = new User
+        {
+            Id = userId,
+            Email = "jane.doe@example.com",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        var userInfo = new UserInfoDto
+        {
+            Email = "jane.doe@example.com",
+            EmailVerified = true,
+            GivenName = "Jane Doe",
+            Name = "Jane Doe",
+            Nickname = "jane.doe",
+            PreferedUsername = "jane.doe",
+            Sub = userId
+        };
+
+        _jwtUtilsMock.Setup(jwtUtils => jwtUtils.GetUserIdFromAuthHeader(userId)).Returns(userId);
+        _userRepositoryMock.Setup(repo => repo.Get(userId)).Returns(null as User);
+        _providerServiceMock.Setup(provider => provider.GetUserInfo(userId)).Returns(userInfo);
+        _userRepositoryMock.Setup(repo => 
+            repo.Add(It.Is<User>(u => u.Id == userInfo.Sub && u.Email == userInfo.Email)))
+            .Returns(user);
+
+        // Act
+        var result = _userService.GetUser(userId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Type.Should().BeEmpty();
+        result.Id.Should().Be(user.Id);
+        result.Email.Should().Be(user.Email);
+
+        _jwtUtilsMock.Verify(jwtUtils => jwtUtils.GetUserIdFromAuthHeader(userId), Times.Once);
+        _userRepositoryMock.Verify(repo => repo.Get(userId), Times.Once);
+        _userRepositoryMock.Verify(repo => repo.Add(It.IsAny<User>()), Times.Once);
+        _providerServiceMock.Verify(provider => provider.GetUserInfo(userId), Times.Once);
+    }
+
+    [Fact]
+    public void GetUser_ShouldThrowException_WhenNoUserIsAssociatedWithProvidedIdNorValid()
     {
         // Arrange
         var userId = "nobody";
 
         // Setup both organizer and moderator repositories to return null, simulating that no user is found with the provided ID
-        _userRepositoryMock.Setup(repo => repo.GetOrganizer(userId)).Returns(null as User);
-        _userRepositoryMock.Setup(repo => repo.GetModerator(userId)).Returns(null as User);
+        _userRepositoryMock.Setup(repo => repo.Get(userId)).Returns(null as User);
         _jwtUtilsMock.Setup(jwtUtil => jwtUtil.GetUserIdFromAuthHeader(userId)).Returns(userId);
+
+        // Setup the provider call as if the call was invalid (no connection or invalid token)
+        _providerServiceMock.Setup(provider => provider.GetUserInfo(userId)).Returns(null as UserInfoDto);
 
         // Act
         Action act = () => _userService.GetUser(userId);
 
         // Assert
         act.Should().Throw<Exception>().WithMessage("No users associated with this ID");
-        _userRepositoryMock.Verify(repo => repo.GetOrganizer(userId), Times.Once);
-        _userRepositoryMock.Verify(repo => repo.GetOrganizer(userId), Times.Once);
+        _userRepositoryMock.Verify(repo => repo.Get(userId), Times.Once);
+        _providerServiceMock.Verify(provider => provider.GetUserInfo(userId), Times.Once);
     }
 
 
@@ -209,7 +259,7 @@ public class UserServiceTests
         };
 
         _activityAreaRepositoryMock.Setup(repo => repo.Get(actAreaIdModified)).Returns(activity); // Simulate activity area found
-        _userRepositoryMock.Setup(repo => repo.GetOrganizer(organizerId)).Returns(existingOrganizer);
+        _userRepositoryMock.Setup(repo => repo.Get(organizerId)).Returns(existingOrganizer);
         _userRepositoryMock.Setup(repo => repo.Update(organizerId, It.IsAny<User>())).Returns(true);
         _jwtUtilsMock.Setup(jwtUtils => jwtUtils.GetUserIdFromAuthHeader(organizerId)).Returns(organizerId);
 
@@ -250,7 +300,7 @@ public class UserServiceTests
             UpdatedAt = DateTime.UtcNow
         };
         _activityAreaRepositoryMock.Setup(repo => repo.Get(badActAreaIdModified)).Returns(null as ActivityArea); // Simulate activity area not found
-        _userRepositoryMock.Setup(repo => repo.GetOrganizer(organizerId)).Returns(existingOrganizer);
+        _userRepositoryMock.Setup(repo => repo.Get(organizerId)).Returns(existingOrganizer);
         _userRepositoryMock.Setup(repo => repo.Update(organizerId, It.IsAny<User>())).Returns(true);
         _jwtUtilsMock.Setup(jwtUtils => jwtUtils.GetUserIdFromAuthHeader(organizerId)).Returns(organizerId);
 
@@ -279,7 +329,7 @@ public class UserServiceTests
             Role = UserRole.Moderator
         };
 
-        _userRepositoryMock.Setup(repo => repo.GetModerator(moderatorId)).Returns(existingModerator); // Simulate moderator found
+        _userRepositoryMock.Setup(repo => repo.Get(moderatorId)).Returns(existingModerator); // Simulate moderator found
         _userRepositoryMock.Setup(repo => repo.Update(moderatorId, It.IsAny<User>())).Returns(true);
         _jwtUtilsMock.Setup(jwtUtils => jwtUtils.GetUserIdFromAuthHeader(moderatorId)).Returns(moderatorId);
 
