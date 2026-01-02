@@ -21,6 +21,4 @@ public interface IUserService
     public bool ToggleUserActiveState(string id);
 
     public string UpdateUserAvatar(string id, IFormFile avatarFile);
-
-    public UserResponseDTO AddUser(string authHeader, string userId);
 }

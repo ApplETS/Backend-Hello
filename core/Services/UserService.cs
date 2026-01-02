@@ -169,8 +169,8 @@ public class UserService(
     /// </summary>
     /// <param name="authHeader">The header used for calling de ID Provider's endpoint</param>
     /// <param name="userId">User to add</param>
-    /// <returns></returns>
-    public UserResponseDTO AddUser(string authHeader, string userId)
+    /// <returns>Formatted DTO of User's information</returns>
+    private UserResponseDTO AddUser(string authHeader, string userId)
     {
         UserInfoDto? userInfo = identityProvider.GetUserInfo(authHeader);
 
@@ -179,7 +179,14 @@ public class UserService(
             throw new Exception("No users associated with this ID");
         }
 
-        User addedUser = userRepository.Add(new User { Email = userInfo.Email, Id = userId });
+        User addedUser = userRepository.Add(new User 
+        { 
+            Email = userInfo.Email, 
+            Id = userId, 
+            ProfileDescription = userInfo.GivenName,
+            Organization = string.Empty,
+            IsActive = true
+        });
 
         return UserResponseDTO.Map(addedUser);
     }

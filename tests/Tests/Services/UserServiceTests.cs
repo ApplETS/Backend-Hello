@@ -187,7 +187,7 @@ public class UserServiceTests
         _userRepositoryMock.Setup(repo => repo.Get(userId)).Returns(null as User);
         _providerServiceMock.Setup(provider => provider.GetUserInfo(userId)).Returns(userInfo);
         _userRepositoryMock.Setup(repo => 
-            repo.Add(It.Is<User>(u => u.Id == userInfo.Sub && u.Email == userInfo.Email)))
+            repo.Add(It.Is<User>(u => u.Id == userInfo.Sub && u.Email == userInfo.Email && u.ProfileDescription == userInfo.GivenName)))
             .Returns(user);
 
         // Act
