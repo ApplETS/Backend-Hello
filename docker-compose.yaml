@@ -1,10 +1,15 @@
 version: '3.9'
 services:
   backend:
-    image: ghcr.io/applets/backend-hello:main
+    image: applets/backend-hello:auth
     restart: always
+    build:
+      context: .
+      dockerfile: core/Dockerfile
     ports:
-      - 8080:8080
+      - "8081:8081"
+    environment:
+      - ASPNETCORE_HTTP_PORTS=8081
     env_file:
       - core/.env
     volumes:
