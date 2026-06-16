@@ -55,7 +55,70 @@ public class EventsController(
         logger.LogInformation("Getting events");
         var validFilter = new PaginationRequest(pagination.PageNumber, pagination.PageSize);
 
-        var events = eventService.GetEvents(startDate, endDate, activityAreas, tags, organizerId, title, State.Published);
+        //var events = eventService.GetEvents(startDate, endDate, activityAreas, tags, organizerId, title, State.Published);
+        var events = new List<EventResponseDTO> {
+            new EventResponseDTO
+            {
+                Id = Guid.NewGuid(),
+                Content = "Je suis un événement. [Lien ici](https://example.com)",
+                Title = "Test",
+                EventStartDate = DateTime.UtcNow,
+                EventEndDate = DateTime.UtcNow.AddDays(1),
+                Organizer = new UserResponseDTO
+                {
+                    Id = "example",
+                    Name = "Organizer"
+                },
+                ImageAltText = "Texte de remplacement",
+                ImageUrl = "https://cdn.britannica.com/29/233029-004-0EDC44F2/poutine-quebec-meal-french-fries-gravy-cheese-curds-canada.jpg"
+            },
+            new EventResponseDTO
+            {
+                Id = Guid.NewGuid(),
+                Title = "Événement mensuel",
+                EventStartDate = DateTime.UtcNow,
+                EventEndDate = DateTime.UtcNow.AddDays(45),
+                Organizer = new UserResponseDTO
+                {
+                    Name = "Orgueux",
+                    AvatarUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Fossiliferous_chert_%28Upper_Mercer_Flint%2C_Middle_Pennsylvanian%3B_Nellie_West_Outcrop%2C_Coshocton_County%2C_Ohio%2C_USA%29_1_%2831882402546%29.jpg/500px-Fossiliferous_chert_%28Upper_Mercer_Flint%2C_Middle_Pennsylvanian%3B_Nellie_West_Outcrop%2C_Coshocton_County%2C_Ohio%2C_USA%29_1_%2831882402546%29.jpg",
+                    Type = "Moderator",
+                    ActivityArea = new ActivityAreaResponseDTO
+                    {
+                        NameFr = "Test",
+                        NameEn = "Sample"
+                    }
+                }
+            },
+            new EventResponseDTO
+            {
+                Id = Guid.NewGuid(),
+                Content = "Test jour unique",
+                EventStartDate = DateTime.UtcNow,
+                EventEndDate = DateTime.UtcNow.AddHours(2),
+                Title = "Test jour unique",
+                Organizer = new UserResponseDTO
+                {
+                    Name = "Truc",
+                    Id = "12",
+                    
+                }
+            },
+            new EventResponseDTO
+            {
+                Id = Guid.NewGuid(),
+                Content = "Test jour unique2",
+                EventStartDate = DateTime.UtcNow,
+                EventEndDate = DateTime.UtcNow.AddHours(2),
+                Title = "Test jour unique",
+                Organizer = new UserResponseDTO
+                {
+                    Name = "Truc",
+                    Id = "12",
+                    
+                }
+            },
+        };
         var totalRecords = events.Count();
         var paginatedRes = events
             .Skip((pagination.PageNumber - 1) * pagination.PageSize)
