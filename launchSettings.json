@@ -4,7 +4,11 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "serviceActions": {
-        "api.core": "StartDebugging"
+        "adminer": "StartWithoutDebugging",
+        "cdn": "StartWithoutDebugging",
+        "core": "StartDebugging",
+        "db": "StartWithoutDebugging",
+        "redis": "StartWithoutDebugging"
       }
     }
   }

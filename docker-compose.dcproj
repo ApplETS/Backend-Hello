@@ -7,10 +7,11 @@
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
     <DockerServiceName>api.core</DockerServiceName>
-	<DockerComposeEnvFilePath>./core/.env</DockerComposeEnvFilePath>
+    <DockerComposeEnvFilePath>./core/.env</DockerComposeEnvFilePath>
   </PropertyGroup>
   <ItemGroup>
     <None Include=".dockerignore" />
     <None Include="docker-compose.yaml" />
+    <None Include="Dockerfile" />
   </ItemGroup>
 </Project>

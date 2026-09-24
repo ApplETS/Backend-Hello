@@ -11,16 +11,17 @@ COPY core/api.core.csproj ./core/
 COPY emails/api.emails.csproj ./emails/
 COPY files/api.files.csproj ./files/
 COPY tests/api.tests.csproj ./tests/
+COPY docker-compose.dcproj ./
 COPY Hello.sln ./
-RUN dotnet restore
+RUN dotnet restore Hello.sln
 
-COPY ../ .
+COPY . .
 WORKDIR /src
-RUN dotnet build -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build Hello.sln -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish Hello.sln -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS runtime
 WORKDIR /app
