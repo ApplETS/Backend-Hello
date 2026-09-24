@@ -1,14 +1,14 @@
 # Make sure the .env file is ready and has the correct values
 services:
-  core:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    env_file:
-      - ./core/.env
-    ports:
-      - "8081:8080"
-      - "8082:8081"
+  # core:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   env_file:
+  #     - ./core/.env
+  #   ports:
+  #     - "8081:8080"
+  #     - "8082:8081"
   adminer:
     image: adminer
     restart: always
@@ -40,6 +40,16 @@ services:
       - ./core/.env
     volumes:
       - ${HOST_CDN_DIR}:/usr/share/nginx/html:Z
+  api.core:
+    image: apicore
+    build:
+      context: .
+      dockerfile: core/Dockerfile
+    ports:
+      - "8081:8080"
+      - "8082:8081"
+    env_file:
+      - ./core/.env
 volumes:
   cache:
     driver: local
