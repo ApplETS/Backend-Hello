@@ -6,6 +6,19 @@ Different ways can be used to spin up a backend Hello API.
 
 ### Create the DB
 First of, you need to create a postgreSQL DB if it's not already done.
+You can check by running this command.
+```bash
+docker ps -a
+```
+It should look like this:
+```bash
+ONTAINER ID   IMAGE                COMMAND                  CREATED          STATUS          PORTS                                                                                                NAMES
+592987e98cc8   backend-hello-core   "dotnet api.core.dll"    32 minutes ago   Up 32 minutes   8082/tcp, 0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp, 0.0.0.0:8082->8081/tcp, [::]:8082->8081/tcp   backend-hello-core-1
+6d67c189ee84   postgres             "docker-entrypoint.s…"   5 days ago       Up 13 hours     0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp                                                          hello-database-setup-db-1
+a20bbf3cfe10   adminer              "entrypoint.sh docke…"   5 days ago       Up 13 hours     0.0.0.0:8090->8080/tcp, [::]:8090->8080/tcp                                                          hello-database-setup-adminer-1
+3c94feaf799e   redis:7.2.4          "docker-entrypoint.s…"   5 days ago       Up 13 hours     0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp                                                          hello-database-setup-redis-1
+5c887780659b   nginx:1.25.3         "/docker-entrypoint.…"   5 days ago       Up 13 hours     0.0.0.0:6464->80/tcp, [::]:6464->80/tcp                                                              hello-database-setup-cdn-1
+```
 
 > ⚠️ If your database is already created and running, you can skip this step and directly go to [Run the image](#run-the-image).
 
@@ -13,10 +26,28 @@ Access this [repository](https://github.com/ApplETS/Hello-Database-Setup) to get
 
 ### Installation introduction
 
-There is two ways you can install the API:
+There are multiple ways you can install the API:
+- Using the docker compose file:  [Docker Compose](#-docker-compose)
+  - Depending on the running parameter you can modify the existing code and is more suited for a local server when there is only front-end development to be done.
 - Using a docker image:  [Docker Installation](#-docker-installation)
   - This method doesn't allows you to modify easily the existing code and is more suited for a local server when there is only front-end development to be done.
 - Using the classic approach with Visual Studio: [Local Installation](#-local-installation)
+
+### 🐳 Docker Compose
+After cloning this repository, open it via a terminal or an IDE.  
+In the same directory as this README, before running the docker compose command: 
+```bash
+docker compose up -d 
+```
+You'll need to setup the environment variables in the `.env` file.  
+Simply copy and paste the `.env.template` file, rename it to `.env` and fill it with the correct values.  
+
+Or, in the same directory as this README, run this command and fill it with the correct values:
+```bash
+cp core/.env.template .env
+```
+After running the docker compose file, the api should be accessible via localhost:8081  
+> ⚠️ Don't forget to rebuild the app after modifying the source code, use the command docker compose up -d --build
 
 ### 🐳 Docker Installation
 Start by pulling the image from docker hub
