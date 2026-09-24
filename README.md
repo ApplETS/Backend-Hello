@@ -28,8 +28,8 @@ Access this [repository](https://github.com/ApplETS/Hello-Database-Setup) to get
 
 There are multiple ways you can install the API:
 - Using the docker compose file:  [Docker Compose](#-docker-compose)
-  - Depending on the running parameter you can modify the existing code and is more suited for a local server when there is only front-end development to be done.
-- Using a docker image:  [Docker Installation](#-docker-installation)
+  - Depending on the running parameter you can modify the existing code.
+- Using a docker image:  [Docker Installation](#-docker-installation) (Deprecated)
   - This method doesn't allows you to modify easily the existing code and is more suited for a local server when there is only front-end development to be done.
 - Using the classic approach with Visual Studio: [Local Installation](#-local-installation)
 
