@@ -1,5 +1,4 @@
-## Run this file after running the one presented in the database setup repository
-## https://github.com/ApplETS/Hello-Database-Setup
+# Make sure the .env file is ready and has the correct values
 services:
   core:
     build:
@@ -10,8 +9,37 @@ services:
     ports:
       - "8081:8080"
       - "8082:8081"
-    networks:
-      - hello-database-setup_default
-networks:
-  hello-database-setup_default:
-    external: true
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8090:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+  redis:
+    image: redis:7.2.4
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    volumes:
+      - cache:/data
+  cdn:
+    image: nginx:1.25.3
+    restart: always
+    ports:
+      - "6464:80"
+    env_file:
+      - .env
+    volumes:
+      - ${HOST_CDN_DIR}:/usr/share/nginx/html:Z
+volumes:
+  cache:
+    driver: local
