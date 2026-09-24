@@ -55,7 +55,12 @@ docker compose up -d
 ```
 
 After running the docker compose file, the api should be accessible via:   
-
+```bash
+# API 
+http://localhost:8081/api
+# SWAGGER 
+http://localhost:8081/swagger/index.html
+```
 > ⚠️ Don't forget to rebuild the app after modifying the source code, use the command docker compose up -d --build
 
 ### 🐳 Docker Installation
