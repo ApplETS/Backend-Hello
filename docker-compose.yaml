@@ -1,42 +1,17 @@
-version: '3.9'
+## Run this file after running the one presented in the database setup repository
+## https://github.com/ApplETS/Hello-Database-Setup
 services:
-  backend:
-    image: ghcr.io/applets/backend-hello:main
-    restart: always
-    ports:
-      - 8080:8080
+  core:
+    build:
+      context: .
+      dockerfile: core/Dockerfile
     env_file:
-      - core/.env
-    volumes:
-      - ./backend-data:/app/volume:rw
-  adminer:
-    image: adminer
-    restart: always
+      - .env
     ports:
-      - 8090:8080
-  db:
-    image: postgres
-    restart: always
-    ports:
-      - 5432:5432
-    environment:
-      - POSTGRES_PASSWORD=test123
-    env_file:
-      - core/.env
-  redis:
-    image: redis:7.2.4
-    restart: always
-    ports:
-      - '63790:6379'
-    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
-    volumes: 
-      - cache:/data
-  cdn:
-    image: nginx:1.25.3
-    restart: always
-    ports:
-      - 6464:80
-volumes:
-  cache:
-    driver: local
-  
+      - "8081:8080"
+      - "8082:8081"
+    networks:
+      - hello-database-setup_default
+networks:
+  hello-database-setup_default:
+    external: true
