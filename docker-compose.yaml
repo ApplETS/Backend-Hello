@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
     env_file:
-      - .env
+      - ./core/.env
     ports:
       - "8081:8080"
       - "8082:8081"
@@ -22,7 +22,7 @@ services:
     ports:
       - "5432:5432"
     env_file:
-      - .env
+      - ./core/.env
   redis:
     image: redis:7.2.4
     restart: always
@@ -37,7 +37,7 @@ services:
     ports:
       - "6464:80"
     env_file:
-      - .env
+      - ./core/.env
     volumes:
       - ${HOST_CDN_DIR}:/usr/share/nginx/html:Z
 volumes:
