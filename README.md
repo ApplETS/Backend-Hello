@@ -35,9 +35,12 @@ There are multiple ways you can install the API:
 
 ### 🐳 Docker Compose
 After cloning this repository, open it via a terminal or an IDE.  
-In the same directory as this README, before running the docker compose command: 
 ```bash
-docker compose up -d 
+cd path/to/repo
+# With an SSH Key
+git clone git@github.com:ApplETS/Backend-Hello.git
+# Without an ssh key
+git clone https://github.com/ApplETS/Backend-Hello.git
 ```
 You'll need to setup the environment variables in the `.env` file.  
 Simply copy and paste the `.env.template` file, rename it to `.env` and fill it with the correct values.  
@@ -46,7 +49,13 @@ Or, in the same directory as this README, run this command and fill it with the 
 ```bash
 cp core/.env.template .env
 ```
-After running the docker compose file, the api should be accessible via localhost:8081  
+In the same directory as this README, run this the docker compose command:
+```bash
+docker compose up -d 
+```
+
+After running the docker compose file, the api should be accessible via:   
+
 > ⚠️ Don't forget to rebuild the app after modifying the source code, use the command docker compose up -d --build
 
 ### 🐳 Docker Installation
