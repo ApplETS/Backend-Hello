@@ -1,14 +1,5 @@
 # Make sure the .env file is ready and has the correct values
 services:
-  # core:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   env_file:
-  #     - ./core/.env
-  #   ports:
-  #     - "8081:8080"
-  #     - "8082:8081"
   adminer:
     image: adminer
     restart: always
@@ -20,7 +11,7 @@ services:
     image: postgres
     restart: always
     ports:
-      - "5432:5432"
+      - "5432:5432" # Check if we want to expose this port to the host
     env_file:
       - ./core/.env
   redis:
