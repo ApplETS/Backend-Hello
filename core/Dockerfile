@@ -1,5 +1,5 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER app
+USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
@@ -7,23 +7,21 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ../core/api.core.csproj ./core/
-COPY ../emails/api.emails.csproj ./emails/
-COPY ../files/api.files.csproj ./files/
-COPY ../tests/api.tests.csproj ./tests/
-COPY ../Hello.sln ./
-RUN dotnet restore
+COPY ["core/api.core.csproj", "core/"]
+COPY ["emails/api.emails.csproj", "emails/"]
+COPY ["files/api.files.csproj", "files/"]
+RUN dotnet restore "./core/api.core.csproj"
 
-COPY ../ .
-WORKDIR /src
-RUN dotnet build -c $BUILD_CONFIGURATION -o /app/build
+COPY . .
+WORKDIR "/src/core"
+RUN dotnet build "./api.core.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./api.core.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-FROM base AS runtime
+FROM base AS final
 WORKDIR /app
-COPY  --chown=app --from=publish /app/publish .
+COPY --chown=$APP_UID --from=publish /app/publish .
 RUN mkdir -p /app/volume # create volume directory to store images
 ENTRYPOINT ["dotnet", "api.core.dll"]
