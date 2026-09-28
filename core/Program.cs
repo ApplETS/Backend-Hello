@@ -29,7 +29,12 @@ redisConnString = Environment.GetEnvironmentVariable("REDIS_CONNECTION_STRING");
 builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddDbContext<EventManagementContext>(opt => opt.UseNpgsql(connectionString));
-
+builder.Services.AddCors((options) => options.AddPolicy("FrontEnd", policy =>
+    {
+        policy.WithOrigins(Environment.GetEnvironmentVariable("FRONTEND_BASE_URL")!);
+        policy.AllowAnyMethod();
+        policy.AllowAnyHeader();
+    }));
 
 var key = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("OPENID_CLIENT_SECRET") ?? "");
 builder.Services
@@ -188,6 +193,8 @@ app.UseExceptionMiddleware();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseCors("FrontEnd");
 
 app.MapHealthChecks("/health");
 
