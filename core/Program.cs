@@ -29,12 +29,16 @@ redisConnString = Environment.GetEnvironmentVariable("REDIS_CONNECTION_STRING");
 builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddDbContext<EventManagementContext>(opt => opt.UseNpgsql(connectionString));
-builder.Services.AddCors((options) => options.AddPolicy("FrontEnd", policy =>
-    {
-        policy.WithOrigins(Environment.GetEnvironmentVariable("FRONTEND_BASE_URL")!);
-        policy.AllowAnyMethod();
-        policy.AllowAnyHeader();
-    }));
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins(Environment.GetEnvironmentVariable("FRONTEND_BASE_URL")!) // Put your frontend URL here
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 
 var key = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("OPENID_CLIENT_SECRET") ?? "");
 builder.Services
@@ -75,7 +79,7 @@ builder.Services
             ValidAudience = Environment.GetEnvironmentVariable("OPENID_CLIENT_ID")
         };
         // Ensure HTTPS is used (should be true in production)
-        options.RequireHttpsMetadata = true;
+        options.RequireHttpsMetadata = false;
     });
 //.AddOpenIdConnect(options =>
 //   {
@@ -186,15 +190,13 @@ await db!.Database.MigrateAsync();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseCors("AllowFrontend");
 
 app.UseExceptionMiddleware();
 
 // app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseCors("FrontEnd");
 
 app.MapHealthChecks("/health");
 

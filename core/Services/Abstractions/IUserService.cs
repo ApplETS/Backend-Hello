@@ -1,4 +1,4 @@
-using System.Diagnostics.Tracing;
+﻿using System.Diagnostics.Tracing;
 
 using api.core.Data.Enums;
 using api.core.Data.requests;
