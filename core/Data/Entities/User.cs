@@ -67,7 +67,7 @@ public class User
 [Flags]
 public enum UserRole
 {
-    Admin     = 0b10000000,
-    Moderator = 0b01000000,
-    Organizer = 0b00100000
+    Admin     = 0x1,
+    Moderator = 0x2,
+    Organizer = 0x4
 }

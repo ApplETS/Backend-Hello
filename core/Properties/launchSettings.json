@@ -8,7 +8,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5010"
+      "applicationUrl": "http://localhost:8081"
     },
     "https": {
       "commandName": "Project",
@@ -35,8 +35,8 @@
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
       "publishAllPorts": true,
       "useSSL": true,
-      "httpPort": 8080,
-      "sslPort": 8081,
+      "httpPort": 8081,
+      "sslPort": 8082,
       "DockerfileRunArguments": "--rm --env-file .env"
     }
   },
