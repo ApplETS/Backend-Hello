@@ -86,11 +86,17 @@ public class OrganizerEventsController(ILogger<OrganizerEventsController> logger
             });
         } catch (BadParameterException<EventCreationRequestDTO> e)
         {
-            return BadRequest(e.Message);
+            return Ok(new Response<string>
+            {
+                Error = e.ErrorCode,
+            });
         }
         catch (BadParameterException<Event> e)
         {
-            return BadRequest(e.Message);
+            return Ok(new Response<string>
+            {
+                Error = e.ErrorCode,
+            });
         }
     }
 
