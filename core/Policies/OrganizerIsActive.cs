@@ -17,7 +17,7 @@ public class OrganizerIsActiveHandler(IUserService userService) : AuthorizationH
         //var userId = Guid.Parse(identifierClaim ?? throw new UnauthorizedException());
 
         var user = userService.GetUser(identifierClaim);
-        if (user.Type != "Organizer" || !user.IsActive)
+        if (!user.Type.Contains("Organizer") || !user.IsActive)
             throw new UnauthorizedException();
         else
             context.Succeed(requirement);
