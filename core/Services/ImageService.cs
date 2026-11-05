@@ -45,8 +45,8 @@ public class ImageService(IFileShareService fileShareService) : IImageService
         try
         {
             using var image = Image.Load(imageFile.OpenReadStream());
-            int width = image.Size.Width;
-            int height = image.Size.Height;
+            double width = image.Size.Width;
+            double height = image.Size.Height;
 
             if (Math.Abs((width / height) - _imageRatioAcceptance[type]) > TOLERANCE_ACCEPTABILITY)
                 throw new BadParameterException<Event>(nameof(image), $"Invalid image aspect ratio {width}/{height}");

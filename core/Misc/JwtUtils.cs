@@ -6,6 +6,10 @@ public class JwtUtils : IJwtUtils
 {
     public string GetUserIdFromAuthHeader(string authHeader)
     {
+        if (!authHeader.Contains("Bearer "))
+        {
+            return authHeader;
+        }
         var token = authHeader.Replace("Bearer ", "");
         var handler = new JwtSecurityTokenHandler();
         var jsonToken = handler.ReadToken(token) as JwtSecurityToken;

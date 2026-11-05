@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using api.core.Data.Requests;
 using api.core.Data.Enums;
+using api.core.Data.Exceptions;
+using api.core.data.entities;
 
 namespace api.core.Controllers;
 
@@ -73,13 +75,29 @@ public class OrganizerEventsController(ILogger<OrganizerEventsController> logger
         logger.LogInformation($"Adding new event");
 
         var userId = jwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
-        var evnt = eventService.AddEvent(userId, dto);
+        try
+        {
 
+            var evnt = eventService.AddEvent(userId, dto);
         return new OkObjectResult(
             new Response<EventResponseDTO>
             {
                 Data = evnt,
             });
+        } catch (BadParameterException<EventCreationRequestDTO> e)
+        {
+            return Ok(new Response<string>
+            {
+                Error = e.ErrorCode,
+            });
+        }
+        catch (BadParameterException<Event> e)
+        {
+            return Ok(new Response<string>
+            {
+                Error = e.ErrorCode,
+            });
+        }
     }
 
     [HttpDelete("{id}")]
