@@ -75,29 +75,8 @@ public class OrganizerEventsController(ILogger<OrganizerEventsController> logger
         logger.LogInformation($"Adding new event");
 
         var userId = jwtUtils.GetUserIdFromAuthHeader(HttpContext.Request.Headers["Authorization"]!);
-        try
-        {
-
-            var evnt = eventService.AddEvent(userId, dto);
-        return new OkObjectResult(
-            new Response<EventResponseDTO>
-            {
-                Data = evnt,
-            });
-        } catch (BadParameterException<EventCreationRequestDTO> e)
-        {
-            return Ok(new Response<string>
-            {
-                Error = e.ErrorCode,
-            });
-        }
-        catch (BadParameterException<Event> e)
-        {
-            return Ok(new Response<string>
-            {
-                Error = e.ErrorCode,
-            });
-        }
+        var evnt = eventService.AddEvent(userId, dto);
+        return new OkObjectResult(evnt);
     }
 
     [HttpDelete("{id}")]
