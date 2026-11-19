@@ -18,7 +18,7 @@ public class IsModeratorHandler(IUserService userService) : AuthorizationHandler
         //var userId = Guid.Parse(identifierClaim ?? throw new UnauthorizedException());
 
         var user = userService.GetUser(identifierClaim);
-        if (user != null && user.Type != "Moderator")
+        if (user != null && !user.Type.Contains("Moderator"))
             throw new UnauthorizedException();
         else
             context.Succeed(requirement);
