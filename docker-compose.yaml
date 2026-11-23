@@ -14,6 +14,8 @@ services:
       - "5432:5432" # Check if we want to expose this port to the host
     env_file:
       - ./core/.env
+    volumes:
+      - database-volume:/var/lib/postgresql
   redis:
     image: redis:7.2.4
     restart: always
@@ -44,3 +46,7 @@ services:
 volumes:
   cache:
     driver: local
+  database-volume:
+    external: false
+    name: database-volume
+
